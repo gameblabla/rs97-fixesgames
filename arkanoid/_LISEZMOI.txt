@@ -1,0 +1,381 @@
+
+ Casse Briques de type Arkanoid.
+ Done by Clément CORDE.
+ Contact : c1702@yahoo.com
+
+
+> Histoire :
+
+ Il y a de ça quelques années, j'ai travaillé dans le jeu vidéo (fort mauvaise expérience du reste). N'ayant jamais programmé de casse briques, je comptais à la base juste programmer un petit casse briques pour moi dans mon coin, et c'est ce que j'ai fait. Un de mes collègues avait l'air intéressé par le projet, donc je lui ai proposé de lui donner les sources pour qu'il puisse voir coment j'avais procédé. Ce même collègue m'a suggéré de mettre mes sources en ligne, car selon lui, ça pourrait intéresser du monde. Je suis un peu sceptique sur ce point, mais si ça peut servir à quelqu'un un, tant mieux !
+
+ Je ne pense pas qu'il y ait rien de révolutionnaire dans ce code, mais il contient quelques principes qui pourront peut-être donner une orientation à des gens commençant la programmation (attention, je ne me pose pas comme expert pour autant !) : Comment gérer des sprites, des anims, des monstres, des tirs, etc... Du moins, c'est une façon de faire les choses. Et puis il y a quand même quelques petites astuces !
+
+
+> Copyrights :
+
+ Non, pas les miens ! :)
+
+ Comme j'ai fait ça pour moi et que je ne suis pas graphiste, j'ai récupéré des graphs comme j'ai pu, afin d'en avoir le moins possible à dessiner moi même. Pour un casse briques, Arkanoid parassait tout indiqué. Mais ceci veut dire qu'une partie des graphismes sont probablement sous copyright (Taito ?). Comme le but n'est absolument pas de faire du profit, on va espérer que je ne serai pas embêté.
+
+ Les monstres, les explosions, les contours des niveaux et la base de la raquette viennent de la version Atari ST.
+ Les arrière plans viennent du site StrategyWiki (http://strategywiki.org/wiki/Arkanoid/Walkthrough).
+ La fonte a été trouvée sur le site de Daniel Guldkrans (http://www.algonet.se/~guld1/freefont.htm), et légèrement retouchée par mes soins pour les besoins du jeu.
+ Tous les autres graphismes par moi même.
+
+ Petite précision : Le but n'était pas de faire un clone strict d'Arkanoid, même si au final ça y ressemble. Donc ne vous étonnez pas s'il y a quelques différences.
+
+
+> Questions :
+
+ Je répondrai par mail (c1702@yahoo.com) autant que possible à d'éventuelles questions, mais veillez à préciser un objet bien clair. La raison est que je reçois pas mal de spam, et qu'évidement, je ne lis pas ce spam avant de l'effacer. Alors si vous m'envoyez un mail, évitez de mettre en objet 'viagra' !
+
+
+> SDL :
+
+ Le jeu utilise SDL au minimum. Je suppose qu'on doit pouvoir faire plein de trucs super avec SDL, mais ce n'était pas mon but. Je n'avais pas codé quelque chose ressemblant à un jeu depuis longtemps, je voulais donc voir si je n'avais pas tout oublié. Donc en gros, je me sers de SDL pour obtenir un buffer en vidéo et blitter dedans, en 256 couleurs parce que c'est ce que je voulais, que les modes 256 couleurs sont faciles à gérer et ont des palettes. SDL me sert aussi à lire les images au format BMP parce que je n'avais pas envie de faire un loader de BMP (même si ça ne doit pas être bien sorcier). Sinon, tout est fait à la main.
+
+
+> Son :
+
+ Il n'y a pas de son dans ce jeu. La raison ? Je n'ai absolument aucun matériel pour créer, éditer ou ripper du son. Maintenant, si quelqu'un veut m'en envoyer et si j'ai un peu de temps, je verrai comment l'inclure dans le projet.
+
+
+> Compilation :
+
+ J'utilise Code::Blocks sous Windows XP, avec gcc et SDL.
+
+ Je n'ai pas inclus le fichier projet pour la raison suivante : Comme il y a peu de chances que vos répertoires soient les mêmes que les miens, le projet ne se lirait de toutes façons probablement pas.
+
+ Créez un nouveau projet SDL, copiez tous les fichiers sources ainsi que le répertoire "gfx" dans le répertoire du projet, incluez tous les fichiers sources au projet, et ça devrait fonctionner.
+
+ Options de compilation :
+ -Wall : Voir tous les warnings.
+ -O3 : Optimisation du code pour la vitesse.
+ -DNDEBUG (= #define NDEBUG) : En mode release, pour que les asserts ne soient plus compilés.
+
+ Le fichier "includes.h". Oui, je sais, il parait que ça ne se fait pas. Moi je trouve ça pratique parce que ça ne me fait inclure qu'un fichier ".h" dans chaque ".c". L'effet chiant, c'est que quand on touche un ".h", on est bon pour recompiler tout le projet. Mais bon, ledit projet n'est pas énorme. Et puis si vous voulez, rien ne vous emêche de refaire les inclusions vous mêmes ! :)
+
+ Le jeu est codé en C. Pourquoi pas en C++ ? Parce que je voulais faire les choses d'une certaine façon, et que je n'avais pas grand chose à gagner à utiliser du C++. Maintenant si ça vous amuse de tout repasser en C++, avec des classes, des méthodes et tout et tout, rien ne vous en empêche (le code est assez compartimenté, ça ne devrait pas être trop violent).
+
+
+> Code :
+
+ * Nomenclature utilisée :
+
+ Variables numériques précédées de 'n'.
+ Pointeurs précédés de 'p'.
+ Variables générales précédées de 'g'.
+ Puis noms de variables commençant par une majuscule.
+
+ Exemples :
+ u32	nMonEntier;
+ u32	pMonTableau[NB_ELEMENTS];
+ u32	*pPtr;
+ u32	**ppPtr;	< pp car pointeur de pointeur.
+ u32	gnMonEntierGeneral;
+ etc...
+
+ Exceptions : Les indices de boucle. Là c'est plutôt i, j, k, ix, iy...
+
+
+> Petits problèmes :
+
+ * Le scroll du décor dans les menus :
+ Je ne peux pas expliquer pourquoi, mais sur certaines machines, le scroll n'est pas smooth (J'ai le problème sur ma vieille machine, sur laquelle je développe). J'ai l'impression que le refresh n'attend pas le vblank et tombe n'importe quand. Je ne suis pas un un expert de SDL, mais à lire l'explication de SDL_FLIP(), c'est peut-être que l'init hardware du 320x240 en 256 couleurs n'est pas supportée par le hard, et qu'alors le SDL_Flip() se comporte comme un SDL_UpdateRect() et n'attend pas le retrace ? Pour enlever les scrollings, commentez la ligne "#define MENU_Bkg_Mvt 1" en haut du fichier "menu.cpp".
+
+ * Le mode full-screen (F10) :
+ Semble poser des problèmes avec les config double écran, de plus en plus courantes (problème SDL ?). Si vous n'avez qu'un écran (comme moi), ça devrait fonctionner.
+
+ * Briques incassables et grosses balles :
+ Voilà deux choses difficilement mixables. Je m'explique, quand une balle grossit (point de référence de la balle au centre), si une partie de la balle est dans une brique incassable, déjà, le recalage est pénible à faire. Si en plus de ça la balle était entre deux briques incassables suffisement rapprochées et que l'espace entre les deux briques devient inférieur à celui du diamètre de la balle, là, ça devient ingérable (graphiquement, ça ne peut pas marcher). Donc, dans les niveaux ou il y a des briques incassables, je n'ai pas mis de bonus "grosse balle". Problème reglé. Vous vous dites que c'est une solution de  lamer ? Je vous pose alors la question : Si je ne vous l'avais pas dit, l'auriez-vous remarqué ? Créer les niveaux de façon à éviter les problèmes est une solution utilisée dans les jeux vidéo plus fréquement que ce qu'on imagine.
+
+
+> Niveaux :
+
+ Pour les niveaux, je n'avais pas l'envie ni le temps de faire un éditeur de niveaux. En même temps, je n'allais certainement pas non plus remplir plus de 30 tables de nombres à la main, comme certains le font. Je suis donc passé par un fichier BMP (levels.bmp).
+
+ La planche est séparée en blocs de 16x20, chaque bloc représentant un niveau. L'espace utile est 15x17. Chaque point représente une brique : Couleurs 1 à 10 pour les briques normales, 16 à 18 pour les briques spéciales.
+
+ Les 2 dernières lignes (soit une table de 32 éléments) représentent une table de bonus distribués au hasard dans le niveau (voir sur la partie droite du fichier BMP pour explications, couleurs à partir de 128). Avec ce système, on peut choisir quelles items tombent selon le niveau. Par exemple, on peut limiter le nombre d'items différents dans les premiers niveaux et l'augmenter au fur et à mesure.
+
+ Les niveaux sont capturés de gauche à droite et de haut en bas. Si le premier point rencontré dans un bloc 16x20 n'est pas de couleur 0, le niveau est capturé.
+
+ Toutes les tables sont générés par le projet "brk_lev", dans le fichier "stdout.txt" et incluses dans le fichier "levels.h". Le code est simplissime à comprendre, vous verrez d'ailleurs que je me suis seulement contenté de rajouter une routine (CreateLevels()) dans le code de base généré quand on créé un projet "SDL".
+
+ Il faut juste penser à mettre le "#define LEVEL_Max xx" dans breaker.h.
+
+ Les niveaux sont ceux du premier Arkanoid (merci au site strategywiki pour le layout), adaptés à la taille de l'aire de jeu (qui est plus large ici), et aussi au fait que la balle ici est plus grosse que celle d'Arkanoid, ce qui rendait certains niveaux très/trop difficiles. Par exemple le niveau 3, la balle ne s'engageait pas dans un interstice de 1 brique de haut. Du coup, non seulement ça devenait très difficile, mais aussi très chiant.
+
+
+> Jeu :
+
+ Pour les rebonds sur la raquette, je me suis inspiré de ce que j'ai vu sur Arkanoid I : La balle est renvoyée selon la position à laquelle elle touche la raquette. Le mouvement n'est pas pris en compte, donc ne vous acharnez pas à mettre de l'effet.
+
+ J'ai laissé au joueur le choix du niveau de départ (comme sur Amiga !). Je l'ai limité sur les 12 premiers niveaux, mais vous pouvez recompiler en mettant : #define LEVEL_SELECT_Max (LEVEL_Max - 1) au lieu de #define LEVEL_SELECT_Max (12 - 1) dans breaker.h, ce qui permet alors de commencer à n'importe quel niveau.
+
+ Note à propos des briques qui reviennent : Je pensais faire ça au début, et finalement, j'ai implémenté le truc juste à la fin. Du coup, il n'y en a qu'une au niveau 2, et c'est tout. Mais ça fonctionne.
+
+
+> Doh :
+
+ Plusieurs petits trucs à dire.
+
+ D'abord, je n'ai jamais atteint ce niveau en jouant à l'époque, donc je ne sais pas comment se comportait ce monstre. C'est donc un comportement complètement inventé.
+
+ Je n'avais pas de sprites pour le boss. Sur un des écrans du site strategywiki, j'ai récupéré une frame ou Doh avait la bouche ouverte. J'ai tant bien que mal dessiné une image où il a la bouche fermée. Par contre, faire l'anim de transition, c'est un peu trop difficile pour moi. Là encore, si quelqu'un se dévoue, je suis preneur ! :)
+
+
+> Sprites :
+
+ Les sprites sont capturés au lancement du jeu, depuis des fichiers BMP.
+
+ Les sprites dans ce jeu sont très simples, ils ne possèdent même pas de zone de collision en plus de leur rectangle englobant. La bonne idée que nous utilisions dans le jeu vidéo était de passer par le format PSD (photoshop), qui permet de rajouter des couches alpha à volonté, et est assez simple à décoder (en 256 couleurs !). On peut alors rajouter des zones de collisions différentes et plein d'autres choses utiles. Dans ce jeu, hormis les balles (qui sont testées au pixel), tout est relativement carré et je n'avais pas vraiment besoin de zones de collisions supplémentaires. Je me suis donc contenté d'un BMP, que SDL permet de lire facilement. (Note: Un loader de PSD est en préparation. Je m'en servirai dans un prochain projet).
+
+ Dans un "vrai" jeu vidéo, on ne capturerait pas les sprites de cette façon. On génèrerait des fichiers avec un outil, ce qui permet entre autres de les compresser. Comme le résultat de la capture sera tout le temps le même, le faire en temps réel présente peu d'intérêt. Ceci éviterait aussi d'avoir à saisir à la main les "e_Spr_xxx" du fichier "sprites.h". Mais ceci prend du temps, et je voulais faire un truc simple, sans avoir à débugger des programmes externes en plus.
+
+ Techniquement, quand un sprite est capturé, on génère un masque inverse (un rectangle de la même taille que le sprite) : Pour chaque pixel du sprite, 0xFF s'il n'y a rien a afficher, 0 si il y a un pixel. Au moment de l'affichage, on fait un trou à l'emplacement du sprite avec un AND du fond et du masque inverse, puis on poke les pixels du sprite avec un OR entre le sprite et le fond (troué).
+
+ * Comment rajouter des sprites ?
+
+ Là, il faut bien faire une différence entre un sprite et une animation. Bien sûr, les animations sont composées de sprites, mais les gestions sont complètement séparées.
+
+ - Rajout d'un sprite :
+
+ Pour commencer simplement, dans une planche existante (ça sera plus simple pour les palettes), rajoutez votre sprite. Il doit être contenu dans un rectangle de couleur 0 (le violet CGA). Les encoches sur les côtés haut et gauche indiquent le point de référence du sprite. L'arrière plan de la planche doit être de couleur 255.
+
+ Il faut ensuite le rajouter dans la liste qui se trouve dans le fichier "sprites.h", au bon endroit (ordre de capture), et mettre à jour le "chaînage" (un sprite à un numéro relatif au sprite qui le précède).
+
+ Voilà, le sprite est intégré. On peut déjà l'afficher : Pour ce faire, utilisez la fonction :
+ void SprDisplay(u32 nSprNo, s32 nPosX, s32 nPosY, u32 nPrio);
+ avec :
+ nSprNo = Le numéro du sprite (e_Spr_<qque chose>).
+ nPosX, nPosY = Position sur l'écran (et (0,0) = coin supérieur gauche).
+ nPrio = Priorité, de 0 (en dessous de tout) à 255 (au dessus de tout).
+
+ - Rajouter d'une animation :
+
+ Une fois que vous avez intégré tous les sprites, il faut définir une anim. Ca se passe dans les fichiers "anims.cpp" et "anims.h".
+
+ Dans "anims.cpp", on définit une table.
+
+ La structure est très simple :
+ 1 clef d'animation (nous y reviendrons plus tard), puis
+ nombre de frames d'affichage, numéro du sprite à afficher (ceci répété autant de fois que nécessaire).
+ On peut aussi rajouter des codes de contrôle, suivi d'une valeur (qui dépend du code).
+
+ Seulement 4 codes définis pour le moment :
+ e_Anm_Jump : Saut dans une anim.
+ e_Anm_Goto : Initialise une autre anim.
+ e_Anm_End : Fin d'une anim, AnmGetImage() renverra SPR_NoSprite, et le flag e_AnmFlag_End sera positionné (interrogation avec AnmCheckEnd()). Le slot d'anim n'est pas libéré.
+ e_Anm_Kill : Fin d'une anim. Renvoie -1 et libère le slot (ex: dust).
+
+ Il faut ensuite déclarer la table dans "anims.h" : extern u32 gAnm_<Nom de l'anim>[];
+
+ Après, on peut l'utiliser : On initialise une anim dans un slot, et à chaque frame on fait un AnmGetImage() du slot, qui renverra le numéro du sprite à afficher.
+
+ Initialisation :
+ NoDeSlot = AnmSet(gAnm_<Nom de l'anim>, NoDeSlot ou -1 pour une nouvelle anim);
+ Il y a aussi AnmSetIfNew().
+
+ La différence, AnmSetIfNew() initialise une anim seulement si l'animation passée en paramètre est nouvelle ET si la clef d'animation le permet (priorité au moins égale à celle de l'anim en cours).
+
+ Mais c'est quoi, cette clef d'animation ?
+
+ D'abord, comme on peut la récupérer à tout moment (AnmGetKey()), on peut s'en servir pour différencier des anims.
+
+ Pas clair ? Exemple : Les anims du joueur ont pour la plupart une clef e_AnmKey_Null. Quand il est en train de mourir (et qu'il faut l'empêcher de bouger), l'anim a alors une clef e_AnmKey_PlyrDeath. Dans la routine Brk_MovePlayer du fichier "breaker.cpp", on teste la mort avec la ligne suivante :
+ if (AnmGetKey(gBreak.nPlayerAnmNo) == e_AnmKey_PlyrDeath) ...
+
+ La clef d'animation est composée de deux parties : Une priorité (16 bits de poids fort) et un identifiant (16 bits de poids faible).
+
+ Là ou ça peut devenir utile, exemple :
+ Un personnage est au repos. Bouton de tir, anim de tir avec une priorité supérieure à celle du repos, l'anim est mise en place. Jusque là, on n'en pas besoin de priorités, d'accord. Mais quand doit on remettre l'anim de repos ? Avec ce système, on peut appeler AnmSetIfNew() tout le temps, l'anim de repos ne sera remise en place que lorsque l'anim de tir sera terminée. La gestion est simplifiée : Par défaut, on essayera de mettre une anim de repos. Si le perso doit tirer, on essaye de mettre l'anim de tir. Si on peut, le perso tire, et cette anim de pourra être interrompue que par une anim de priorité supérieure (un hit ou la mort, par exemple).
+
+ Ce système ne règle pas tous les problèmes, mais c'est une aide sympathique.
+
+
+> Monstres :
+
+ Voilà comment ça se passe : La gestion se passe dans mst.cpp. Le code des monstres proprement dits se trouve dans monsters.cpp.
+
+ Gestion : Il y a une table contenant x slots (comme pour les tirs, les dusts...). Chaque slot correspond à un monstre.
+
+ Chaque slot a une taille fixe, voir la struct SMstCommon dans mst.h. On voit dans cette structure que les monstres ont un certain nombre de variables communes. Pour les variables particulières, on utilise la table pData[64], qui laisse 64 octets de données spécifiques pour chaque monstre. Si 64 octets vous semble peu, je vous le dis tout ce suite, c'est au contraire surdimensionné. Mais sur un PC, l'espace mémoire est infini !
+
+ Ensuite, on a les monstres. Ils ont une fonction d'initialisation, et une fonction principale (appelée toutes les frames quand le monstre est actif).
+
+ Lorsqu'ils ont besoin de variables spécifiques, on fait pointer une structure spécifique sur la zone pData. Ca se passe comme ça :
+ SMstDoh *pSpe = (SMstDoh *)pMst->pData;
+
+ Note : Il faut faire super attention à la taille des structures spécifiques, si elles sont trop grandes, il y aura un phénomène de recouvrement (la fin des données d'un slot qui débordent sur le slot suivant), et une belle merde à débugger... La fonction MstCheckStructSizes() à la fin du fichier monsters.cpp sert à ça. Pour ne plus compiler les asserts en release, il faut spécifier -DNDEBUG au compilateur.
+
+ Les monstres fonctionnent avec une phase, je vous laisse regarder, je trouve ça pratique.
+
+ Pour d'autres types de jeu, un shoot'em up par exemple, il y a une gestion à rajouter : la gestion des ennemis qui arrivent (avec le scroll en général), et ceux qu'il faut éliminer (les ennemis le feront eux-mêmes).
+
+
+> Tirs :
+
+ Une table avec des slots, et un FireManage() a appeler à chaque frame.
+
+ Ici, la gestion des tirs qui sortent de l'écran est simplifiée du fait que les tirs du joueur ne font que monter, et que les tirs du boss ne font que descendre.
+
+ Ce qu'il faut savoir pour les tirs, c'est que ce ne sont pas les tirs qui testent les monstres, ce sont les monstres qui testent les tirs. Et ce n'est pas la même chose. Par exemple, le monstre "porte" (pour sortir d'un niveau) ne viendra jamais tester les tirs. Dans d'autres contextes, des monstres "endormis" (inactifs) ou en train de mourir ne viendront pas non plus tester les tirs. Seuls les monstres concernés feront le test, c'est plus rapide, et beaucoup plus simple.
+
+ Le petit truc intéressant à regarder, c'est la variable gnFireLastUsed dans les routines FireGetSlot() et FireReleaseSlot(), qui permet d'accélérer la recherche d'un slot libre au lieu de scanner la table depuis le début à chaque fois. Ce truc est utilisé à chaque fois qu'il y a une table de ce type (tirs, dusts, etc...).
+
+
+> Dusts :
+
+ Juste un petit point sur ces fameux "dusts". Qu'est ce que c'est ?
+
+ En fait, à l'époque ou je travaillais dans le jeu, on utilisait ça pour gérer facilement plein de petits effets facilement. La première personne qui avait utilisé ça l'avait fait pour afficher des "poussières" (dust en anglais) pour un personnage à la réception d'un saut. Le nom est resté.
+
+ Cette liste est bien pratique : Les dusts ont leur vie propre, et on ne s'en occupe plus jamais. On peut y mettre n'importe quoi, comme de la fumée derrière un missile par exemple... Dans ce jeu, j'y mets les anims de disparition des briques, les explosions des ennemis (qui ne font pas de dégats, donc pas besoin de générer un nouveau tir)...
+
+ Le système est customisable à volonté. On peut imaginer donner une direction et une vitesse aux dusts, si nécéssaire.
+
+
+> Opacité (ombres) :
+
+ J'ai fait les ombres au plus simple : Technique du shade bob, à savoir un add (ici, +6).
+
+ Il faut penser un peu au truc avant de le faire, parce que les palettes des décors doivent être organisées en conséquence. Regardez la palette du décor n°1 (qui contient toutes les palettes des décors). Chaque décor utilise au max 6 couleurs pour sa partie claire. On réserve 6 couleurs de plus pour les ombres. Enfin, on réserve encore 6 couleurs pour les ombres des ombres (J'y reviendrai plus tard). Total : 18 couleurs réservées pour chaque level.
+
+ Pour afficher une ombre, on commence comme pour un sprite, on fait un trou sur la destination là où doit être affichée l'ombre. Puis on récupère les pixels de l'emlacement du trou sur l'image ORIGINALE du décor (pas le double buffer), auxquels on ajoute 6 et on poke ça sur la destination.
+
+ Résultat :
+ Les couleurs normales se retrouvent 6 couleurs plus loin dans la palette, soit la couleur des ombres.
+ Les couleurs des ombres se retrouvent 6 couleurs plus loin, soit dans les palettes des ombres des ombres, qui sont les mêmes couleurs que les ombres, et hop, le tour est joué.
+ Une couleur claire devient une ombre, une ombre reste une ombre.
+
+ Avec cette méthode, on peut superposer plusieurs ombres, ça fonctionnera toujours, puisque la source est toujours l'image ORIGINALE.
+
+ Ca à l'air compliqué, mais c'est juste un jeu de AND, OR et NOT. Regardez dans la fonction SprDisplayLock() (fichier sprites.cpp).
+
+ La routine, en fonction d'un flag, affiche soit une ombre, soit un sprite normal.
+
+ Ensuite, j'avais le choix entre plusieurs méthodes pour prendre en compte les ombres.
+ - Soit à chaque fois que j'affichais un sprite, j'en affichais un autre décalé avec le flag d'ombre. Avantage : On peut sur chaque ombre mettre un décalage différent. Inconvénient : Il y a un double appel à la fonction SprDisplay(), donc plus de sprites à trier. De plus, les ombres étant affichées toujours derrière tous les autres sprites, on les trie un peu pour rien...
+ - Soit, et c'est ce que j'ai choisi de faire, je rajoutais le flag ombre quand je voulais afficher un sprite et son ombre. Chaque sprite, ombré ou non n'est donc trié qu'une fois. Le SprDisplayAll() fait deux passes : Une première pour afficher toutes les ombres (en dessous des autres sprites, donc), et une seconde pour les sprites normaux. Inconvénient : Toutes les ombres ont le même décalage (puisque donné dans la fonction SprDisplayAll()). Avantage : Gestion super simple, juste un flag à rajouter (avec un OR) quand on veut une ombre. Pas de double appel à SprDisplay(). Enfin, ça permet de rajouter des ombres dans les dusts (disparition de brique) sans rien retoucher à la routine de gestion des dusts. J'ai simplement rajouté le flag ombre dans l'anim en question.
+
+ On peut très facilement repasser de la méthode 2 à la méthode 1, il suffit de retirer la boucle pour afficher les ombres de la fonction SprDisplayAll().
+
+ Note : Pour ceux qui voudraient faire de la "vraie" opacité sur une image 256 couleurs, il faut passer par des CLUT (Color Look Up Table, cherchez avec google). Ce n'est pas très compliqué à mettre en oeuvre, mais dans ce projet ça ne m'apportait rien.
+
+
+> Pour "timer" une routine :
+
+ Evidement, maintenant on ne peut plus timer une routine au raster (càd changer la couleur 0 eu début de la routine et la remettre à sa valeur après). Au début, je pensais faire ça avec SDL_GetTicks(), en en mettant un avant et un après le bout de code à timer. Manque de bol, les bouts de code à tester sont souvent tellement petits ou tellement rapides que la différence vaut très souvent 0.
+
+ Donc je fais ça avec le bout de code ci dessous (windows only), qui est beacoup plus précis :
+
+>>>
+#include <windows.h>
+
+Dans la fonction :
+
+LARGE_INTEGER a,b,c;
+QueryPerformanceFrequency(&c);
+QueryPerformanceCounter(&a);
+
+[Partie à timer]
+
+QueryPerformanceCounter(&b);
+printf("%d %d %d\n", (int)(b.QuadPart - a.QuadPart), (int)a.QuadPart, (int)b.QuadPart);
+<<<
+
+ Ca peut servir ! :)
+
+
+> Précalculs :
+
+ J'ai juste précalculé une table de sinus et de cosinus, sur 256 valeurs.
+
+ Il y a d'autres précalculs faisables :
+
+ Une table de SCR_Width éléments et une de SCR_Height éléments, pour savoir immédiatement sur quelle brique on va taper à la position (x,y). Ceci éviterai plein de divisions (et les divisions, c'est mal !). Note : Pourquoi n'ai-je pas choisi une taille de briques maline, comme 16 pixels par exemple ? Comme c'est pour PC et que les PC ont plein de megahertz, j'ai pris une taille que je trouvais jolie (24 pixels), à défaut d'être pratique. Je pensais faire les tables sus-citées par la suite, mais en fait ça ne rame pas du tout. Donc je ne l'ai pas fait.
+ Note additionnelle : J'ai essayé de mettre en place cette table, et les résultats ont été surprenants. Le gain était quasiment nul, et je me demande même si on ne perdait pas (le temps utilisé par les divs est contstant, avec la table, ça varie d'un peu mieux à carrément pire). => Table supprimée.
+
+ Une table de SCR_Width éléments pour les angles de tirs du boss. Il y a un atan2() calculé en temps réél, pas trop terrible pour la vitesse. La aussi, j'ai fait l'essai en real-time en pensant faire une table par la suite, et en fait, ça passe même sur mon vieux coucou. Donc...
+
+ La table des briques fait 15 éléments de large. Forcément, c'est pas terrible, il aurait mieux valu 16. Je pensais peut-être étendre la table utilisée ingame à 16 (avec 1 colonne qui ne servirait à rien) pour éviter plein de multiplications par 15, mais une fois de plus, ça ne rame pas...
+
+
+> Frame rate :
+
+ Pour la gestion du frame rate, je me suis inspiré de plusieurs bouts de code trouvés dans des tutoriels sur internet. Le problème, c'est que je récupère les fichiers frame.c et frame.h d'un projet à l'autre, alors je ne me rappelle absolument plus d'où ça provient. Si quelqu'un se reconnait ici, qu'il me contacte, je mettrai une référence vers son site avec plaisir.
+
+ Le principe, c'est qu'en gros, la fonction FrameWait() attend qu'un certain nombre de cycles d'horloge se soient écoulés depuis l'appel précédent avant de rendre la main. Ceci car bien sûr, on ne peut pas avoir accès directement au vblank, surtout en mode fenêtré ! :)
+
+ Evidement, c'est une gestion simpliste et qui suppose qu'on ne va pas perdre de frames. Si ça arrive, ce n'est pas géré. Il faudrait alors relancer toute la gestion du jeu (pour prendre en compte tous les déplacements et autres), mais sauter l'affichage (qui prend du temps) une fois. C'est d'ailleurs pour ça que dans la gestion du jeu en lui même, l'affichage est séparé de la gestion (bon ok, sauf pour les monstres).
+
+ Petit truc sur le SDL_Delay(3); dans la boucle : C'est ce qui permet au jeu de rendre la main au système d'exploitation un court instant, et de soulager le processeur. Vous pouvez regarder avec le gestionnaire de tâches de windows l'utilisation du processeur, avec et sans cette ligne. C'est assez parlant.
+
+ Après, si on veut faire autrement, on peut mettre en place un timer sous IRQ qui avance un compteur de frames général qui sera pratique pour savoir combien de frames ont été ratées.
+
+
+> Fichiers :
+
+ Liste des fichiers et leur fonction :
+
+sprites.cpp	Moteur / Gestion des sprites.
+sprites.h
+
+animspr.cpp	Moteur / Gestion des animations de sprites.
+animspr.h
+
+anims.cpp	Les tables d'animations de sprites.
+anims.h		Les déclarations des dites tables.
+
+mst.cpp		Moteur / Gestion des monstres.
+mst.h
+
+monsters.cpp	Les monstres du jeu.
+monsters.h
+
+ctypes.h	Déclarations des types u8, s8, etc...
+
+includes.h	Includes et définitions de structs.
+
+dust.cpp	Gestion des dusts.
+dust.h
+
+fire.cpp	Gestion des tirs.
+fire.h
+
+font.cpp	Routines d'affichage de texte.
+font.h
+
+frame.cpp	Gestion du frame rate.
+frame.h
+
+breaker.cpp	Tout le jeu.
+breaker.h
+
+levels.h	Niveaux du jeu, fichier inclus directement dans breaker.cpp.
+
+menu.cpp	Gestion des différents menus et des high-scores.
+menu.h
+
+preca.cpp	Différentes routines utilisées pour des précalculs.
+preca.h
+
+main.cpp	Main, boucle du jeu, boucle des menus, gestion des évènements.
+
+gfx		Répertoire contenant tous les graphismes du jeu.
+
+high.scr	Le fichier des high-scores (binaire, recréé si manquant).
+		Il y a un petit checksum dessus, ce qui permet de contrôler que le fichier n'est pas corrompu.
+
+
+> Conclusion :
+
+ J'ai réussi à faire ce que je voulais faire, ça s'est bien passé, et je suis plutôt content du résultat (ça n'a pas l'air trop buggé ! (^_^)). Bien sûr, ça ressemble à un jeu d'il y a 15 ans, mais au début, je l'ai fait pour moi!
+
+ J'espère n'avoir pas trop oublié de choses essentielles en entrant dans les détails, et que tout ça pourra servir à quelqu'un.
+
+ J'espère aussi que certains s'amuseront avec le jeu ! :) (Même si pour moi, la partie amusante était plutôt le codage !).
+
+
+--End of file--

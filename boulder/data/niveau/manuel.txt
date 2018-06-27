@@ -1,0 +1,15 @@
+B: boulder
+O: terre
+ : vide
+#: contour
+M: mur
+-: mur qui bouge
+x: explosion
+1: ennemi type rien
+2: ennemi type diamant
+D: diamant
+E: diamant type transformation
+P: pierre
+S: slim type diamant
+T: slim type pierre
+F: porte de fin

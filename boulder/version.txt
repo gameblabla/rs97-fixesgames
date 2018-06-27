@@ -1,0 +1,77 @@
+Boulder 2:
+
+9/1/2006
+Version: 0.01
+ implémentation de la liste
+ programmation de test de la liste
+
+
+10/1/2006:
+Version: 0.02
+ meilleure implémentation de la liste
+ début implem Pierre et pierre liste
+
+
+14/1/2006:
+Version: 0.03
+  implém pierre et pierre liste achevée
+  programmation de test pr pierre et pierre liste
+  modification du module liste
+
+15/1/2006:
+Version: 0.04
+	implém diamant, diamantliste
+	impém ennemi, ennemi liste
+	début implem joueur
+
+16/1/2006:
+Version: 0.05
+	implém evenement/touche/
+	fin implém joueur et liste joueur
+Version: 0.06
+	implém explosion et liste explosion
+	début implem mur_qui_bouge
+
+17/1/2006:
+Version: 0.07:
+	implém mur qui bouge et test
+	implem slim et test
+	début implem niveau
+
+21/1/2006:
+Version: 0.1
+	fin implém niveau
+	début implem environnement
+
+27/1/2006:
+Version: 0.5
+ 	continuation implem environnement
+	implem moteur graphique
+	implem boulder graphique
+	implem interface
+	debugage temps
+
+
+28/01/2006:
+Version: 0.5
+ 	fin implem environnement
+	debogage
+	fin implem boulder graphique
+	fin implem moteur graphique
+01/01/2006:
+Version: 0.6
+	debugage des fuites mémoire
+	ajout doc sur fichier, moteur graphique, touche, liste, niveau
+	possibilité de charger un fichier de liste de niveau
+
+17:02:2006:
+Version: 0.7
+	implém à un joueur fini
+
+19/02/2006:
+Version: 0.9
+	debugage des bug des vidages (astuce pr retirer le bug, mais pb d'optimisation)
+	ajout bombe
+	ajout ennemi type pierre (pas de sprite encore)
+
+

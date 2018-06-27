@@ -1,0 +1,5 @@
+
+// Prototypes.
+void PrecaSinCos(void);
+
+

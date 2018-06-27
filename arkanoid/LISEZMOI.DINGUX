@@ -1,0 +1,51 @@
+**************************************
+*				     *
+*        Arkanoid pour Dingux        *
+*                                    *
+**************************************
+
+Ce jeu est un portage d'Arkanoid SDL codé par Clement CORDE, merci à lui.
+
+I . Construction/Installation
+
+       -Pour construire Arkanoid, allez dans le répertoire Arkanoid
+		$cd Arkanoid
+	Puis faites:
+		$make
+	Ca devrait compiler sans erreurs.
+	(pour la version GNU/Linux : $make -f Makefile.linux
+
+       -Pour l'installer, Copiez juste Arkanoid et le répertoire "gfx" sur votre carte SD.
+
+	(si vous lancez le jeu depuis l'explorateur de fichiers, pensez à désactiver la souris)
+
+II . Controles 
+
+-Menu :
+	Haut/Bas : Flèches
+	Valider : B/Start
+	Quitter : Gachette Droite + Gachette Gauche + Select
+
+-Jeu :
+	Droite/Gauche : Flèches
+	Lancer la balle/Tirer : B/A
+	Accelerer : Gachette Droite
+	Quitter : Gachette Droite + Gachette Gauche + Select
+
+-HighScore :
+	Quitter : B/Start
+
+III . A faire/Fait
+       -A faire :
+		- Amméliorer le menu de pause
+		- Ajouter les Highscore
+       -Fait :
+		- Ajout de 2 niveaux (dont un de Clément CORDE)
+		- Ajouter des sons
+		- Acceleration des balles
+
+IV . Remerciements
+
+	Merci à Clement CORDE pour sa release d'un Arkanoid SDL
+
+Version 1.1 par Ezial

@@ -1,0 +1,291 @@
+[SDL] Boulder Dash
+
+
+Voici une copie du célèbre jeu d'amstrad Boulder Dash utilisant le moteur graphique SDL (et SDL_ttf pour le texte).
+
+J'ai tenté au maximum de garder le graphisme original mais l'implémentation du jeu fait que
+normalement, changer le graphisme ne devrait pas être trop dur.
+
+Le jeu ne dispose malheureusement pas de son, et je ne compte pas en ajouter (mais rien ne vous empêche de le faire, mais bon courage :p).
+
+
+Il est actuellement compilable sous windows (fichier DevC++) et sous Linux (il y a un makefile). 
+
+
+L'ensemble du projet est découpé en module (ce qui corresponderait à des classes en programmation orientée objet). 
+
+
+
+
+Les modules sont tous commentés, certains modules se ressemblants renvoit à d'autres module pour voir les commentaires (du même type).
+Les modules les plus importants (utilisables ailleurs que dans ce jeu) sont beaucoup plus commenté dans la partie ./doc/index.html, notamment les modules :
+ moteur_graphique, touche, fichierl, et liste.
+
+
+
+
+
+
+
+Présentation général des modules :
+
+liste :
+
+ Ce module met à disposition des listes généralisées (avec les pointeurs void*), il
+dispose de nombres fonctions (ajout et suppression n'impore où...)
+  Détails d'implémentations : liste doublement chaînée
+
+
+
+pierre, diamant, slim, ennemis, explosion :
+
+ Ce module permet la gestion de base des pierres (dispose surtout des constructeurs, destructeurs et accesseurs (sur la position, les types)) mais reste indépendant du reste du programme.
+
+
+
+touche :
+ 
+ Ce module permet la gestion des touches (utilisent ici la bibliothèque SDL), mais on pourrait facilement changer, le module ne dispose que d'une fonction permettant de savoir
+si une touche particulière est appuyée).
+
+
+
+joueur :
+ 
+ Module du même type que pierre, diamant et slim. Dispose en plus d'une fonction permettant de savoir la direction du joueur indépendemment des touches assignés (important pour ajouter plusieurs joueurs).
+
+
+
+Les listes particulières sur les pierre, diamants, joueurs, slim, joueurs, ennemis, explosion :
+
+ Module utilisant les listes, mais uniquements les fonctions utiles au jeux. Permet d'éviter
+de faire des cast à cause du void* des listes.
+
+
+
+mur_qui_bouge :
+
+ Représente dans le jeu, le mur qui transforme les diamants en pierre et vice et versa durant un certain temps. Il n'y a pas de liste dédiée à ce mur car il n'y en a qu'un pas niveau.
+
+
+fichier :
+
+Contient des opérations de base sur les fichiers pour lire les niveaux, les données sur les sprites et les couleurs des niveaux.
+
+
+
+niveau :
+
+Permet de charger un niveau au format fichier (en créant toutes les structures nécessaires).
+
+
+
+
+environnement :
+
+Faire évoluer (faire tomber les pierres, faire avancer les ennemis, de récuperer les touches du joueur...), est totalement indépendant du graphisme.
+
+
+
+
+moteur_graphique :
+
+Module reprenant les fonctions utilisés de SDL, on créait un module supplémentaire pour tenter de rendre indépendant au maximum de cette bibliothèque.
+
+
+
+boulder_graphique :
+
+Contient les fonctions graphiques évolués (chargement des sprites en format fichier du jeu...), affichage des niveaux.
+
+
+
+jeu, menu :
+
+Module proposant la fonction permettant de jouer à un joueur et donnant accès au menu.
+
+
+
+
+
+
+
+
+Présentation des tests :
+
+Tous les modules ont été testés. Les textes dans les fprintf permettent de savoir
+à quoi correspondent les textes.
+
+
+Exemple pour la liste :
+
+On teste si les champs ont bien été initialisés.
+
+
+void test_listeInitialiser_champ_dernierePositionNulle ()
+{
+  Liste liste;
+  fprintf(stderr, "*** Test de listeInitialiser_dernierepositionNulle =");
+  listeInitialiser(&liste);
+  assert(liste.derniere_position == 0); 
+  oki();
+}
+
+
+
+
+
+Exemple 2 :
+
+/*test ecrire*/
+void test_listeEcrire_horsborne ()
+{
+   int i = 42;  
+   Liste liste;   
+     fprintf(stderr, "*** Test de listeEcrire_hors_borne ="); 
+   listeInitialiser(&liste);
+   listeEcrire(&liste, 12, &i);
+   listeEcrire(&liste, -1, &i);
+   
+   assert(listeTaille(&liste) == 0);
+ listeDetruire(&liste);
+   oki ();
+     
+}
+
+
+
+On teste en écrivant hors borne de la liste, voir si cela provoque des erreurs ou non.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Présentation de comment ajouter un niveau :
+
+Un niveau se compose de 2 fichiers, un fichier de couleur et un fichier de niveau.
+
+
+Le fichier de couleur est comme ça :
+
+Extrait de : data/niveau/normal/caveAcouleur.txt
+
+
+COULEUR_NOIR= 0 0 0
+COULEUR_BLANC= 255 255 255
+COULEUR_JAMBE= 255 153 0
+COULEUR_TETE= 153 153 153
+COULEUR_MOCHE= 255 153 153
+
+
+Donc, il suffit de reprendre ce fichier (de le nommer comme vous voulez) et de changer les couleurs en RGB.
+
+Le fichier niveau est comme ça :
+
+Extrait de : data/nivea/normal/caveA.txt
+
+
+
+TEMPS_NIVEAU= 150
+TEMPS_MUR= 1
+VITESSE_SLIM= 1 
+NOMBRE_DIAMANT= 17
+LONGUEURX= 40
+LONGUEURY= 22
+
+########################################
+#000000 00D0P 00000P0P000000000000P0000#
+#0PBP000000 000000000PD00P0000 00000 00#
+#0000000000 00 00000P0P00P00000000P0000#
+#P0  000000000P000000P00P0000P000P00000#
+#P0PP000000000PP00P00000000P000000P0P 0#
+#000P00P00000000P00000P0 P00000000P0PP0#
+#MMMMMMMMMMMMMMMMMMMMMMMMMMMMMM000P00P0#
+#0 000P00D0 00P0P0000000000D0P0000000P0#
+#00D00000P00000 00000000P  P00D0000P000#
+#000P00P0P00000000000000PP0P00P00000000#
+#0 00000P00000000PP 0000000P00P0D0000 0#
+#0P00 00P0  00000D0PD00D0000P000P00D0P0#
+#0DP00000000000000PPD00P00000000D00000P#
+#00000000MMMMMMMMMMMMMMMMMMMMMMMMMMMMMM#
+#  00000000 000D0000P00000P000P00000000#
+#P 000000000PP00P00000000P000000P0P 00F#
+#0P00P00000000P00000P0  0000D000P0PP000#
+#0000PD00 00000000D000000P0PD000000P000#
+#000 00 0P000P0PP00000000P0PD000000P00P#
+#0D0000P000000 00000000 0P00P0000P000P0#
+########################################
+
+
+On indique au début, les longueurs du niveau, le temps que dure le mur (doit être supérieur strictement à 0), la vitesse du slim (doit être supérieur strictement à 0), le nombre de diamant à prendre, et le temps que doit durer le niveau
+
+Les caractères correspondent à :
+
+
+B: boulder
+O: terre
+ : vide
+#: contour
+M: mur
+-: mur qui bouge
+x: explosion
+1: ennemi type rien
+2: ennemi type diamant
+D: diamant
+E: diamant type transformation
+P: pierre
+S: slim type diamant
+T: slim type pierre
+F: porte de fin
+
+
+
+
+Pour ajouter soit dans le mode normal, soit dans le mode flo, il y a les deux fichiers :
+
+Dans data/niveau/
+
+fliste_niveau.txt et liste_niveau.txt qui contiennent les chemins relatifs à la racine du jeu :
+
+
+./data/niveau/flo/fniveau1.txt
+./data/niveau/flo/fniveau1couleur.txt
+./data/niveau/flo/fniveau2.txt
+./data/niveau/flo/fniveau2couleur.txt
+./data/niveau/flo/fniveau3.txt
+./data/niveau/flo/fniveau3couleur.txt
+./data/niveau/flo/fniveau4.txt
+./data/niveau/flo/fniveau4couleur.txt
+./data/niveau/flo/fniveau5.txt
+./data/niveau/flo/fniveau5couleur.txt
+./data/niveau/flo/fniveau6.txt
+./data/niveau/flo/fniveau6couleur.txt
+./data/niveau/flo/fniveau7.txt
+./data/niveau/flo/fniveau7couleur.txt
+./data/niveau/flo/fniveau8.txt
+./data/niveau/flo/fniveau8couleur.txt
+
+Premier fichier, fichier de niveau, deuxième fichier, fichier de couleur.
+
+Vous pouvez donc inserer le votre comme ça.
+
+
+
+
+
+
+
+
+
+
+

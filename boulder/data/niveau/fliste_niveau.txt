@@ -1,0 +1,16 @@
+./data/niveau/flo/fniveau1.txt
+./data/niveau/flo/fniveau1couleur.txt
+./data/niveau/flo/fniveau2.txt
+./data/niveau/flo/fniveau2couleur.txt
+./data/niveau/flo/fniveau3.txt
+./data/niveau/flo/fniveau3couleur.txt
+./data/niveau/flo/fniveau4.txt
+./data/niveau/flo/fniveau4couleur.txt
+./data/niveau/flo/fniveau5.txt
+./data/niveau/flo/fniveau5couleur.txt
+./data/niveau/flo/fniveau6.txt
+./data/niveau/flo/fniveau6couleur.txt
+./data/niveau/flo/fniveau7.txt
+./data/niveau/flo/fniveau7couleur.txt
+./data/niveau/flo/fniveau8.txt
+./data/niveau/flo/fniveau8couleur.txt

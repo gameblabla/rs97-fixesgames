@@ -1,0 +1,33 @@
+# Project: fichier
+# Makefile created by Dev-C++ 4.9.9.2
+
+CPP  = g++.exe
+CC   = gcc.exe
+WINDRES = windres.exe
+RES  = 
+OBJ  = fichier.o test_fichier.o $(RES)
+LINKOBJ  = fichier.o test_fichier.o $(RES)
+LIBS =  -L"C:/DevCpp/lib"  
+INCS =  -I"C:/DevCpp/include" 
+CXXINCS =  -I"C:/DevCpp/lib/gcc/mingw32/3.4.2/include"  -I"C:/DevCpp/include/c++/3.4.2/backward"  -I"C:/DevCpp/include/c++/3.4.2/mingw32"  -I"C:/DevCpp/include/c++/3.4.2"  -I"C:/DevCpp/include" 
+BIN  = fichier.exe
+CXXFLAGS = $(CXXINCS)  
+CFLAGS = $(INCS)  
+RM = rm -f
+
+.PHONY: all all-before all-after clean clean-custom
+
+all: all-before fichier.exe all-after
+
+
+clean: clean-custom
+	${RM} $(OBJ) $(BIN)
+
+$(BIN): $(OBJ)
+	$(CC) $(LINKOBJ) -o "fichier.exe" $(LIBS)
+
+fichier.o: fichier.c
+	$(CC) -c fichier.c -o fichier.o $(CFLAGS)
+
+test_fichier.o: test_fichier.c
+	$(CC) -c test_fichier.c -o test_fichier.o $(CFLAGS)

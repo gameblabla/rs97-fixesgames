@@ -1,0 +1,14 @@
+
+TEMPS_NIVEAU= 100
+
+TEMPS_MUR= 56
+VITESSE_SLIM= 34
+NOMBRE_DIAMANT= 12
+LONGUEURX= 6
+LONGUEURY= 5
+
+######
+#    #
+# 00 #
+# 00 #
+######

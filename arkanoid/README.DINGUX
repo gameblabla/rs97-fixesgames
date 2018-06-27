@@ -1,0 +1,51 @@
+*************************************
+*				    *
+*        Arkanoid for Dingux        *
+*                                   *
+*************************************
+
+This is a port of a SDL Arkanoid made by Clement CORDE, thanks to him.
+
+I . Building/Installation
+
+       -To build Arkanoid, you just have to go into Arkanoid folder
+		$cd Arkanoid
+	Then do:
+		$make
+	It should compile without errors.
+	(for the GNU/Linux version : $make -f Makefile.linux
+
+       -To install it, just copy Arkanoid and the "gfx" folder on your SD Card.
+
+	(if you launch it from the file explorer, think to disable mouse before)
+
+II . Controls 
+
+-Menu :
+	Up/Down : Arrows
+	Valid : B/Start
+	Exit : R Trigger + L Trigger + Select
+
+-Game :
+	Right/Left : Arrows
+	Launch ball/Fire : B/A
+	Accelerate : R Trigger
+	Exit : R Trigger + L Trigger + Select
+
+-HighScore :
+	Exit : B/Start
+
+III . To do/Done
+       -To do :
+		- Ameliorate Pause
+		- Add Highscore
+       -Done :
+		- Add 2 levels (one made by Clément CORDE)
+		- Add sounds
+		- Acceleration of the balls
+
+IV . Thanks
+
+	Tanks to Clement CORDE for releasing his SDL Breaker.
+
+Version 1.1 by Ezial

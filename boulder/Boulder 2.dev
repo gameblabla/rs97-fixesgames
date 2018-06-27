@@ -1,0 +1,629 @@
+[Project]
+FileName=Boulder 2.dev
+Name=Boulder 2
+UnitCount=58
+Type=0
+Ver=1
+ObjFiles=
+Includes=
+Libs=
+PrivateResource=Boulder_2_private.rc
+ResourceIncludes=
+MakeIncludes=
+Compiler=-Dmain=SDL_main_@@_
+CppCompiler=
+Linker=-lSDL_ttf -lmingw32  -lSDLmain -lSDL_@@_
+IsCpp=0
+Icon=Boulder 2.ico
+ExeOutput=
+ObjectOutput=
+OverrideOutput=0
+OverrideOutputName=Boulder 2.exe
+HostApplication=
+Folders=
+CommandLine=
+UseCustomMakefile=0
+CustomMakefile=
+IncludeVersionInfo=1
+SupportXPThemes=0
+CompilerSet=0
+CompilerSettings=0000000000000101000000
+
+[Unit1]
+FileName=src\main.c
+CompileCpp=0
+Folder=Boulder 2
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit2]
+FileName=src\boulder_graphique\boulder_graphique.h
+CompileCpp=0
+Folder=Boulder 2
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit3]
+FileName=src\boulder_graphique\boulder_graphique_acc.c
+CompileCpp=0
+Folder=Boulder 2
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit4]
+FileName=src\boulder_graphique\boulder_graphique_affiche.c
+CompileCpp=0
+Folder=Boulder 2
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit5]
+FileName=src\boulder_graphique\boulder_graphique_calcul.c
+CompileCpp=0
+Folder=Boulder 2
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit6]
+FileName=src\boulder_graphique\boulder_graphique_cons.c
+CompileCpp=0
+Folder=Boulder 2
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit7]
+FileName=src\boulder_graphique\boulder_graphique_couleurs.c
+CompileCpp=0
+Folder=Boulder 2
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit8]
+FileName=src\boulder_graphique\boulder_graphique_sprite.c
+CompileCpp=0
+Folder=Boulder 2
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit10]
+FileName=src\diamant\liste_diamant\liste_diamant.h
+CompileCpp=0
+Folder=Boulder 2
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit11]
+FileName=src\diamant\type_diamant\diamant.c
+CompileCpp=0
+Folder=Boulder 2
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit12]
+FileName=src\diamant\type_diamant\diamant.h
+CompileCpp=0
+Folder=Boulder 2
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit13]
+FileName=src\ennemi\liste_ennemi\liste_ennemi.c
+CompileCpp=0
+Folder=Boulder 2
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit14]
+FileName=src\ennemi\liste_ennemi\liste_ennemi.h
+CompileCpp=0
+Folder=Boulder 2
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit15]
+FileName=src\ennemi\type_ennemi\ennemi.c
+CompileCpp=0
+Folder=Boulder 2
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit16]
+FileName=src\ennemi\type_ennemi\ennemi.h
+CompileCpp=0
+Folder=Boulder 2
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit17]
+FileName=src\environnement\environnement.c
+CompileCpp=0
+Folder=Boulder 2
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit18]
+FileName=src\environnement\environnement.h
+CompileCpp=0
+Folder=Boulder 2
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit19]
+FileName=src\environnement\environnement_diamant.c
+CompileCpp=0
+Folder=Boulder 2
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit20]
+FileName=src\environnement\environnement_ennemi.c
+CompileCpp=0
+Folder=Boulder 2
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit21]
+FileName=src\environnement\environnement_explosion.c
+CompileCpp=0
+Folder=Boulder 2
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit22]
+FileName=src\environnement\environnement_joueur.c
+CompileCpp=0
+Folder=Boulder 2
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit23]
+FileName=src\environnement\environnement_pierre.c
+CompileCpp=0
+Folder=Boulder 2
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit24]
+FileName=src\environnement\environnement_slim.c
+CompileCpp=0
+Folder=Boulder 2
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit25]
+FileName=src\evenement\temps\temps.c
+CompileCpp=0
+Folder=Boulder 2
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit26]
+FileName=src\evenement\temps\temps.h
+CompileCpp=0
+Folder=Boulder 2
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit27]
+FileName=src\evenement\touche\touche.c
+CompileCpp=0
+Folder=Boulder 2
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit28]
+FileName=src\evenement\touche\touche.h
+CompileCpp=0
+Folder=Boulder 2
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit29]
+FileName=src\explosion\liste_explosion\liste_explosion.c
+CompileCpp=0
+Folder=Boulder 2
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit30]
+FileName=src\explosion\liste_explosion\liste_explosion.h
+CompileCpp=0
+Folder=Boulder 2
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit31]
+FileName=src\explosion\type_explosion\explosion.c
+CompileCpp=0
+Folder=Boulder 2
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit32]
+FileName=src\explosion\type_explosion\explosion.h
+CompileCpp=0
+Folder=Boulder 2
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit33]
+FileName=src\fichier\fichier.c
+CompileCpp=0
+Folder=Boulder 2
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit34]
+FileName=src\fichier\fichier.h
+CompileCpp=0
+Folder=Boulder 2
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit35]
+FileName=src\interface\interface.c
+CompileCpp=0
+Folder=Boulder 2
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit36]
+FileName=src\interface\interface.h
+CompileCpp=0
+Folder=Boulder 2
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit37]
+FileName=src\jeu\jeu.c
+CompileCpp=0
+Folder=Boulder 2
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit38]
+FileName=src\jeu\jeu.h
+CompileCpp=0
+Folder=Boulder 2
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit39]
+FileName=src\joueur\liste_joueur\liste_joueur.c
+CompileCpp=0
+Folder=Boulder 2
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit40]
+FileName=src\joueur\liste_joueur\liste_joueur.h
+CompileCpp=0
+Folder=Boulder 2
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit41]
+FileName=src\joueur\type_joueur\joueur.c
+CompileCpp=0
+Folder=Boulder 2
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit42]
+FileName=src\joueur\type_joueur\joueur.h
+CompileCpp=0
+Folder=Boulder 2
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit43]
+FileName=src\liste\liste.c
+CompileCpp=0
+Folder=Boulder 2
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit44]
+FileName=src\liste\liste.h
+CompileCpp=0
+Folder=Boulder 2
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit45]
+FileName=src\menu\menu.c
+CompileCpp=0
+Folder=Boulder 2
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit46]
+FileName=src\menu\menu.h
+CompileCpp=0
+Folder=Boulder 2
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit47]
+FileName=src\moteur_graphique\moteur_graphique.c
+CompileCpp=0
+Folder=Boulder 2
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit48]
+FileName=src\moteur_graphique\moteur_graphique.h
+CompileCpp=0
+Folder=Boulder 2
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit49]
+FileName=src\mur_qui_bouge\mur_qui_bouge.c
+CompileCpp=0
+Folder=Boulder 2
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit50]
+FileName=src\mur_qui_bouge\mur_qui_bouge.h
+CompileCpp=0
+Folder=Boulder 2
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit51]
+FileName=src\niveau\niveau.c
+CompileCpp=0
+Folder=Boulder 2
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit52]
+FileName=src\niveau\niveau.h
+CompileCpp=0
+Folder=Boulder 2
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit53]
+FileName=src\pierre\liste_pierre\liste_pierre.c
+CompileCpp=0
+Folder=Boulder 2
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit54]
+FileName=src\pierre\liste_pierre\liste_pierre.h
+CompileCpp=0
+Folder=Boulder 2
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit55]
+FileName=src\pierre\type_pierre\pierre.c
+CompileCpp=0
+Folder=Boulder 2
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit56]
+FileName=src\pierre\type_pierre\pierre.h
+CompileCpp=0
+Folder=Boulder 2
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit57]
+FileName=src\slim\slim.c
+CompileCpp=0
+Folder=Boulder 2
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit58]
+FileName=src\slim\slim.h
+CompileCpp=0
+Folder=Boulder 2
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[VersionInfo]
+Major=0
+Minor=9
+Release=1
+Build=90
+LanguageID=1036
+CharsetID=1252
+CompanyName=
+FileVersion=
+FileDescription=Boulder DASH CPC
+InternalName=
+LegalCopyright=
+LegalTrademarks=
+OriginalFilename=
+ProductName=
+ProductVersion=
+AutoIncBuildNr=1
+
+[Unit9]
+FileName=src\diamant\liste_diamant\liste_diamant.c
+CompileCpp=0
+Folder=Boulder 2
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
