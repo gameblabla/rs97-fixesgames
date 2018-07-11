@@ -1,0 +1,113 @@
+from D to C++
+
+If you are more familiar English than Japanese, please read README.en.
+
+・説明。
+
+C++ の遺産(死んでない) を D から触るためのものです。
+extern(C++) がサポートされた時、無意味に帰ります。
+
+C++ からは C のインターフェイスを提供して、
+D からそれを触るためのインポートライブラリも作らなければならない、
+ということを理解して頂ければ何がやりたいかがわかるかと思います。
+
+C 関数の宣言/定義は C++ ソースからプリプロセッサで、
+D 関数の宣言は C++ ソースから perl スクリプトで生成されます。
+
+README.en で説明を放棄するために作った図。
+
+generating process
+
+C++ using d_cpp     -----------------------> C wrapper
+(interface definition) |    preprocesser
+                       |
+                       --------------------> D import interface
+                            perl script
+
+accessing process
+
+D client code --> D import interface --> C wrapper -->
+C++ using d_cpp --> C++ library code
+
+・ファイルの説明
+
+README:
+ これ。
+
+Makefile:
+ サンプルであるところの cpp_test 実行ファイルを作る。
+
+Makefile.win32:
+ windows での Makefile。
+
+d_cpp_interface.h:
+ C++ から C の宣言を生成するためのヘッダ。
+
+create_d_import.pl:
+ D の宣言を自動生成する perl スクリプト。
+
+cpp.cc:
+ サンプル、ユーザが書かにゃならんのはこの部分です。
+
+cpp_test.d:
+ D から cpp.cc を実際にいじってみるサンプル。
+
+create_d_cpp_interface.pl:
+ おまけ。d_cpp_interface.h を生成する。改造したい場合にどうぞ。
+
+cpp.cc の前半が D から使いたいクラスライブラリ、
+後半部が D で import するのに必要な作業です。
+
+cpp.cc に C 関数の定義がマクロで生成されます。
+このマクロは雑な perl script でパースするため、
+途中で絶対改行しないで下さい。
+
+D による import は create_d_import.pl を用いて
+import するためのファイルを作成して下さい。
+このファイルには宣言しか含まれないので、
+コンパイル・リンクする必要はありません。
+
+こんなややこしいものの説明を書く自信が無いので、
+cpp.cc を眺めて適当に理解して下さい。
+
+・その他
+
+とてもとてもα版です。ご意見頂けるととても嬉しいです。
+
+以下が実際的な実例となっています。
+http://user.ecc.u-tokyo.ac.jp/~s31552/wp/bulletss/
+
+修正 BSD ライセンスに従って配布します。
+
+Copyright (c) 2003, shinichiro.h All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are
+met:
+
+    * Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above
+      copyright notice, this list of conditions and the following
+      disclaimer in the documentation and/or other materials provided
+      with the distribution.
+    * The name of the author may not be used to endorse or promote
+      products derived from this software without specific prior
+      written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+------------------
+ shinichiro.h
+  s31552@mail.ecc.u-tokyo.ac.jp
+  http://user.ecc.u-tokyo.ac.jp/~s31552/wp/

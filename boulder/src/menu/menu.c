@@ -13,7 +13,7 @@ Mix_Music* music;
 
 static void Play_MusS()
 {
-	Mix_PlayMusic(music, -1);
+	Mix_PlayMusic(music, 99);
 }
 
 static void Stop_MusS()

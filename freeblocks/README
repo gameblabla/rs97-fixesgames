@@ -1,0 +1,66 @@
+# FreeBlocks
+-------------------------------------------------------------------------------
+
+FreeBlocks is a puzzle game with similar gameplay to Tetris Attack.
+
+
+
+## Copyright & License
+
+FreeBlocks is Copyright (c) 2012-2015 Justin Jacobs
+
+FreeBlocks' source code is released under the GNU GPL v3. Later versions are permitted.
+
+The block graphics are modified versions of those by Kenney.nl, licensed under CC-BY 3.0.
+
+The space background is modified from the following artists and under the following licenses:
+
+- http://opengameart.org/content/spaaaaaaace-scene by Kris Lachowski (CC-BY 3.0)
+- http://opengameart.org/content/ui-pack by Kenney.nl (CC0)
+
+The included Alegreya font is licensed under the SIL Open Font License, Version 1.1.
+
+This project contains music created by the following artists and under the following licenses:
+
+- David McKee (ViRiX) (http://soundcloud.com/virix) (CC-BY 3.0)
+- cynicmusic (pixelsphere.org) (CC-BY 3.0)
+
+All other artwork is by me, Justin Jacobs, and is licensed under CC-BY-SA 3.0.
+
+
+
+## Dependencies & Building
+
+* SDL
+* SDL_ttf
+* SDL_image
+* SDL_mixer
+
+To compile FreeBlocks, simply run `cmake . && make` in the base directory.
+
+
+
+## Controls
+
+* Arrow keys = Move cursor
+* Left Control = Switch blocks / Confirm menu selection
+* Left Alt = Manually bump up the stack / Go to previous menu
+* ESC = Pause the game / Exit the game when on the title screen
+* Return = Confirm menu selection
+
+## Controls (joystick)
+
+* Primary directional input (stick or D-pad depending on device) = Move cursor
+* Button 0 = Switch blocks / Confirm menu selection
+* Button 1 = Manually bump up the stack / Go to previous menu
+* Button 9 = Pause the game / Confirm menu selection
+* Button 8 = Exit the game when on the title screen
+
+## Controls (GCW-Zero)
+
+* D-Pad = Move cursor
+* A = Switch blocks / Confirm menu selection
+* B = Manually bump up the stack / Go to previous menu
+* Start = Pause the game / Confirm menu selection
+* Select = Exit the game when on the title screen
+

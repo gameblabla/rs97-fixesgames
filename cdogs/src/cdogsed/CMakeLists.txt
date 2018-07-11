@@ -1,0 +1,22 @@
+include_directories(${SDL_INCLUDE_DIR})
+set(CDOGSED_SOURCES
+	charsed.c
+	editor_brush.c
+	editor_ui.c
+	editor_ui_color.c
+	editor_ui_common.c
+	editor_ui_static.c
+	editor_ui_static_additem.c
+	ui_object.c)
+set(CDOGSED_HEADERS
+	charsed.h
+	editor_brush.h
+	editor_ui.h
+	editor_ui_color.h
+	editor_ui_common.h
+	editor_ui_static.h
+	editor_ui_static_additem.h
+	ui_object.h)
+add_library(cdogsedlib STATIC ${CDOGSED_SOURCES} ${CDOGSED_HEADERS})
+target_link_libraries(cdogsedlib
+	${SDL_LIBRARY})

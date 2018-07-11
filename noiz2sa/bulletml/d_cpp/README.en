@@ -1,0 +1,99 @@
+from D to C++
+
+I'm sorry of my poor English...
+
+* Introduction
+
+This package helps to access C++ library from D. If D compiler
+supports such as extern(C++), this package becomes useless.
+
+* Figure
+
+generating process
+
+C++ using d_cpp     -----------------------> C wrapper
+(interface definition) |    preprocesser
+                       |
+                       --------------------> D import interface
+                            perl script
+
+accessing process
+
+D client code --> D import interface --> C wrapper -->
+C++ using d_cpp --> C++ library code
+
+* File Description
+
+README:
+ this file.
+
+Makefile:
+ linux's makefile.
+
+Makefile.win32:
+ windows's makefile.
+
+d_cpp_interface.h:
+ helps C++ using d_cpp to C wrapper
+
+create_d_import.pl:
+ helps C++ using d_cpp to D import interface
+
+cpp.cc:
+ sample of C++ using d_cpp and C++ library code.
+
+cpp_test.d:
+ sample of D client code.
+
+create_d_cpp_interface.pl:
+ I created d_cpp_interface.h with this script.
+
+* Misc
+
+This package is alpha release. I'm glad if you give me advice.
+
+More complicated sample is available as "barrage 360 deg.",
+a BulletML viewer.
+
+- Japanese page
+http://user.ecc.u-tokyo.ac.jp/~s31552/wp/bulletss/
+- Download
+http://user.ecc.u-tokyo.ac.jp/~s31552/wp/bulletss/bulletss.tar.bz2
+- BulletML
+http://www.asahi-net.or.jp/~cs8k-cyu/bulletml/index_e.html
+
+This package distributes under the modified BSD license
+
+Copyright (c) 2003, shinichiro.h All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are
+met:
+
+    * Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above
+      copyright notice, this list of conditions and the following
+      disclaimer in the documentation and/or other materials provided
+      with the distribution.
+    * The name of the author may not be used to endorse or promote
+      products derived from this software without specific prior
+      written permission.
+
+TTHIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+------------------
+ shinichiro.h
+  s31552@mail.ecc.u-tokyo.ac.jp
+  http://user.ecc.u-tokyo.ac.jp/~s31552/wp/
+

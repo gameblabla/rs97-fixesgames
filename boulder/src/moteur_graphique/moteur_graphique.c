@@ -56,8 +56,6 @@ int g_fenetreInitialiser(G_fenetre* pfenetre, int resolutionx, int resolutiony, 
     }
     
     Mix_OpenAudio(48000,MIX_DEFAULT_FORMAT,2,2048);
-    Mix_AllocateChannels(8);
-    
        // eneleve la souris
     pfenetre->surface = screen;
     

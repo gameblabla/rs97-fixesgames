@@ -23,7 +23,6 @@
 #include "font.h"
 #include "menu.h"
 #include "SDL_mixer.h"
-#include "SDL_sound.h"
 
 #include "snd.h"
 

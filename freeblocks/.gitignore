@@ -1,0 +1,28 @@
+freeblocks
+.depend
+build/
+freeblocks.opk
+gmon.out
+
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+install_manifest.txt
+
+# Windows
+*.vcxproj*
+*.opensdf
+*.sdf
+*.sln
+freeblocks.dir/
+Win32/
+
+# OSX
+CMakeScripts/
+Debug/
+freeblocks.build/
+*.xcodeproj
+
+# GCW-Zero
+pkg/gcw_build/

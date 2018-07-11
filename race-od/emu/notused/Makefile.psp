@@ -1,0 +1,45 @@
+PSPSDK=$(shell psp-config --pspsdk-path)
+
+PSPAPP=psp
+PSPLIB=$(PSPAPP)/psplib
+
+PSP_FW_VERSION=200
+export PSP_FW_VERSION
+
+PSP_APP_NAME=RACE! PSP
+PSP_APP_VER=2.16
+
+TARGET=racepsp
+EXTRA_TARGETS=EBOOT.PBP
+PSP_EBOOT_TITLE=$(PSP_APP_NAME) $(PSP_APP_VER)
+PSP_EBOOT_ICON=$(PSPAPP)/race-icon.png
+
+BUILD_EMUL=cz80.o cz80_support.o input.o neopopsound.o \
+           ngpBios.o tlcs900h.o memory.o flash.o graphics.o \
+           main.o state.o sound.o
+BUILD_MZ=ioapi.o unzip.o
+BUILD_PORT=$(PSPAPP)/main.o $(PSPAPP)/emulate.o $(PSPAPP)/menu.o
+
+OBJS=$(BUILD_EMUL) $(BUILD_MZ) $(BUILD_PORT)
+
+DEFINES=-DCZ80 -DTARGET_PSP -D_MAX_PATH=2048 -DHOST_FPS=60
+BASE_DEFS=-DPSP -DPSP_APP_VER=\"$(PSP_APP_VER)\" -DPSP_APP_NAME="\"$(PSP_APP_NAME)\""
+CFLAGS=-O2 -G0 -Wall $(BASE_DEFS) $(DEFINES)
+CXXFLAGS=$(CFLAGS) -fno-exceptions -fno-rtti
+ASFLAGS=$(CFLAGS)
+INCDIR=$(PSPLIB)
+LIBDIR=$(PSPLIB)
+LIBS=-lpsplib -lpng -lpspgu -lpsppower \
+     -lz -lm -lc -lpspaudio -lpsprtc -lpspwlan -lpspnet_adhoc \
+     -lpspnet_adhocctl -lpspnet_adhocmatching
+
+all: build_libs
+clean: clean_libs
+
+include $(PSPSDK)/lib/build.mak
+
+build_libs:
+	cd $(PSPLIB) ; $(MAKE)
+clean_libs:
+	cd $(PSPLIB) ; $(MAKE) clean
+
