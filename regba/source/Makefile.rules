@@ -1,0 +1,13 @@
+
+$(TARGET): $(OBJS)
+	$(CC) $(CFLAGS) $^ $(LDFLAGS) -o $@
+
+%.o: %.c
+	$(CC) $(CFLAGS) -c $< -o $@
+
+%.o: %.S
+	$(CC) $(ASFLAGS) -c $< -o $@
+
+.PHONY: clean
+clean:
+	rm -rf $(OBJS) $(TARGET) $(DATA_TO_CLEAN)

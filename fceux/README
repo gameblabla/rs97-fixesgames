@@ -1,0 +1,167 @@
+
+ FCEU320 v0.3 
+ FCEUX port for OpenDingux
+ -------------------------------------------------------------
+ 
+ Thanks go to all people who worked on each incarnation of FCEU320: the_gama, ValdikSS and DiegoSLTS.
+ 
+ The archive contains 3 files:
+ fceu320/fceu320.dge - binary for legacy Dingux (Ritmix rzx50 and Dingoo a380/a320e) DO NOT USE FOR DINGOO A320 LEGACY DINGUX
+ fceu320/fceu320-od.dge - binary for OpenDingux
+ fc_emu.dge - bash-script replacement for native rzx50/a380/a320e emulators
+ 
+ HOWTO INSTALL FOR RITMIX RZX-50 AND DINGOO A380/A320e:
+ - copy folder fceu320 with its contents to "emulator" folder of inner flash-memory of your handheld
+ - replace native fc_emu.dge with a replacement from the archive
+ - disconnect and play
+ 
+ What's changed comparing to DiegoSLTS's version:
+
+ - CHANGED: All subsystems are back on SDL: video, sound, input and so on; minimal driver is removed completely.
+   In fact it's vitually a new port.
+ - ADDED: Thanks to new sound synchronizing with mutexes and conditions sound framerate is tweakable again: 8000 - 48000
+   and it doesn't affect emulation speed anymore
+ - ADDED: Most of Rshift + key combos are brought back (see Controls below)
+ - ADDED: For Ritmix RZX-50 fullscreen upscales to 384x272
+ - FIXED: Corrupt preview screen in load/save state options
+ - FIXED: Screen corruption with scaler=original and clipsides=0
+ - REMOVED: Sound thread priority option is removed as it has no sense anymore
+
+Noticed bugs/features:
+ - When sound is off, the framerate lowers to 50 fps
+ - Upscalers 280x240 and 320x240 ignore 8 left and 8 right pixels (critical for some games)
+ 
+Controls
+ 
+ Dingoo				Nes
+ -----------------------------------------------------
+ Pad				Pad
+ A				A
+ B				B
+ Y				TurboB
+ X				TurboA
+ Select				Select
+ Start				Start
+
+ R Shoulder		  	Hotkey combo
+ L Shoulder			Open GUI screen
+
+
+ *Default Hotkeys*
+
+ R + A				Save state (current slot from gui is used)
+ R + B 				Load state (current slot from gui is used)
+ R + X				Toggle fullscreen
+ R + Y				Flip fds disk
+ R + UP				Toggle framerate display
+ R + LEFT			Insert vsuni coin
+ R + SELECT			Save snapshot
+ R + START			Pause emulation
+
+
+ Dmitry Smagin exmortis(at)yandex.ru
+
+
+ FCEU320 v0.3
+ FCEUx port for Dingux
+ -------------------------------------------------------------
+
+ Features
+
+ - Based on latest fceux svn revision (4/03/2010).
+ - Great compatibility
+ - Builtin nsf player
+ - FDS support
+   NOTE: You must put a copy of your fds bios (disksys.rom)
+	 in the /local/home/.fceux folder.
+ - 280x240 and fullscreen (320x240) video scale support.
+ - Blur filter support
+ - Fractional frameskip support: 1/3, 1/2 and 1. For example
+   for frameskip 1/3 one frame is skipped and three emulated.
+ - Zipped roms.
+ - Gui for configuration with almost all fceux options available.
+ - Built-in rom browser.
+ - FCM and FM2 movie formats supported. 
+   NOTE: When a movie is selected the emu will ask for the 
+         corresponding nes rom.
+ - Custom palette support
+   NOTE: As version 0.3 you need to choose the palette from the file
+	 browser.
+ - Virtual mouse support; use the pad to move the cursor, A and B
+   are the mouse buttons.
+ - Support for zapper, oeka and other mouse (gun) like games.
+ - Support for fceux hotkeys (See controls for default hotkeys). 
+   NOTE: Only 10 hotkeys can be set using R + key combo and not 
+     all hotkeys are supported. Please read fceux documentation 
+     for more info about hotkeys.
+ - Screenshot support.
+
+
+ Changelog
+
+ v0.3
+ 
+ * Added file browser to GUI.
+ * Rearenged all settings to three submenus: main, video and sound.
+   Almost every original option is available now; like ntsc tv emulation, 
+   PAL timming, individual nes apu channel volume, etc.
+ * Added new 280x240 scaler in video settings.
+ * Merged last svn revision (4/03/2010).
+ * Added fcm and fm2 movie support.
+ * Added virtual mouse (gun) support.
+ * Added hotkeys support (See features).
+ * Added screenshot option to GUI.  The screenshot is saved in png
+   format in the /usr/home/.fceux folder.
+ * Added softreset nes using power switch.
+ * Added option to save (override) default config to GUI.
+   NOTE: There is no option to recover the default config yet.  So if you
+         want to do that just remove the /local/home/.fceux/fceux.cfg file.
+ * Added fractional frameskip (See features).
+ * Replaced SDL driver with a minimal driver using Slaanesh's minimal
+   library.
+ * Fixed gui vsync.
+ --------------------------------------------------------
+ v0.2
+
+ * Fixed battery support for FDS games.
+ * Fixed save state support for FDS games.
+ + Added separate config file for each rom.
+ + Added frameskip support.
+ + Added small GUI for configuration and other options.
+ + Added custom palette support.
+ * Added one button fds disk switching. 
+ + Small speed increase.
+ + Started optimizing mappers using code coverage.
+ 
+
+ ISSUES
+
+ - Small gameplay lag.
+   NOTE: Please use elta's rootfs to reduce lag.
+ - The fullscreen scaler always clips left
+   and right 8 pixels columns from the nes screen.
+ - IMPORTANT: Audio can get out of sync and some games play too
+   fast, especially nsfs.  To avoid (lower) this
+   issue please try changing the following settings:
+   sound rate, cpu rate, frameskip and sound thread prioriy.
+   
+
+ Not supported
+
+ - Movie record.  Actually it should work but i haven't tested
+   it and there is currently no option to activate it in the GUI.
+ - Hight quality sound (It is just too heavy :().
+ - New ppu core (Just like hqsound :().
+ - Family keyboard, Mahjong and other input devices that needs more
+   than 10 buttons.
+
+
+ TODO
+
+ - Add movie record support.
+ - Make splash screen (?).
+ - VSync not supported.  NOTE: I read somewhere that the vsync 
+   problem is related to the emulator itself.
+
+ gama
+ gama.coder@gmail.com

@@ -1,0 +1,8 @@
+
+Makefile
+    - use this to compile dingux version on desktop (useful for debugging)
+
+Makefile.dingux
+    - use this to build for dingux and opendingux
+
+Dmitry Smagin exmortis(at)yandex.ru

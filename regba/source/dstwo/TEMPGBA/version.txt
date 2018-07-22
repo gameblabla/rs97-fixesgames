@@ -1,0 +1,7 @@
+TempGBA emulator for the Game Boy Advance
+
+Based on:
+* gpSP 0.9 by Exophase;
+* Unofficial gpSP Kai by Takka;
+* NDSGBA 1.21 by the Supercard Team.
+

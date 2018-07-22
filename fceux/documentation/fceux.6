@@ -1,0 +1,119 @@
+.\" t                                    Hey, EMACS: -*- nroff -*-
+.\" First parameter, NAME, should be all caps
+.\" Second parameter, SECTION, should be 1-8, maybe w/ subsection
+.\" other parameters are allowed: see man(7), man(1)
+.TH FCEUX 6 "August 10, 2008"
+.\" Please adjust this date whenever revising the manpage.
+.\"
+.\" Some roff macros, for reference:
+.\" .nh        disable hyphenation
+.\" .hy        enable hyphenation
+.\" .ad l      left justify
+.\" .ad b      justify to both left and right margins
+.\" .nf        disable filling
+.\" .fi        enable filling
+.\" .br        insert line break
+.\" .sp <n>    insert n+1 empty lines
+.\" for manpage-specific macros, see man(7)
+.SH NAME
+fceux \- An emulator for the original (8-bit) Nintendo game console.
+.SH SYNOPSIS
+.B fceux
+.RI [ options ]
+"filename"
+.SH DESCRIPTION
+.B FCE Ultra
+is an emulator for the original (8-bit) Nintendo Entertainment System (NES).
+It has a robust color palette rendering engine that is fully customizable,
+along with excellent sound and joystick support, and even supports movie 
+recording and playback.
+.SH OPTIONS
+These are some of the more frequently used options in FCE Ultra.  Run
+fceux without any options for a larger list, or see the README for the full
+list.
+.TP
+.B \--fullscreen {0|1}
+Toggle full-screen mode.
+.TP
+.B \--xres <res>
+Set the Horizontal resolution for full-screen mode.
+.TP
+.B \--yres <res>
+Set the Vertical resolution for full-screen mode.
+.TP
+.B \--autoscale {0|1}
+Toggle autoscaling for fullscreen.
+.TP
+.B \--gamegenie {0|1}
+Enable Game Genie emulation support.
+.TP
+.B \--palette <file>
+Use the custom palette in <file>.
+.TP
+.B \--volume <percentge>
+Sets the sound volume to the given percentage.
+.TP
+.B \--soundrate <rate>
+Set the sound playback sample rate (0 == off).
+.TP
+.SH KEYBOARD COMMANDS
+.B FCE Ultra
+has a number of commands available within the emulator.
+It also includes default keyboard bindings when emulating game pads or power pads.
+.SS Gamepad Keyboard Bindings
+.TS
+center box;
+cb | cb, c | ci.
+NES Gamepad	Keyboard
+=
+Up  	W
+Down	S
+Left	A
+Right	D
+A	J
+B	K
+Select	TAB
+Start	ENTER
+.TE
+.SS Other Commands
+.PP
+.TP 15
+.BI <Alt+Enter>
+Toggle full-screen mode.
+.TP 15
+.BI <F1>
+Activate cheat interface.
+.TP 15
+.BI <F3>
+Load LUA script.
+.TP 15
+.BI <F5>
+Save game state into current slot (set using number keys).
+.TP 15
+.BI <F7>
+Restore game state from current slot (set using number keys).
+.TP 15
+.BI Shift + <F5>
+Beging recording video.
+.TP 15
+.BI Shift + <F7>
+Load recorded video.
+.TP 15
+.BI <F9>
+Reset NES.
+.TP 15
+.BI <F12>
+Save screen snapshot.
+.TP 15
+.BR <ESC>
+Quit
+.B FCE Ultra.
+.TP
+.I http://fceultra.sourceforge.net/
+The
+.B FCE Ultra
+project homepage.
+.SH AUTHOR
+This manual page was written by Joe Nahmias <joe _at_ nahmias.net>, and
+Lukas Sabota <ltsmooth42 _at_ gmail.com> for the Debian GNU/Linux system 
+(but may be used by others).
