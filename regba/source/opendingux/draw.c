@@ -18,6 +18,7 @@
  */
 
 #include "common.h"
+#include <SDL/SDL_image.h>
 
 struct StringCut {
 	uint32_t Start;  // Starting character index of the cut, inclusive.
@@ -80,7 +81,7 @@ void SetMenuResolution()
 #ifdef GCW_ZERO
 	if (SDL_MUSTLOCK(OutputSurface))
 		SDL_UnlockSurface(OutputSurface);
-	OutputSurface = SDL_SetVideoMode(GCW0_SCREEN_WIDTH, GCW0_SCREEN_HEIGHT, 16, SDL_HWSURFACE | SDL_DOUBLEBUF);
+	OutputSurface = SDL_SetVideoMode(GCW0_SCREEN_WIDTH, GCW0_SCREEN_HEIGHT, 16, SDL_HWSURFACE);
 	if (SDL_MUSTLOCK(OutputSurface))
 		SDL_LockSurface(OutputSurface);
 #endif
@@ -98,43 +99,25 @@ void SetGameResolution()
 	}
 	if (SDL_MUSTLOCK(OutputSurface))
 		SDL_UnlockSurface(OutputSurface);
-	OutputSurface = SDL_SetVideoMode(Width, Height, 16, SDL_HWSURFACE |
-#ifdef SDL_TRIPLEBUF
-		SDL_TRIPLEBUF
-#else
-		SDL_DOUBLEBUF
-#endif
+	OutputSurface = SDL_SetVideoMode(Width, Height, 16, SDL_HWSURFACE
 		);
 	if (SDL_MUSTLOCK(OutputSurface))
 		SDL_LockSurface(OutputSurface);
 #endif
 }
 
+/* We'll just use SoftStretch and DisplayFormat for borders rather than imageio.c 
+ * Only downside is a dependency on SDL_image.
+ * */
 bool ApplyBorder(const char* Filename)
 {
-	SDL_Surface* JustLoaded = loadPNG(Filename, GCW0_SCREEN_WIDTH, GCW0_SCREEN_HEIGHT);
-	bool Result = false;
-	if (JustLoaded != NULL)
-	{
-		if (JustLoaded->w == GCW0_SCREEN_WIDTH && JustLoaded->h == GCW0_SCREEN_HEIGHT)
-		{
-			if (BorderSurface != NULL)
-			{
-				SDL_FreeSurface(BorderSurface);
-				BorderSurface = NULL;
-			}
-			BorderSurface = SDL_CreateRGBSurface(SDL_SWSURFACE, GCW0_SCREEN_WIDTH, GCW0_SCREEN_HEIGHT, 16,
-			  OutputSurface->format->Rmask,
-			  OutputSurface->format->Gmask,
-			  OutputSurface->format->Bmask,
-			  OutputSurface->format->Amask);
-			SDL_BlitSurface(JustLoaded, NULL, BorderSurface, NULL);
-			Result = true;
-		}
-		SDL_FreeSurface(JustLoaded);
-		JustLoaded = NULL;
-	}
-	return Result;
+	SDL_Surface* conv; 
+	conv = SDL_DisplayFormat(IMG_Load(Filename));
+	BorderSurface = SDL_CreateRGBSurface(SDL_HWSURFACE, 320, 480, 16, 0, 0, 0, 0);
+	SDL_SoftStretch(conv, NULL, BorderSurface, NULL);
+	if (conv) SDL_FreeSurface(conv);
+	
+	return true;
 }
 
 /***************************************************************************

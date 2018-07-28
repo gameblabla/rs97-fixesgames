@@ -25,7 +25,7 @@ DEFS        := -DDINGOO_A320 -DMIPS_XBURST -DLOAD_ALL_ROM                       
 CFLAGS      = $(SDL_CFLAGS) -mno-abicalls -Wall -Wno-unused-variable \
                -O2 -msym32 -mlong-calls -fno-pic -fno-pie -fdata-sections -ffunction-sections -mhard-float -fomit-frame-pointer -mno-mips16 -mips32 -mtune=mips32 -mno-shared $(DEFS) $(INCLUDE)
 ASFLAGS     := $(CFLAGS) -D__ASSEMBLY__ -mno-abicalls -fno-PIC -fno-PIE -Wa,-mno-shared
-LDFLAGS     := $(SDL_LIBS) -lpthread -lz -lm -lpng  -mno-abicalls -Wl,--as-needed -Wl,--gc-sections -flto -s -fno-PIC -fno-PIE
+LDFLAGS     := $(SDL_LIBS) -lpthread -lz -lm -lpng -lSDL_image -Wl,--as-needed -Wl,--gc-sections -flto -s -fno-PIC -fno-PIE
 
 DATA_TO_CLEAN := .opk_data $(TARGET).opk
 
