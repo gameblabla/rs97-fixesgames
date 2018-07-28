@@ -111,10 +111,19 @@ void SetGameResolution()
  * */
 bool ApplyBorder(const char* Filename)
 {
-	SDL_Surface* conv; 
-	conv = SDL_DisplayFormat(IMG_Load(Filename));
+	SDL_Surface *conv, *tmp; 
+	tmp = IMG_Load(Filename);
+	/* I forgot to put that check...*/
+	if (!tmp) return false;
+	
+	conv = SDL_DisplayFormat(tmp);
+	
+	/* Clear temporary image file once we converted it */
+	if (tmp) SDL_FreeSurface(tmp);
+	
 	BorderSurface = SDL_CreateRGBSurface(SDL_HWSURFACE, 320, 480, 16, 0, 0, 0, 0);
 	SDL_SoftStretch(conv, NULL, BorderSurface, NULL);
+	
 	if (conv) SDL_FreeSurface(conv);
 	
 	return true;
