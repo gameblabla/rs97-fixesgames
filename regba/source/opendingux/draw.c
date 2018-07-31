@@ -66,7 +66,7 @@ void init_video()
 	}
 
 	SDL_ShowCursor(SDL_DISABLE);
-	OutputSurface = SDL_SetVideoMode(GCW0_SCREEN_WIDTH, GCW0_SCREEN_HEIGHT, 16, SDL_HWSURFACE | SDL_DOUBLEBUF);
+	OutputSurface = SDL_SetVideoMode(GCW0_SCREEN_WIDTH, GCW0_SCREEN_HEIGHT, 16, SDL_HWSURFACE);
 	GBAScreenSurface = SDL_CreateRGBSurface(SDL_SWSURFACE, GBA_SCREEN_WIDTH, GBA_SCREEN_HEIGHT, 16,
 	  GBA_RED_MASK,
 	  GBA_GREEN_MASK,
@@ -81,7 +81,7 @@ void SetMenuResolution()
 #ifdef GCW_ZERO
 	if (SDL_MUSTLOCK(OutputSurface))
 		SDL_UnlockSurface(OutputSurface);
-	OutputSurface = SDL_SetVideoMode(GCW0_SCREEN_WIDTH, GCW0_SCREEN_HEIGHT, 16, SDL_HWSURFACE | SDL_DOUBLEBUF);
+	OutputSurface = SDL_SetVideoMode(GCW0_SCREEN_WIDTH, GCW0_SCREEN_HEIGHT, 16, SDL_HWSURFACE );
 	if (SDL_MUSTLOCK(OutputSurface))
 		SDL_LockSurface(OutputSurface);
 #endif
@@ -99,7 +99,7 @@ void SetGameResolution()
 	}
 	if (SDL_MUSTLOCK(OutputSurface))
 		SDL_UnlockSurface(OutputSurface);
-	OutputSurface = SDL_SetVideoMode(Width, Height, 16, SDL_HWSURFACE  | SDL_DOUBLEBUF);
+	OutputSurface = SDL_SetVideoMode(Width, Height, 16, SDL_HWSURFACE);
 	if (SDL_MUSTLOCK(OutputSurface))
 		SDL_LockSurface(OutputSurface);
 #endif
