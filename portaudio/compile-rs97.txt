@@ -1,0 +1,6 @@
+Compiling for the RS-97 should be straightforward, as long as the toolchain is in /opt/rs97-toolchain.
+
+PATH=/opt/rs97-toolchain/bin:$PATH
+./configure --host=mipsel-linux
+
+Then PortAudio will detect the use of the OSS API.

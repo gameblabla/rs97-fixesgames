@@ -4,3 +4,6 @@ url = git://github.com/gameblabla/ketm.git
 [submodule "FFmpeg-GCW0"]
 	path = FFmpeg-GCW0
 url = git://github.com/gameblabla/FFmpeg-GCW0.git
+[submodule "ohboy"]
+	path = ohboy
+url = git://github.com/gameblabla/ohboy.git
