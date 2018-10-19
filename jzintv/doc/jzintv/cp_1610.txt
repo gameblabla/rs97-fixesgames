@@ -1,0 +1,536 @@
+===============================================================================
+    CP-1610 Instruction Set Simulator 
+    J. Zbiciak
+===============================================================================
+
+==============
+ Introduction
+==============
+
+This document describes the current architecture of the CP-1610
+instruction set simulator, as well as providing some documentation and
+my current set of unknowns about the actual CPU itself.  This document
+is, and probably will always be, far from complete.  :-)
+
+===========================
+ CPU Architecture Overview
+===========================
+
+The CP-1610 is a simple 16-bit CPU.  Here's a quick overview of its
+features:
+
+ -- Several addressing modes: Direct, Indirect, Indirect-Increment,
+    Stack, Immediate, Implied, and Register.
+
+ -- Eight 16-bit registers, R0-R7.  All 8 registers may be used for
+    general arithmetic.  Some of the registers have special properties:
+
+     -- R0 has no special purpose assigned to it.
+
+     -- R1 though R3 are non-incrementing "data counters."  These can 
+        be used as indirect-addressing registers.
+
+     -- R4 and R5 are incrementing "data counters."  These can be used
+        as indirect-increment-addressing registers.  Their values are
+        incremented after every read or write.
+
+     -- R6 is the "stack pointer."  As with R4 and R5, it is incremented
+        after every indirect-addressing write.  However, it is decremented
+        _before_ every read, thus providing an upward-growing stack.
+
+     -- R7 is the program counter.  It can be either a source or a
+        destination for most arbitrary arithmetic.  It cannot, however,
+        be used as a data counter, although I suspect that is how
+        "immediate mode" is implemented, upon examining the instruction
+        encoding.  :-)
+
+ -- A 10-bit primary opcode word.  This opcode word is describable using
+    a handful of encoding formats that are reasonably regular.  
+
+ -- External branch-condition support.  Four external pins can provide
+    1 of 16 possible "branch conditions" that can be polled directly
+    by the BEXT instruction.  This is potentially useful for
+    microcontroller applications.  The Intellivision does not have
+    anything interesting connected to these pins.  BEXT is always taken.
+
+ -- Typical complement of arithmetic instructions -- ADD, SUB, CMP,
+    AND, and XOR.  Missing is "OR", although XOR or ADD often suffice.
+
+ -- Complete complement of shift/rotate instructions -- SLL, SLLC, 
+    SAR, SARC, SLR, RRC, RLC, and byte SWAP.  The shifts and rotates
+    can move one or two bits in one instruction, as well.
+
+
+The CP-1610 is a 16-bit CPU that is designed to live in a world that
+was mostly narrower than 16-bits at the time.  As a result, it sports
+some interesting design decisions:
+
+ -- Most instructions are 10 bits wide, to allow using 10-bit-wide
+    ROMs to store programs.  In fact, instructions that were wider
+    than 10-bits are (or can be) divided up into 10-bit-wide words
+    for storage.  These 10-bit-wide quantities are referred to as
+    "decles".
+
+ -- Typical systems have a mix of 8-, 10-, and 16-bit wide peripherals
+    and memories.  (The documentation also mentions 12- and 14-bit
+    wide devices!)  Fortunately, devices narrower than 16 bits are
+    accessed the same way as 16-bit wide devices, with the ms-bits
+    of each word ignored/set to zero with pull-downs that are built
+    into the device.
+
+ -- To access 16-bit quantities in "narrow" memory, the SDBD prefix
+    is provided.  It causes the next memory access to bring in two
+    bytes, in little-endian order.  (Low byte first, high byte second).
+    This instruction also causes immediate constants on immediate-mode
+    instructions to span two bytes instead of one word.  More on this
+    later.
+
+
+Without further ado, I'd like to describe the basic opcode formats.
+As you examine these, you may notice some cleverness about the encodings.
+I'll point these out as I can.
+
+
+The CP-1610 supports the following basic opcode formats:
+
+ ---------------------------------------  -------  --------------------------
+  Format                                   Words    Description
+ ---------------------------------------  -------  --------------------------
+  0000 000 0oo                               1      Implied 1-op insns
+  0000 000 100  bbppppppii  pppppppppp       3      Jump insns
+  0000 000 1oo                               1      Implied 1-op insns
+  0000 ooo ddd                               1      1-op insns, comb src/dst
+  0000 110 0dd                               1      GSWD
+  0000 110 1om                               1      NOP(2), SIN(2)
+  0001 ooo mrr                               1      Rotate/Shift insns
+  0ooo sss ddd                               1      2-op arith, reg->reg
+  1000 zxc ccc  pppppppppp                   2      Branch insns
+  1ooo 000 ddd  pppppppppp                   2      2-op arith, direct, reg
+  1ooo mmm ddd                               1*     2-op arith, ind., reg
+  1ooo 111 ddd  iiiiiiiiii                   2*     2-op arith, immed., reg
+ ---------------------------------------  -------  --------------------------
+
+
+ -----
+  Key
+ -----
+
+  oo    -- Opcode field (dependent on format)
+  sss   -- Source register,      R0 ... R7 (binary encoding)
+  ddd   -- Destination register, R0 ... R7 (binary encoding)    
+  0dd   -- Destination register, R0 ... R3 
+  cccc  -- Condition codes (branches)
+  x     -- External branch condition (0 == internal, 1 == examine BEXT)
+  z     -- Branch displacement direction (1 == negative)
+  m     -- Shift amount (0 == shift by 1, 1 == shift by 2)
+  bb    -- Branch return register
+  ii    -- Branch interrupt flag mode
+
+ --------------------------------
+  Branch Condition Codes  (cccc)
+ --------------------------------
+           n == 0                    n == 1
+  n000  -- Always                    Never
+  n001  -- Carry set/Greater than    Carry clear/Less than or equal
+  n010  -- Overflow set              Overflow clear
+  n011  -- Positive                  Negative
+  n100  -- Equal                     Not equal
+  n101  -- Less than                 Greater than or equal
+  n110  -- Less than or equal        Greater than
+  n111  -- Unequal sign and carry    Equal sign and carry
+
+
+ -------------------------------
+  Branch Return Registers  (bb)
+ -------------------------------
+
+  00   -- R4
+  01   -- R5
+  10   -- R6
+  11   -- none (do not save return address)
+
+ -------------------------------
+  Branch Interrupt Modes   (ii)
+ -------------------------------
+
+  00   -- Do not change interrupt enable state
+  01   -- Enable interrupts
+  10   -- Disable interrupts
+  11   -- Undefined/Reserved ?
+
+ ------------
+  SDBD notes
+ ------------
+
+  -- SDBD is supported on "immediate" and "indirect" modes only.
+
+  -- An SDBD prefix on an immediate instruction sets the immediate constant
+     to be 16 bits, stored in two adjacent 8-bit words.  The ordering is
+     little-endian.
+
+  -- An SDBD prefix on an indirect instruction causes memory to be
+     accessed twice, bringing in (or out) two 8-bit words, again in
+     little-endian order.  If a non-incrementing data counter is used,
+     both accesses are to the same address.  Otherwise, the counter
+     is post-incremented with each access.  Indirect through R6
+     (stack addressing) is not allowed, although I suspect it works
+     as expected (performing two accesses through R6).
+
+ ------------------------
+  Interruptibility notes
+ ------------------------
+
+  -- Interrupts always occur after an instruction completes.
+     No instruction is interrupted midstream and completed later.
+
+  -- Interrupts are taken after the completion of the next interruptible
+     instruction.  A non-interruptible instruction masks interrupts
+     through the transition from the current instruction to the next.
+
+  -- When the processor takes an interrupt, the current PC value is
+     pushed on the stack.  The address jumped to for the interrupt
+     is provided by external hardware (similar to an 8080, if I
+     recall correctly).  In the case of the Intellivision, the 
+     EXEC ROM asserts an interrupt vector value of 01004h.
+
+ ---------------------------------
+  Status register/GSWD/RSWD notes
+ ---------------------------------
+
+  -- The status register has the following format:
+
+         3   2   1   0       S -- Sign
+       +---+---+---+---+     Z -- Zero
+       | S | Z | O | C |     O -- Overflow
+       +---+---+---+---+     C -- Carry
+
+  -- The GSWD instruction stores the status word in the upper 4 bits of each
+     byte of the destination register:
+
+         F   E   D   C   B   A   9   8   7   6   5   4   3   2   1   0
+       +---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+       | S | Z | O | C | - | - | - | - | S | Z | O | C | - | - | - | - |
+       +---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+
+  -- The RSWD instruction reads the status word's new value from the upper
+     four bits of the lower byte of the source register:
+
+         7   6   5   4   3   2   1   0
+       +---+---+---+---+---+---+---+---+
+       | S | Z | O | C | - | - | - | - |
+       +---+---+---+---+---+---+---+---+
+
+ ------------
+  SWAP notes
+ ------------
+
+  -- A "double" swap replicates the lower word in both bytes, and sets
+     S and Z status bits based on the lower byte.  This is based on the
+     comments in the following code snippet from RUNNING.SRC in the dev kit:
+
+           SWAP    R0, 2                 ; check bit #7
+           BMI     @@exit                ; max speed is 127
+
+
+ ------------------------
+  General encoding notes
+ ------------------------
+
+  -- "Immediate" mode is encoded the same as "Indirect" mode, except that
+     R7 is given as the indirect register.  I'm guessing R7 is implemented
+     the same as R4 and R5, especially since MVOI does what you'd
+     expect -- it (attempts to) write over its immediate operand!!!
+
+  -- The PC value (in R7) used for arithmetic always points to the first
+     byte after the instruction for purposes of arithmetic.  This is
+     consistent with the observation that immediate mode is really
+     indirect mode in disguise, with the instruction being only one word
+     long initially.
+
+  -- Several instructions are just special cases of other instructions,
+     and therefore do not need special decoder treatment:
+
+      -- TSTR Rx  -->  MOVR Rx, Rx  
+      -- JR Rx    -->  MOVR Rx, R7
+      -- CLRR Rx  -->  XORR Rx, Rx
+      -- B        -->  Branch with condition code 0000 ("Always")
+      -- NOPP     -->  Branch with condition code 1000 ("Never")
+      -- PSHR Rx  -->  MVO@ Rx, R6
+      -- PULR Rx  -->  MVI@ R6, Rx
+
+  -- "Direct" mode is encoded the same as "Indirect" mode, except 000
+     (which corresponds to R0) is encoded in the indirect register field.
+     This is why R0 cannot be used as a data counter, and why it has no
+     "special use."
+
+  -- Relative branches encode their sign bit in the opcode word, rather
+     than relying on a sign-extended relative offset in their second word.
+     This allows +/- 10-bit range in a 10-bit wide memory, or +/-
+     16-bit range in a 16-bit memory.  To avoid redundant encoding, the
+     offset is calculated slightly differently for negative vs. positive
+     offset:
+
+      -- Negative: address_of_branch + 1 - offset
+      -- Positive: address_of_branch + 2 + offset
+
+     I'm guessing it is implemented about like so in hardware:
+
+      -- offset == pc + (offset ^ (sign ? -1 : 0))
+
+
+ ---------------
+  Opcode Spaces
+ ---------------
+
+  I've divided the CP-1610 opcode map into 12 different opcode
+  spaces.  (I really should merge the two separate Implied 1-op
+  spaces into one space.  Oh well...)  In the descriptions below,
+  "n/i" means "not interruptible".  Defined flags: Sign, Zero, Carry,
+  Overflow, Interrupt-enable, Double-byte-data.  Interrupt-enable and
+  Double-byte-data are not user visible.
+
+  -- Implied 1-op instructions, part A:     0000 000 0oo
+     Each has a single, implied operand, if any.
+
+         opcode   mnemonic n/i  SZCOID  description 
+      --   00       HLT                 Halts the CPU (until next interrupt?)
+      --   01       SDBD    *        1  Set Double Byte Data 
+      --   10       EIS     *       1   Enable Interrupt System
+      --   11       DIS     *       1   Disable Interrupt System
+
+  -- Implied 1-op instructions, part B:     0000 000 1oo
+     Each has a single, implied operand, if any.
+
+         opcode   mnemonic n/i  SZCOID  description 
+      --   00       n/a                 Aliases the "Jump" opcode space
+      --   01       TCI     *           Terminate Current Interrupt.
+      --   10       CLRC    *     0     Clear carry flag
+      --   11       SETC    *     1     Set carry flag
+
+  -- Jump Instructions:                     0000 000 100 bbppppppii pppppppppp
+     Unconditional jumps with optional return-address save and
+     interrupt enable/disable.  
+
+          bb  ii   mnemonic n/i SZCOID  description 
+      --  11  00    J                   Jump.
+      --  xx  00    JSR                 Jump.  Save return address in R4..R6
+      --  11  01    JE              1   Jump and enable ints.
+      --  xx  01    JSRE            1   Jump and enable ints.  Save ret addr.
+      --  11  10    JD              0   Jump and disable ints
+      --  xx  10    JSRD            0   Jump and disable ints.  Save ret addr.
+      --  xx  11    n/a                 Invalid opcode.
+
+  -- Register 1-op instructions             0000 ooo rrr
+     Each has one register operand, encoded as 000 through 111.
+
+         opcode   mnemonic n/i  SZCOID  description 
+      --   000      n/a                 Aliases "Implied", "Jump" opcode space
+      --   001      INCR        XX      INCrement register
+      --   010      DECR        XX      DECrement register
+      --   011      COMR        XX      COMplement register (1s complement)
+      --   100      NEGR        XXXX    NEGate register     (2s complement)
+      --   101      ADCR        XXXX    ADd Carry to Register
+      --   110      n/a                 Aliases "GSWD", "NOP/SIN" opcode space
+      --   111      RSWD        XXXX    Restore Status Word from Register
+
+  -- Get Status WorD                        0000 110 0rr
+     This was given its own opcode space due to limited encoding on its
+     destination register and complication with the NOP/SIN encodings.
+
+  -- NOP/SIN                                0000 110 1om
+     I don't know what the "m" bit is for.  I don't know what to do with SIN.
+
+         opcode   mnemonic n/i  SZCOID  description 
+      --    0       NOP                 No operation
+      --    1       SIN                 Software Interrupt (pulse PCIT pin) ?
+
+  -- Shift/Rotate 1-op instructions         0001 ooo mrr
+     These can operate only on R0...R3.  The "m" bit specifies whether the
+     operation is performed once or twice.  The overflow bit is used for
+     catching the second bit on the rotates/shifts that use the carry.
+
+         opcode   mnemonic n/i  SZCOID  description 
+      --   000      SWAP    *   XX      Swaps bytes in word once or twice.
+      --   001      SLL     *   XX      Shift Logical Left
+      --   010      RLC     *   XXX2    Rotate Left through Carry/overflow
+      --   011      SLLC    *   XXX2    Shift Logical Left thru Carry/overflow
+      --   100      SLR     *   XX      Shift Logical Right
+      --   101      SAR     *   XX      Shift Arithmetic Right
+      --   110      RRC     *   XXX2    Rotate Left through Carry/overflow
+      --   111      SARC    *   XXX2    Shift Arithmetic Right thru Carry/over
+
+  -- Register/Register 2-op instructions    0ooo sss ddd
+     Register to register arithmetic.  Second operand acts as src2 and dest.
+
+         opcode   mnemonic n/i  SZCOID  description 
+      --   00x      n/a                 Aliases other opcode spaces
+      --   010      MOVR        XX      Move register to register
+      --   011      ADDR        XXXX    Add src1 to src2 -> dst
+      --   100      SUBR        XXXX    Sub src1 from src2 -> dst
+      --   101      CMPR        XXXX    Sub src1 from src2, don't store
+      --   110      ANDR        XX      AND src1 with src2 -> dst
+      --   111      XORR        XX      XOR src1 with src2 -> dst
+
+  -- Conditional Branch instructions        1000 zxn ccc pppppppppppppppp
+     The "z" bit specifies the direction for the offset.  The "x" bit 
+     specifies using an external branch condition instead of using flag
+     bits.  Conditional brances are interruptible.  The "n" bit specifies
+     branching on the opposite condition from 'ccc'.
+
+          cond      n=0         Condition       n=1         Condition
+      --  n000      B           always          NOPP        never
+      --  n001      BC          C = 1           BNC         C = 0
+      --  n010      BOV         O = 1           BNOV        O = 0
+      --  n011      BPL         S = 0           BMI         S = 1
+      --  n100      BZE/BEQ     Z = 1           BNZE/BNEQ   Z = 0
+      --  n101      BLT/BNGE    S^O = 1         BGE/BNLT    S^O = 0
+      --  n110      BLE/BNGT    Z|(S^O) = 1     BGT/BNLE    Z|(S^O) = 0
+      --  n111      BUSC        S^C = 1         BESC        S^C = 0
+
+  -- Direct/Register 2-op instructions      1ooo 000 rrr  pppppppppppppppp
+     Direct memory to register arithmetic.  MVO uses direct address as
+     a destination, all other operations use it as a source, with
+     the register as the destination.
+
+         opcode   mnemonic n/i  SZCOID  description 
+      --   000      n/a                 Aliases conditional branch opcodes
+      --   001      MVO     *           Move register to direct address
+      --   010      MVI                 Move direct address to register
+      --   011      ADD         XXXX    Add src1 to src2 -> dst
+      --   100      SUB         XXXX    Sub src1 from src2 -> dst
+      --   101      CMP         XXXX    Sub src1 from src2, don't store
+      --   110      AND         XX      AND src1 with src2 -> dst
+      --   111      XOR         XX      XOR src1 with src2 -> dst
+
+
+  -- Indirect/Register 2-op instructions    1ooo sss ddd
+     A source of "000" is actually a Direct/Register opcode.
+     A source of "111" is actually a Immediate/Register opcode.
+     R4, R5 increment after each access.  If the D bit is set, two
+     accesses are made through the indirect register, updating the
+     address if R4 or R5.  R6 increments after writes, decrements
+     before reads.
+
+         opcode   mnemonic n/i  SZCOID  description 
+      --   000      n/a                 Aliases conditional branch opcodes
+      --   001      MVO@    *           Move register to indirect address
+      --   010      MVI@                Move indirect address to register
+      --   011      ADD@        XXXX    Add src1 to src2 -> dst
+      --   100      SUB@        XXXX    Sub src1 from src2 -> dst
+      --   101      CMP@        XXXX    Sub src1 from src2, don't store
+      --   110      AND@        XX      AND src1 with src2 -> dst
+      --   111      XOR@        XX      XOR src1 with src2 -> dst
+
+  -- Immediate/Register 2-op instructions   1ooo 111 ddd  pppp
+     If DBD is set, the immediate value spans two adjacent bytes, little
+     endian order.  Otherwise the immediate value spans one word.  This
+     instruction really looks like indirect through R7, and I suspect
+     that's how the silicon implements it.
+
+         opcode   mnemonic n/i  SZCOID  description 
+      --   000      n/a                 Aliases conditional branch opcodes
+      --   001      MVOI    *           Move register to immediate field!
+      --   010      MVII                Move immediate field to register
+      --   011      ADDI        XXXX    Add src1 to src2 -> dst
+      --   100      SUBI        XXXX    Sub src1 from src2 -> dst
+      --   101      CMPI        XXXX    Sub src1 from src2, don't store
+      --   110      ANDI        XX      AND src1 with src2 -> dst
+      --   111      XORI        XX      XOR src1 with src2 -> dst
+
+
+So, now that you know all about the CP-1610 instruction set architecture,
+let me describe how I simulate it.
+
+
+========================
+ CPU Simulator Overview
+========================
+
+The CP-1610 Simulator is divided into three sections.  These sections
+are the Core CPU functions, the Opcode Decoding functions, and the Opcode
+Execution functions.  The division of labor between these three sections
+is as follows:
+
+ -- The Core CPU functions: cp_1610.c / cp_1610.h
+     -- Main CPU execution loop.
+     -- Memory decoding and accessing functions.
+     -- The CPU state structure, "struct cpu_t"
+
+ -- The Opcode Decoder functions: op_decode.c / op_decode.h
+     -- General opcode decoder which decodes arbitrary instruction words.
+     -- Specialized decoders invoked by the general decoder.
+     -- Opcode-specific decoder structures, "struct op_XXXXXX"
+     -- Generalized "decoded instruction" structure, "struct op_decoded"
+     -- Union of all opcode decoder structures, "union opcode_t"
+
+ -- The Opcode Execution functions: op_exec.c / op_exec.h
+    -- Instruction-specific functions for all CP-1610 instructions.
+
+The main CPU structure (struct cpu_t) contains the entire state of the
+CP-1610 machine, including its 8 registers, internal status bits, raw
+memory, and memory accessor functions.  Also included are pointers to
+"execute functions" and predecoded instructions that are used for 
+actually executing the CP-1610 instruction set.
+
+
+The main CPU execution loop performs roughly the following steps:
+
+ 1. Set the "interruptibility" bit equal to our interrupt enable bit.
+ 2. Call the execute function corresponding to our current PC value.
+ 3. Add elapsed microcycles to our total.
+ 4. If an interrupt is detected, and we're interruptible, start taking
+    the interrupt.  (Push PC, set PC to interrupt vector.)
+ 5. If we have time left, go back to 1.
+
+Notice that "read and decode instruction" does not appear anywhere in
+this list.  Instruction decoding happens in a demand-driven fashion.
+The CPU structure holds an array of instruction "execute functions"
+which correspond to decoded instructions.  At initialization, these
+functions are set to point to the generalized decoder "fn_decode", 
+which is contained in "op_decode.c".  This forces each instruction to
+be decoded the first time it is executed.
+
+The opcode decoder "fn_decode" is charged with the responsibility of
+decoding instructions, and potentially caching the decoded instruction
+in the CPU structure.  These are the steps it takes to do this:
+
+ -- Read the opcode word at the current PC
+ -- Look it up in the 1024-entry "opcode format" table.
+ -- Based on the format, determine how long the instruction is.
+ -- Read up to two more words of the instruction, if needed.
+ -- Place instruction words in "encoded" field of the "opcode_t" union.
+ -- Call format-specific decoder function to actually perform the decode.
+ -- Call the instruction execute function returned by the decoder.
+ -- If the addresses spanned by the instruction are marked cacheable,
+    store the execute function pointer in the CPU's execute array.
+    Otherwise set the entry to "fn_decode".
+ -- Return to the CPU execute loop.
+
+What this provides is a demand-driven instruction decoder.  It works
+by looking like an "execute function" even though it's a decoder, and
+when its finished, it leaves the actual "execute function" pointer in
+its place.
+
+The "execute functions" have the responsibility of reading their
+arguments (either from memory or from registers), performing the requested
+operations, and storing their results.  This includes updating the PC and
+toggling status bits.  An additional requirement is that the functions
+return the total number of microcycles they required for execution,
+so that the core CPU loop knows when to stop looping.
+
+The "execute functions" call the core CPU's read and write functions
+to access memory.  The CPU_RD and CPU_WR macros perform the necessary
+address decoding and function calling.  In the case of jzIntv, these
+macros call out to the "Peripheral Subsystem" (aka. Periph) to register
+the reads and writes.  Periph is responsible for all address decoding,
+etc.
+
+In order to support self-modifying code, the CPU write functions
+invalidate any decoded instructions stored at addresses that are written
+to.  This is done by setting the decode function at the address and the
+two before it to "fn_decode".
+
+
+===============================================================================
+
+ $Id: cp_1610.txt,v 1.3 1999/06/06 04:30:25 im14u2c Exp $

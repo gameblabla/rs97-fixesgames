@@ -1,0 +1,175 @@
+==============================================================================
+  SHOW_GROM -- Reads in a GROM file, and shows the pictures within it.
+==============================================================================
+
+SHOW_GROM is a short utility that is intended to let you see what's inside
+the GROM.  For Copyright reasons, I likely cannot publish a file containing
+all of the GROM pictures as part of SDK-1600.  I can, however, give you a
+utility that lets you see the GROM pictures yourself, as long as you have a
+copy of the GROM.
+
+This utility gives you that capability.  It offers two output modes:  ASCII
+and HTML.  The mode is selected with a commandline switch.
+
+
+------------------------------------------------------------------------------
+  ASCII OUTPUT MODE
+------------------------------------------------------------------------------
+
+ASCII mode is the default mode.  No additional flags are needed.  In this
+mode, SHOW_GROM is used as follows:
+
+    show_grom [-o outfile.txt] grom.bin
+
+The following flags are recognized in ASCII mode:
+
+        -o outfile  Specify output file (writes to stdout by default)
+        -d #        Digit display mode for card #'s
+                    1  Decimal only (default)
+                    2  Hexadecimal only 
+                    3  Hexadecimal and Decimal
+        -r #        Cards per row
+
+The -o flag specifies an output file for the dump to be written to.  If
+this flag is omitted, then the output will be written directly to stdout.
+
+The -d# flag specifies the display mode for card numbers.  The default
+mode is decimal-only and is equivalent to -d1.  The flag -d2 displays
+hexadecimal, and -d3 displays both hexadecimal and decimal.
+
+Each card in GROM is displayed in a giant 8 x 32 table of GROM cards.
+Each cell in the table is an 8x8 ASCII depiction of the GROM card.
+A snippet of the table looks about like so:
+
+ CARD 112  CARD 113  CARD 114  CARD 115  CARD 116  CARD 117  CARD 118  CARD 119
+ ..####..  ..####..  ..####..  ..####..  ..####..  ..####..  ..####..  ..####..
+ .#....#.  .#....#.  .#....#.  .#....#.  .#....#.  .#....#.  .#....#.  .#....#.
+ #.#..#.#  #.#..#.#  #.#..#.#  #.#..#.#  #.#..#.#  #.#..#.#  #.#..#.#  #.#..#.#
+ #......#  #......#  #......#  #......#  #......#  #......#  #......#  #......#
+ #.#..#.#  #.#..#.#  #.#..#.#  #.#..#.#  #.#..#.#  #.#..#.#  #.#..#.#  #.#..#.#
+ #..##..#  #..##..#  #..##..#  #..##..#  #..##..#  #..##..#  #..##..#  #..##..#
+ .#....#.  .#....#.  .#....#.  .#....#.  .#....#.  .#....#.  .#....#.  .#....#.
+ ..####..  ..####..  ..####..  ..####..  ..####..  ..####..  ..####..  ..####..
+
+ CARD 120  CARD 121  CARD 122  CARD 123  CARD 124  CARD 125  CARD 126  CARD 127
+ ..####..  ..####..  ..####..  ..####..  ..####..  ..####..  ..####..  ..####..
+ .#....#.  .#....#.  .#....#.  .#....#.  .#....#.  .#....#.  .#....#.  .#....#.
+ #.#..#.#  #.#..#.#  #.#..#.#  #.#..#.#  #.#..#.#  #.#..#.#  #.#..#.#  #.#..#.#
+ #......#  #......#  #......#  #......#  #......#  #......#  #......#  #......#
+ #.#..#.#  #.#..#.#  #.#..#.#  #.#..#.#  #.#..#.#  #.#..#.#  #.#..#.#  #.#..#.#
+ #..##..#  #..##..#  #..##..#  #..##..#  #..##..#  #..##..#  #..##..#  #..##..#
+ .#....#.  .#....#.  .#....#.  .#....#.  .#....#.  .#....#.  .#....#.  .#....#.
+ ..####..  ..####..  ..####..  ..####..  ..####..  ..####..  ..####..  ..####..
+
+
+Note that these pictures are not pictures from the actual GROM.
+The format, though, is the same as the actual output of this program.
+
+In the dump, '#' characters indicate pixels that are "ON", and '.'
+characters indicate pixels that are "OFF".  The card # displayed over
+the ASCII depiction is card # you'd use to display this picture on
+the display.
+
+
+EXAMPLE:
+
+    show_grom -o ascii.txt grom.bin
+
+This will write a text file named "ascii.txt" containing the textual dump of
+"grom.bin".
+
+
+------------------------------------------------------------------------------
+  HTML OUTPUT MODE
+------------------------------------------------------------------------------
+
+HTML mode is selected with the "-h" flag.  In this mode, SHOW_GROM is
+used as follows:
+
+    show_grom -h [flags] [-o outfile.html] grom.bin
+
+The following flags are recognized in HTML mode:
+
+        -o outfile  Specify output file (writes to stdout by default)
+        -d #        Digit display mode for card #'s
+                    1  Decimal only (default)
+                    2  Hexadecimal only 
+                    3  Hexadecimal and Decimal
+        -x #        Displayed width for GIFs
+        -y #        Displayed height for GIFs
+        -r #        Cards per row
+        -f #        Relative font size for labels
+
+The -o flag specifies an output file for the dump to be written to.  If
+this flag is omitted, then the output will be written directly to stdout.
+
+The -x # and -y # flags set the width and height for displaying the
+GIFs.  By default, the GIFs are displayed as 64x64 images.  Note that
+the GIFs are always generated as 8x8 images -- these flags only affect
+the HTML output.
+
+The -r # flag determines how many cards are displayed per rom.  By
+default, only 8 are shown per row.  This number may vary from 1 to
+256.
+
+The -f # flag affects the relative font-size applied to the labels.
+The default size is 0.  Sizes from -4 to 4 are allowed.
+
+The -d# flag specifies the display mode for card numbers.  The default
+mode is decimal-only and is equivalent to -d1.  The flag -d2 displays 
+hexadecimal, and -d3 displays both hexadecimal and decimal.           
+
+
+In HTML mode, SHOW_GROM outputs a single HTML file containing a series of
+tables, and a set of 256 GIF files containing the various GROM pictures.
+Together, these produce an attractive HTML document showing the contents
+of the GROM.
+
+The GIF files output in this mode will be named the same as the output
+filename given with the "-o" flag, except the ".html" (or ".htm") suffix
+will be replaced with "_XX.gif", where XX is the hexadecimal index for the
+GROM card.  If the original filename does not end in ".html", ".HTML",
+".htm" or ".HTM", then the "_XX.gif" suffix is just tacked on the end.
+If the you do not specify an output file with "-o", then the GIF files
+will be named "grom_XX.gif".
+
+The full pathname of the output file specified by "-o" is used in the
+generated HTML.  This can cause strange things to happen, since the
+web-browser typically expects the GIF files to be specified with a path
+relative to the HTML file.  For this reason, I strongly encourage you
+to run show_grom in the directory where you want the output to appear.
+
+EXAMPLE:
+
+    show_grom -h -o wxyz.html grom.bin
+
+This will write an HTML file named "wxyz.html" containing the HTML dump of
+"grom.bin".  It will also write a series of files named "wxyz_00.gif"
+through "wxyz_FF.gif" which contain the individual pictures for each
+of the GROM cards.
+
+EXAMPLE #2:
+
+    show_grom -h -o tiny.html -r16 -x24 -y24 -f-2 grom.bin
+
+This will write an HTML file named "tiny.html" containing the HTML dump of
+"grom.bin".  In this case, the GIFs will be displayed as 24x24 GIFs, and
+the labels will be at <FONT SIZE=-2>.  This particular set of flags 
+produces an HTML file that prints on a single letter-size page under
+Mozilla.  Your mileage may vary.
+
+------------------------------------------------------------------------------
+  GIF PATENT ISSUES
+------------------------------------------------------------------------------
+
+The GIF implementation in this program should NOT infringe on the Unisys
+LZW patent.  This code does NOT employ LZW compression.  Rather, it
+avoids compressing the data entirely.  This is acceptible for small GIFs
+such as these.
+
+The GIF encoder in this code outputs a syntactically valid GIF.  It does
+not, however, send any compression-specific codes other than "Clear
+dictionary" and "End of Information."  It does not construct, maintain,
+or even track the state of anything resembling an LZW dictionary.
+
+

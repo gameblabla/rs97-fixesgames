@@ -1,0 +1,323 @@
+<!-- Copyright (C) 2010 Amf -->
+<chroma type="graphics">
+
+<head>
+
+<title translate="yes">Chroma Marble</title>
+
+<sizes>
+<size x="16" y="16" />
+<size x="20" y="20" />
+<size x="24" y="24" />
+<size x="32" y="32" />
+<size x="40" y="40" />
+<size x="64" y="64" />
+</sizes>
+
+<shadows>
+<shadow x="1" y="0" />
+<shadow x="0" y="1" />
+<shadow x="1" y="1" />
+<shadow x="0" y="0" />
+</shadows>
+
+</head>
+
+<pieces path="chroma-marble">
+
+<piece name="space" tile="yes">
+<image file="%x_space.png" /> 
+</piece>
+
+<piece name="wall" bevel="piece" bevel="shadow" tile="yes">
+<image file="%x_wall.png" />
+<image file="%x_wall_x.png" />
+<image file="%x_wall_y.png" />
+<image file="%x_wall_outside.png" />
+<image file="%x_wall_inside.png" />
+<image type="shadow" colour="#ffffff00" x="25%" y="25%" />
+<image type="shadow" file="%x_wall_x_shadow.png" x="25%" y="25%" />
+<image type="shadow" file="%x_wall_y_shadow.png" x="25%" y="25%" />
+<image type="shadow" file="%x_wall_outside_shadow.png" x="25%" y="25%" />
+<image type="shadow" file="%x_wall_inside_shadow.png" x="25%" y="25%" />
+</piece>
+
+<piece name="player_one">
+<image file="%x_player_one.png" />
+<image file="%x_player_one_swapped.png" />
+<image type="shadow" file="%x_player_shadow.png" x="25%" y="25%" />
+<image type="small" file="%x_player_one.png" />
+<image type="small" file="%x_player_one_swapped.png" />
+</piece>
+
+<piece name="player_two">
+<image file="%x_player_two.png" />
+<image file="%x_player_two_swapped.png" />
+<image type="shadow" file="%x_player_shadow.png" x="25%" y="25%" />
+<image type="small" file="%x_player_two.png" />
+<image type="small" file="%x_player_two_swapped.png" />
+</piece>
+
+<piece name="dots">
+<image file="%x_dots.png" />
+<image type="shadow" file="%x_dots_shadow.png" x="25%" y="25%" />
+</piece>
+
+<piece name="arrow_red_left">
+<image file="%x_arrow_red_left.png" />
+<image type="shadow" file="%x_arrow_shadow_left.png" x="25%" y="25%" />
+</piece>
+
+<piece name="arrow_red_up">
+<image file="%x_arrow_red_up.png" />
+<image type="shadow" file="%x_arrow_shadow_up.png" x="25%" y="25%" />
+</piece>
+
+<piece name="arrow_red_right">
+<image file="%x_arrow_red_right.png" />
+<image type="shadow" file="%x_arrow_shadow_right.png" x="25%" y="25%" />
+</piece>
+
+<piece name="arrow_red_down">
+<image file="%x_arrow_red_down.png" />
+<image type="shadow" file="%x_arrow_shadow_down.png" x="25%" y="25%" />
+</piece>
+
+<piece name="bomb_red_left">
+<image file="%x_bomb_red_left.png" />
+<image type="shadow" file="%x_bomb_shadow_left.png" x="25%" y="25%" />
+</piece>
+
+<piece name="bomb_red_up">
+<image file="%x_bomb_red_up.png" />
+<image type="shadow" file="%x_bomb_shadow_up.png" x="25%" y="25%" />
+</piece>
+
+<piece name="bomb_red_right">
+<image file="%x_bomb_red_right.png" />
+<image type="shadow" file="%x_bomb_shadow_right.png" x="25%" y="25%" />
+</piece>
+
+<piece name="bomb_red_down">
+<image file="%x_bomb_red_down.png" />
+<image type="shadow" file="%x_bomb_shadow_down.png" x="25%" y="25%" />
+</piece>
+
+<piece name="arrow_green_left">
+<image file="%x_arrow_green_left.png" />
+<image type="shadow" file="%x_arrow_shadow_left.png" x="25%" y="25%" />
+</piece>
+
+<piece name="arrow_green_up">
+<image file="%x_arrow_green_up.png" />
+<image type="shadow" file="%x_arrow_shadow_up.png" x="25%" y="25%" />
+</piece>
+
+<piece name="arrow_green_right">
+<image file="%x_arrow_green_right.png" />
+<image type="shadow" file="%x_arrow_shadow_right.png" x="25%" y="25%" />
+</piece>
+
+<piece name="arrow_green_down">
+<image file="%x_arrow_green_down.png" />
+<image type="shadow" file="%x_arrow_shadow_down.png" x="25%" y="25%" />
+</piece>
+
+<piece name="bomb_green_left">
+<image file="%x_bomb_green_left.png" />
+<image type="shadow" file="%x_bomb_shadow_left.png" x="25%" y="25%" />
+</piece>
+
+<piece name="bomb_green_up">
+<image file="%x_bomb_green_up.png" />
+<image type="shadow" file="%x_bomb_shadow_up.png" x="25%" y="25%" />
+</piece>
+
+<piece name="bomb_green_right">
+<image file="%x_bomb_green_right.png" />
+<image type="shadow" file="%x_bomb_shadow_right.png" x="25%" y="25%" />
+</piece>
+
+<piece name="bomb_green_down">
+<image file="%x_bomb_green_down.png" />
+<image type="shadow" file="%x_bomb_shadow_down.png" x="25%" y="25%" />
+</piece>
+
+<piece name="arrow_blue_left">
+<image file="%x_arrow_blue_left.png" />
+<image type="shadow" file="%x_arrow_shadow_left.png" x="25%" y="25%" />
+</piece>
+
+<piece name="arrow_blue_up">
+<image file="%x_arrow_blue_up.png" />
+<image type="shadow" file="%x_arrow_shadow_up.png" x="25%" y="25%" />
+</piece>
+
+<piece name="arrow_blue_right">
+<image file="%x_arrow_blue_right.png" />
+<image type="shadow" file="%x_arrow_shadow_right.png" x="25%" y="25%" />
+</piece>
+
+<piece name="arrow_blue_down">
+<image file="%x_arrow_blue_down.png" />
+<image type="shadow" file="%x_arrow_shadow_down.png" x="25%" y="25%" />
+</piece>
+
+<piece name="bomb_blue_left">
+<image file="%x_bomb_blue_left.png" />
+<image type="shadow" file="%x_bomb_shadow_left.png" x="25%" y="25%" />
+</piece>
+
+<piece name="bomb_blue_up">
+<image file="%x_bomb_blue_up.png" />
+<image type="shadow" file="%x_bomb_shadow_up.png" x="25%" y="25%" />
+</piece>
+
+<piece name="bomb_blue_right">
+<image file="%x_bomb_blue_right.png" />
+<image type="shadow" file="%x_bomb_shadow_right.png" x="25%" y="25%" />
+</piece>
+
+<piece name="bomb_blue_down">
+<image file="%x_bomb_blue_down.png" />
+<image type="shadow" file="%x_bomb_shadow_down.png" x="25%" y="25%" />
+</piece>
+
+<piece name="circle">
+<image file="%x_circle.png" />
+<image type="shadow" file="%x_circle_shadow.png" x="25%" y="25%" />
+</piece>
+
+<piece name="star">
+<image file="%x_star.png" />
+<image type="shadow" file="%x_star_shadow.png" x="25%" y="25%" />
+<image type="small" file="%x_star.png" />
+</piece>
+
+<piece name="door">
+<image file="%x_door.png" />
+<image type="shadow" file="%x_door_shadow.png" x="25%" y="25%" />
+<image type="small" file="%x_door.png" />
+</piece>
+
+<piece name="explosion_red_left">
+<image colour="#ff0000" />
+<image type="shadow" x="25%" y="25%" colour="#ffc0c0" />
+</piece>
+<piece name="explosion_red_horizontal">
+<clone piece="explosion_red_left" />
+</piece>
+<piece name="explosion_red_right">
+<clone piece="explosion_red_left" />
+</piece>
+<piece name="explosion_red_top">
+<clone piece="explosion_red_left" />
+</piece>
+<piece name="explosion_red_vertical">
+<clone piece="explosion_red_left" />
+</piece>
+<piece name="explosion_red_bottom">
+<clone piece="explosion_red_left" />
+</piece>
+
+<piece name="explosion_green_left">
+<image colour="#00ff00" />
+<image type="shadow" x="25%" y="25%" colour="#c0ffc0" />
+</piece>
+<piece name="explosion_green_horizontal">
+<clone piece="explosion_green_left" />
+</piece>
+<piece name="explosion_green_right">
+<clone piece="explosion_green_left" />
+</piece>
+<piece name="explosion_green_top">
+<clone piece="explosion_green_left" />
+</piece>
+<piece name="explosion_green_vertical">
+<clone piece="explosion_green_left" />
+</piece>
+<piece name="explosion_green_bottom">
+<clone piece="explosion_green_left" />
+</piece>
+
+<piece name="explosion_blue_left">
+<image colour="#0000ff" />
+<image type="shadow" x="25%" y="25%" colour="#c0c0ff" />
+</piece>
+<piece name="explosion_blue_horizontal">
+<clone piece="explosion_blue_left" />
+</piece>
+<piece name="explosion_blue_right">
+<clone piece="explosion_blue_left" />
+</piece>
+<piece name="explosion_blue_top">
+<clone piece="explosion_blue_left" />
+</piece>
+<piece name="explosion_blue_vertical">
+<clone piece="explosion_blue_left" />
+</piece>
+<piece name="explosion_blue_bottom">
+<clone piece="explosion_blue_left" />
+</piece>
+
+<xor>
+<piece name="dots_x">
+<image file="%x_dots_x.png" />
+<image type="shadow" file="%x_dots_x_shadow.png" x="25%" y="25%" />
+</piece>
+
+<piece name="dots_y">
+<image file="%x_dots_y.png" />
+<image type="shadow" file="%x_dots_y_shadow.png" x="25%" y="25%" />
+</piece>
+
+<piece name="switch">
+<image file="%x_switch.png" />
+<image type="shadow" file="%x_switch_shadow.png" x="25%" y="25%" />
+</piece>
+
+<piece name="teleport">
+<image file="%x_teleport.png" />
+<image type="shadow" file="%x_teleport_shadow.png" x="25%" y="25%" />
+</piece>
+
+<piece name="map_top_left">
+<image file="%x_map_top_left.png" />
+<image type="shadow" file="%x_map_shadow.png" x="25%" y="25%" />
+</piece>
+
+<piece name="map_top_right">
+<image file="%x_map_top_right.png" />
+<image type="shadow" file="%x_map_shadow.png" x="25%" y="25%" />
+</piece>
+
+<piece name="map_bottom_left">
+<image file="%x_map_bottom_left.png" />
+<image type="shadow" file="%x_map_shadow.png" x="25%" y="25%" />
+</piece>
+
+<piece name="map_bottom_right">
+<image file="%x_map_bottom_right.png" />
+<image type="shadow" file="%x_map_shadow.png" x="25%" y="25%" />
+</piece>
+
+<piece name="darkness">
+<image colour="#000000" />
+</piece>
+</xor>
+
+<enigma>
+<piece name="dots_double">
+<image file="%x_dots_double.png" />
+<image type="shadow" file="%x_dots_double_shadow.png" x="25%" y="25%" />
+</piece>
+
+<piece name="circle_double">
+<image file="%x_circle_double.png" />
+<image type="shadow" file="%x_circle_double_shadow.png" x="25%" y="25%" />
+</piece>
+</enigma>
+
+</pieces>
+
+</chroma>

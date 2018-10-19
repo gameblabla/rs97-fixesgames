@@ -1,0 +1,67 @@
+
+
+#CFLAGS=-c -g -Wall
+#CFLAGS=-c -g -Wall
+CFLAGS=-c -O2 -g -Wall
+
+LDFLAGS=
+
+GPLDFLAGS=-L/opt/open2x/gcc-4.1.1-glibc-2.3.6/lib -Wl,-rpath,/opt/open2x/gcc-4.1.1-glibc-2.3.6/lib \
+		-static -lSDL_gfx -lSDL_image -ljpeg -lpng12 -lz -lSDL_mixer -lmikmod -lvorbisidec -lmad -lSDL \
+		 -lpthread -lgcc -lm -lc -ldl -msoftfloat
+
+PCLDFLAGS=-L/usr/lib -Wl,-rpath,/usr/lib -lSDL -lpthread -lSDL_gfx -lSDL_image -lz -lpng12 -lSDL_mixer \
+		 -lmikmod  -lgcc 
+
+SOURCES=cmdline.c encoding.c err.c fileio.c help.c lxlogic.c mslogic.c play.c random.c res.c \
+		score.c series.c solution.c tworld.c unslist.c \
+		oshw-sdl/SFont.c oshw-sdl/ccicon.c oshw-sdl/sdlerr.c oshw-sdl/sdlin.c \
+		oshw-sdl/sdloshw.c oshw-sdl/sdlout.c oshw-sdl/sdlsfx.c oshw-sdl/sdltext.c \
+		oshw-sdl/sdltile.c oshw-sdl/sdltimer.c
+
+
+OBJECTS=$(SOURCES:.c=.o)
+EXECUTABLEPC=tworld2x
+EXECUTABLEGP=tworld2x.gpe
+
+ifdef arm
+CC=arm-open2x-linux-gcc
+CFLAGS+=-I/opt/open2x/gcc-4.1.1-glibc-2.3.6/include/ \
+		-I/opt/open2x/gcc-4.1.1-glibc-2.3.6/include/SDL -D_REENTRANT \
+		-msoft-float -DPLATFORM_GP2X
+else
+CC=gcc
+CFLAGS+=-I/usr/include/SDL -D_GNU_SOURCE=1 -D_REENTRANT -DPLATFORM_PC
+endif
+
+all: 
+	make pcversion
+	make cleanobjs
+	make arm=1 gpversion
+	#make gpold
+
+pcversion: $(SOURCES) $(EXECUTABLEPC)
+
+
+gpversion: $(SOURCES) $(EXECUTABLEGP)
+
+
+$(EXECUTABLEPC): $(OBJECTS) 
+	$(CC) $(LDFLAGS) $(PCLDFLAGS) $(OBJECTS) -o $@
+
+
+#$(EXECUTABLEGP): $(OBJECTS) 
+#	$(CC) $(LDFLAGS) $(GPLDFLAGS) $(OBJECTS) -o $@
+$(EXECUTABLEGP): $(OBJECTS) 
+	$(CC) $(LDFLAGS) -static $(OBJECTS) -o $@ $(GPLDFLAGS)
+
+
+.c.o:
+	$(CC) $(CFLAGS) $< -o $@
+
+cleanobjs:
+	rm -f $(OBJECTS)
+
+clean:
+	-rm -f tworld2x tworld2x.gpe *~ *.o *.bak oshw-sdl/*.o oshw-sdl/*.bak oshw-sdl/*~
+

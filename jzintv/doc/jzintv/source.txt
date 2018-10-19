@@ -1,0 +1,132 @@
+==============================================================================
+ Source Code Structure for jzIntv
+ J. Zbiciak
+==============================================================================
+
+-------------
+ File Layout
+-------------
+
+Before diving into jzIntv's source structure, first consider the layout
+of the jzIntv project in its entirety.
+
+jzIntv is more than an emulator.  It's a complete Intellivision
+development kit, including several command-line utilities, programming
+documentation, technical information, as well as the emulator.
+
+
+
+|-- bin            Compiled executables go here
+|
+|-- doc            Documentation on jzIntv and Intellivision here
+|   |              
+|   |              Emulator Related:
+|   |              -----------------
+|   |-- jzintv     Docs on jzIntv itself
+|   |-- utilities  Docs on included utilites
+|   |-- rom_fmt    .ROM format documentation
+|   |              
+|   |              Intellivision Technical Documentation
+|   |              -------------------------------------
+|   |-- De_Re_Intellivision     William Moeller's De Re Intellivision
+|   |-- programming             Intellivision programming information
+|   |-- color                   Color reference table
+|   |-- tech                    Hardware information
+|   |-- voice                   Intellivoice reverse engineering docs
+|   |              
+|   |              Miscellaneous
+|   |              -------------
+|   `-- historic   Out of date documation
+|
+|-- examples       Programming examples and Intellivision library functions
+|
+`-- src
+    |              jzIntv Infrastructure 
+    |              ---------------------
+    |-- cfg        Intellivision initialization and configuration
+    |-- periph     Peripheral backplane.  Most "objects" derive from periph
+    |-- gfx        Graphics abstraction layer
+    |-- snd        Sound mixer and abstraction layer
+    |-- event      Input event collector
+    |-- speed      Rate controller
+    |-- debug      Debugger
+    |
+    |              Intellivision Components
+    |              ------------------------
+    |-- cp1600     CPU emulation (CP-1600 family)
+    |-- ay8910     PSG emulation (AY-3-8914, AY-3-8915, AY-3-8916, AY-3-8917)
+    |-- stic       STIC emulation (AY-3-8900)
+    |-- pads       Hand controller and keyboard input emulation
+    |-- mem        RAM/ROM emulation
+    |
+    |              Intellivision Peripherals
+    |              -------------------------
+    |-- ivoice     Intellivoice emulation (SPB-640, SP0256-012)
+    |-- icart      Intellicart emulation and utility functions
+    |-- bincfg     BIN+CFG handler 
+    |
+    |              Extras
+    |              ------
+    |-- gif        Routines for writing GIF files
+    |-- mvi        Routines for recording/decoding movies
+    |
+    |              Utility Functions
+    |              -----------------
+    |-- plat       Platform adaptation functions
+    |-- file       File I/O helpers
+    |-- misc       Other misc routines 
+    |   |-- avl.c      AVL tree implementation
+    |   |-- ll.c       Linked-list implementation
+    |   |-- crc16.c    16-bit CRC functions
+    |   `-- crc32.c    32-bit CRC functions
+    |
+    |              External Utility Programs 
+    |              -------------------------
+    |-- dasm       Disassembler
+    |-- asm        Assembler
+    |-- imasm      Preprocessor and GUI environment from Joe Fisher
+    `-- util       Simple command-line utilities and utility functions
+        |          
+        |                  ROM Format Conversion/Manipulation
+        |                  ----------------------------------
+        |-- bin2rom.c      Convert BIN+CFG -> .ROM
+        |-- rom2bin.c      Convert .ROM -> BIN+CFG
+        |-- rom_merge.c    Merge multiple .ROM/BIN+CFG into single .ROM
+        |-- gms2rom.c      Convert INTVPC save-state into playable game
+        |-- split_rom.c    Convert a 16-bit ROM image to two 8-bit images
+        |          
+        |                  Cart-Dumper Related
+        |                  -------------------
+        |-- cart.c         Cart-dumper I/O routines
+        |-- test_cart.c    Simple test procedure for cart dumper
+        |          
+        |                  Intellivoice Related
+        |                  --------------------
+        |-- dasm0256.c     Disassemble voice data
+        |-- filt_calc.c    Calculate filter response from coefficients
+        |-- ivplay.c       Play voice data to Intellivoice via cart dumper
+        |-- ivreset.c      Reset Intellivoice connected to cart dumper
+        |          
+        |                  ECScable Related
+        |                  ----------------
+        |-- ec_dump.c      Dump ROM images via ECScable
+        |-- ec_load.c      Load game image via ECScable
+        |-- ec_test.c      Test ECScable
+        |-- ec_watch.c     Watch variables via ECScable
+        |-- ecscable.c     ECScable interface routines
+        |          
+        |                  Binary File Manipulation
+        |                  ------------------------
+        |-- tohex.c        Convert a binary file to a hex dump
+        |-- fromhex.c      Convert a hex dump to a binary file
+        |-- tobit.c        Convert a binary file to a 1/0 dump
+        |-- frombit.c      Convert a 1/0 dump to a binary file
+        |-- tobit_f.c      Like tobit, with different output format
+        |-- tobit_r.c      Like tobit, except bit order is reversed
+        |-- frombit_r.c    Like frombit, except bit order is reversed
+        |          
+        |                  Miscellaneous
+        |                  -------------
+        |-- imvtogif.c     Convert jzIntv movie file to animated GIF
+        |-- show_grom.c    Generate HTML report showing contents of GROM
+        `-- test_hcif.c    Test the INTV2PC Hand Controller Interface

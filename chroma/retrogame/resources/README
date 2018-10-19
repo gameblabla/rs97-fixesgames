@@ -1,0 +1,115 @@
+Resources
+=========
+This directory contains various resources for building the graphics used in
+Chroma, as well as a script to allow XOR and Enigma to be played with Chroma.
+
+Graphics
+========
+The graphics in Chroma come from the various SVG files in this directory,
+which are automatically converted to PNGs in the required sizes by a number of
+perl scripts. The entire process is started by make-graphics.sh, which will
+rebuild all of the PNGs in graphics/chroma-*/. It requires the following:
+
+    * Inkscape
+      http://www.inkscape.org/
+
+    * ImageMagick
+      http://www.imagemagick.org
+
+    * Netpbm
+      http://netpbm.sourceforge.net/
+
+    * Pngcrush
+      http://pmt.sourceforge.net/pngcrush/index.html
+
+XOR
+===
+XOR was published by Logotron Longman in 1987. It features fifteen mazes of
+increasingly fiendish puzzles built from surreal elements such as chickens,
+fish, bombs and dolls. It was released on a variety of platforms, including
+the BBC Micro, Amstrad CPC, Commodore 64, ZX Spectrum and Atari ST. A later
+release for the Amiga included a second set of fifteen further mazes.
+
+    http://www.danceswithferrets.org/xor/
+
+Enigma
+======
+Enigma was devised by an anonymous author, and subsequently reimplemented by
+Simon Tatham in 2000. It features twelve levels of falling blocks, exploding
+bombs, and pushing stuff around - a mixture of Boulderdash, Sokoban and XOR.
+
+    http://www.chiark.greenend.org.uk/~sgtatham/enigma/
+
+convert2chroma.pl
+=================
+convert2chroma.pl is a perl script that allows Chroma to play both XOR and
+Enigma. It will convert the levels and graphics from all of aforementioned
+versions of XOR, as well as the levels from Enigma. Obviously, you will need
+to obtain copies of the original games before convert2chroma.pl can be used!
+
+For BBC XOR, you'll need a disc image:
+
+    convert2chroma.pl --bbc xor.ssd ~/.chroma
+
+For BBC XOR Designer, you'll need a disc image:
+
+    convert2chroma.pl --designer xor-designer.ssd ~/.chroma
+
+For Spectrum XOR, you'll need a .tap tape image:
+
+    convert2chroma.pl --spectrum xor-spectrum.tap ~/.chroma
+
+For Commodore 64 XOR, you'll need a memory snapshot:
+
+    convert2chroma.pl --c64 c64-1.sta ~/.chroma
+
+    (an emulator such as MESS will allow such a snapshot to be made)
+
+For Amstrad CPC XOR, you'll need a memory snapshot:
+
+    convert2chroma.pl --cpc cpc464-1.sta ~/.chroma
+
+    (an emulator such as MESS will allow such a snapshot to be made)
+
+For Atari ST XOR, you'll need a memory snapshot:
+
+    convert2chroma.pl --atari hatari.sav ~/.chroma
+
+    (an emulator such as Hatari will allow such a snapshot to be made)
+
+For Amiga XOR, you'll need to extract the xor_lib directory from the disc:
+
+    convert2chroma.pl --amiga xor_lib/ ~/.chroma
+
+For Enigma, you'll need the levels directory from the tarball:
+
+    convert2chroma.pl --enigma enigma-1.04/levels/ ~/.chroma
+
+A variety of more esoteric conversions may also be performed by
+convert2chroma.pl - see the comments inside the script for more details.
+
+Once Chroma has seen XOR or Enigma levels, an additional menu will be available
+from the Display Options menu. This will allow you to choose which game engine
+is used to play XOR and Enigma levels, as well as how to display XOR levels:
+
+    * XOR Engine
+          exact: use an (almost) exact reverse engineering of the original
+              BBC XOR game engine. This passes all but one of the regression
+              tests in levels/regression/xor-regression.chroma, but evolves
+              levels in a rather jerky manner, one piece at a time.
+          approximate: use the Chroma engine. This fails a number of the
+              regression tests, but has a smoother feel to it.
+
+    * XOR Display
+          full: display the entire level.
+          partial: display an 8x8 scrolling window, as per the original XOR.
+
+    * Enigma Engine
+          exact: use a reverse engineering of the original Enigma game engine.
+              This passes all of the regression tests in levels/regression/
+              enigma-regression.chroma, but has some subtle display glitches
+              in graphical mode, such as pieces moving through each other.
+
+          approximate: use the Chroma engine. This fails the regression tests,
+              but doesn't have the aforementioned display glitches.
+

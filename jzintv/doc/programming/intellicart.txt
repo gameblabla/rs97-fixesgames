@@ -1,0 +1,383 @@
+==============================================================================
+  INTELLICART PROGRAMMING
+==============================================================================
+
+The Intellicart is a RAM-based cartridge that was produced by Chad Schell.
+It is a very flexible device, offering 64K x 16-bit worth of read/write
+storage.  It offers a flexible memory map, as well as support for 
+bankswitching.  SDK-1600's tools offer direct support for the Intellicart.
+
+------------------------------------------------------------------------------
+  WHERE TO FIND ONE?
+------------------------------------------------------------------------------
+
+Chad's original Intellicart page is here:
+
+    http://www.schells.com/intellicart.shtml
+
+Rob Mundo has taken over the construction and sales of the Intellicart.
+Order one here while they last:
+
+    http://www.edisplay.com/intellicart
+
+Also, some emulators support emulating the Intellicart.  At present, BlissJ,
+BlissJX, and jzIntv have Intellicart support.  Hopefully, further emulator
+support is on the way.
+
+------------------------------------------------------------------------------
+  FEATURES
+------------------------------------------------------------------------------
+
+ -- Serial connection for downloading ROM images from PC
+
+ -- 64K x 16-bit RAM (64K-words)
+
+ -- Flexible memory map:
+     -- Three selectible memory attributes (Read, Write, Bank-switched)
+     -- 2K-word granularity on memory attributes
+     -- 256-word granularity on memory map "fine-tuning"
+     -- 256-word granularity on bank-switching
+
+ -- 100% compatible with all Intellivision Master Component variants and
+    clones, ECS and Intellivoice.
+
+------------------------------------------------------------------------------
+  MEMORY MODEL:  THE BASICS
+------------------------------------------------------------------------------
+
+Because the Intellivision's memory map is only 64K-words large, and because
+the Intellicart offers 64K-words worth of storage, it is neither possible
+nor desirable to directly map the Intellicart's RAM into the Intellivision's
+address space.  There are already many devices and ROMs in the Intellivision
+address space that must be dealt with.
+
+The Intellicart solves the problem by keeping the two memory spaces separate.  
+Thus, there is the Intellivision address space and the Intellicart address 
+space.  The Intellicart then maps ranges of Intellivision addresses to its
+own private Intellicart addresses.
+
+Ranges of addresses can be marked with three independent attributes:
+
+ -- Readable:      Addresses in this range will respond to reads 
+ -- Writeable:     Addresses in this range will respond to writes
+ -- Bankswitched:  Addresses in this range may point to anywhere in the
+                   Intellicart address map.
+     
+Marking a range as Readable but not Writeable simulates ROM.  Marking a
+range as both Readable and Writeable simulates RAM.  Marking a range as
+Writeable-only simulates the little-used WOM (Write-Only Memory).  (More 
+on bank-switched memory in a minute.)  The Intellicart will not respond on 
+range which is neither readable nor writeable, thus allowing it to not 
+interfere with other devices in the system.
+
+Some emulators (such as jzIntv) also support an additional attribute which 
+the Intellicart presently does not.  This one is for support of 8-bit RAM 
+emulation:
+
+ -- Narrow:        Ignore writes to the upper byte of writeable areas.
+
+These memory attributes may be specified with a 2K-word granularity.  That
+is, the address space is carved up into 32 2K-word ranges, and each range
+may be marked separately with these attributes.  This allows specifying
+ranges of RAM and ROM in a cartridge with reasonable flexibility.
+
+The Intellicart also supports "fine-address mapping."  This is intended
+to get around "potholes" in the memory map.  With this feature, a given 2K
+range may be "trimmed" at one or both ends in 256-word chunks.  A 2K-word
+address range may be trimmed from both ends, but never in the middle.
+The trimmed portion of the range does not respond to memory accesses,
+and so the Intellicart won't interfere with devices in that range.
+
+For instance, consider the 2K range $0800 - $0FFF.  The Intellivoice maps
+its peripheral expansion bus at $0700 - $0CFF.  (See "memory_map.txt" 
+for details.)  If we wish to map memory here, we need to avoid overlapping
+the Intellivoice.  Fine-address mapping allows us to map memory starting
+at $0D00 rather than $0800 to avoid the hole.  (The ECScable Monitor 
+uses this trick -- see "ec_mon2.asm" under "examples/ecscable".)  
+
+
+------------------------------------------------------------------------------
+  MEMORY MODEL:  BANK-SWITCHING
+------------------------------------------------------------------------------
+
+By default, ranges of mapped addresses provide a direct map between the
+Intellivision and Intellicart address space.  That is, there is an exact
+1-to-1 correspondence between Intellivision and Intellicart addresses.
+For instance, $5000 in the Intellivision address space becomes $5000 in
+the Intellicart address space.  For most programs, that is sufficient.
+
+For programs that wish to use the entire Intellicart address map, or
+wish to employ advanced functionality, the Intellicart provides 
+bank-switching support.  
+
+Bank-switching allows a given 2K-word range to point anywhere in the 
+Intellicart address space with 256-word granularity.  There are no
+restrictions whatsoever on where a given 2K range maps to.  Multiple
+ranges may point to the same Intellicart memory -- they are controlled
+independently of each other.
+
+The following diagrams attempt to illustrate how direct-mapping compares
+to bank-switching.  (ASCII ART alert!)
+
+                    DIRECT MAPPED RANGE $6000 - $67FF:
+
+             Intellivision                     Intellicart
+       $FFFF +-----------+                     +----------+ $FFFF  
+             |           |                     |          |        
+             |           |                     |          |        
+       $67FF |___________|.....................|__________| $67FF
+             |           |     DIRECT MAP      |          |        
+       $6000 |___________|.....................|__________| $6000
+             |           |                     |          |        
+             |           |                     |          |        
+             |           |                     |          |        
+             |           |                     |          |        
+             |           |                     |          |        
+             |           |                     |          |        
+             |           |                     |          |        
+             |           |                     |          |        
+       $0000 +-----------+                     +----------+        
+
+
+                     BANKSWITCHED RANGE $6000 - $67FF 
+                  WITH $0000 - $07FF CURRENTLY SELECTED:
+
+             Intellivision                     Intellicart
+       $FFFF +-----------+                     +----------+ $FFFF  
+             |           |                     |          |        
+             |           |                     |          |        
+       $67FF |___________| .                   |          |
+             |           | B'.                 |          |
+       $6000 |___________| . A'.               |          |
+             |           |  '. N'.             |          |        
+             |           |    '. K'.           |          |        
+             |           |      '. S'.         |          |        
+             |           |        '. W'.       |          |        
+             |           |          '. I'.     |          |        
+             |           |            '. T'.   |          |        
+             |           |              '. C'. |          |
+             |           |                '. H'|__________| $07FF
+             |           |                  '. |          |      
+       $0000 |___________|                    '|__________| $0000
+
+
+                     BANKSWITCHED RANGE $6000 - $67FF 
+                  WITH $3E00 - $45FF CURRENTLY SELECTED:
+
+             Intellivision                     Intellicart
+       $FFFF +-----------+                     +----------+ $FFFF  
+             |           |                     |          |        
+             |           |                     |          |        
+       $67FF |___________|.__                  |          |
+             |           |   '-.__             |          |
+       $6000 |___________|._      '-.__        |          |
+             |           |  '--._      '-.__   |          |        
+             |           |       '--._      '-.|__________| $45FF
+             |           |            '--._    |          |      
+             |           |                 '--.|__________| $3E00
+             |           | B A N K S W I T C H |          |        
+             |           |                     |          |        
+             |           |                     |          |
+             |           |                     |          |
+             |           |                     |          |      
+       $0000 |___________|                     |__________| $0000
+
+
+                  DIRECT MAP RANGE  $5000 - $57FF, AND
+                     BANKSWITCHED RANGE $6000 - $67FF 
+                  WITH $5000 - $57FF CURRENTLY SELECTED:
+
+             Intellivision                     Intellicart
+       $FFFF +-----------+                     +----------+ $FFFF  
+             |           |                     |          |        
+             |           |                     |          |        
+       $67FF |___________|.__                  |          |
+             |           |   '-.__             |          |
+       $6000 |___________|._      '-.__        |          |
+             |           |  '--._      '-.__   |          |        
+       $57FF |___________|.......'--._......'-.|__________| $57FF
+             |           |            '--._    |          |      
+       $5000 |___________|.................'--.|__________| $5000
+             |           |                     |          |        
+             |           |                     |          |        
+             |           |                     |          |
+             |           |                     |          |
+             |           |                     |          |      
+       $0000 |___________|                     |__________| $0000
+
+
+Notice how in the last example, we have two ranges, one of which is 
+bank-switched and one of which is not, both looking at the same memory.
+This is perfectly legal and valid.  The ranges at $6000 - $67FF and
+$5000 - $57FF may have completely different attributes.  For instance
+$6000 - $67FF may be writeable, and $5000 - $57FF may be read only.
+If the CPU writes via $6000 - $67FF to $5000 - $57FF in the Intellicart
+address map, it'll change what the CPU sees via the direct map at 
+$5000 - $57FF.
+
+Indeed, the ECScable uses just this sort of trick for loading games.
+It maps $5000 - $6FFF, $8000 - $BFFF, $D000 - $DFFF and $F000 - $FFFF
+as read-only.  It then maps a bank-switched writeable range at
+$0E00 - $0FFF, and uses that window to fill memory behind the read-only
+ranges when a game is uploaded.
+
+As noted in the example above, bank selection occurs with 256-word 
+granularity.  The next section discusses how that works.
+
+------------------------------------------------------------------------------
+  REGISTERS
+------------------------------------------------------------------------------
+
+The Intellicart's bank-switching is controlled by a series of write-only
+registers in lower memory.  These registers live at $0040 - $005F.  Only
+pages that are marked as bank-switchable will be affected by writes to
+these registers:
+
+    Address       Range Modified         Address       Range Modified 
+   ---------     ----------------       ---------     ----------------
+     $0040        $0000 - $07FF           $0050        $0800 - $0FFF  
+     $0041        $1000 - $17FF           $0051        $1800 - $1FFF  
+     $0042        $2000 - $27FF           $0052        $2800 - $2FFF  
+     $0043        $3000 - $37FF           $0053        $3800 - $3FFF  
+     $0044        $4000 - $47FF           $0054        $4800 - $4FFF  
+     $0045        $5000 - $57FF           $0055        $5800 - $5FFF  
+     $0046        $6000 - $67FF           $0056        $6800 - $6FFF  
+     $0047        $7000 - $77FF           $0057        $7800 - $7FFF  
+     $0048        $8000 - $87FF           $0058        $8800 - $8FFF  
+     $0049        $9000 - $97FF           $0059        $9800 - $9FFF  
+     $004A        $A000 - $A7FF           $005A        $A800 - $AFFF  
+     $004B        $B000 - $B7FF           $005B        $B800 - $BFFF  
+     $004C        $C000 - $C7FF           $005C        $C800 - $CFFF  
+     $004D        $D000 - $D7FF           $005D        $D800 - $DFFF  
+     $004E        $E000 - $E7FF           $005E        $E800 - $EFFF  
+     $004F        $F000 - $F7FF           $005F        $F800 - $FFFF  
+
+Each register accepts an 8-bit value.  (The upper 8 bits of the value
+written are ignored.)  The lower 8 bits of the value written specify the 
+upper 8 bits of the target address for that 2K range.  The target address 
+is combined with the CPU address in this manner:
+
+    target_addr = bank_select << 8;
+    icart_addr  = (intv_addr & 0x07FF) + target_addr;
+
+That is, the bank-switching process adds a value to the upper 8 bits of the 
+Intellivision address, *after* bits 11 through 15 have been cleared.  This 
+might seem confusing at first, so let's consider some examples.
+
+Suppose we mark $6000 - $67FF as bank-switched, and we write $38 to 
+that range's bank-switch register at location $0046.  The CPU then makes
+an access to location $6123.  The following steps are performed:
+
+ 1. The upper 5 bits of the CPU address are cleared.  This leaves $0123.
+ 2. The bank-select register value is shifted left 8.  This gives us $3800.
+ 3. The two values are added, yielding the final Intellicart addr:  $3923.
+
+Now suppose we write $3F to location $0046.  The CPU accesses $6123 again.
+
+ 1. The upper 5 bits of the CPU address are cleared.  This leaves $0123.
+ 2. The bank-select register value is shifted left 8.  This gives us $3F00.
+ 3. The two values are added, yielding the final Intellicart addr:  $4023.
+
+Essentially, the byte written to the bank-select register specifies the
+starting address (to a 256-word granularity) that the given 2K-word range
+will map to.  When we wrote $38 to location $0046, the range $6000 - $67FF
+in the Intellivision's address space mapped to $3800 - $3FFF in the 
+Intellicart's address space.  When we wrote $3F to location $0046, the
+Intellivision range $6000 - $67FF mapped to the Intellicart range $3F00 -
+$46FF.
+
+>>  NOTE:  
+>>
+>>  The bank-switch registers have an UNDEFINED STATE when your program
+>>  starts.  Therefore, do NOT place your program's startup code in 
+>>  a bank-switched section.  This also means you should NOT map $4800,
+>>  $5000 or $7000 as bank-switchable addresses, as you may confuse the
+>>  EXEC boot routines.  Also, make sure to set your bank selectors to
+>>  known values by writing to the corresponding bank-switch registers 
+>>  BEFORE reading and writing the bank-switched areas.
+
+------------------------------------------------------------------------------
+  ASSEMBLER SUPPORT IN AS1600
+------------------------------------------------------------------------------
+
+The assembler supports the Intellicart by allowing the programmer to specify 
+memory attributes on ranges that are being assembled.  These attributes will 
+get reflected directly in the .ROM file the assembler generates.  (Or, if you 
+generate a BIN+CFG, these will be reflected in the .CFG file.)
+
+The assembler also supports the Intellicart by allowing the programmer to
+specify an Intellicart loading address that is separate from the 
+Intellivision symbol address.  This is useful for tables and/or functions
+that will be bank-selected between.  See "examples/bankdemo" for an example.
+
+
+Memory attributes are specified in three ways:  Implicitly, explicitly 
+with an ORG directive, and explicitly with a MEMATTR directive.  (Please
+consult "doc/as1600.txt" for additional documentation.)
+
+By default, the assembler marks most assembled regions as "readable."  
+The programmer may override this three ways:
+
+ -- Specify an Intellicart load address that differs from the Intellivision
+    address in an ORG directive.  For example:  "ORG $5000, $1000".  
+    The assembler will default to "no attribute" for code assembled 
+    following such an ORG statement.
+
+ -- Specify a mode-string on an ORG statement.  The mode will be applied
+    to the given range of Intellicart addresses (not Intellivision!).
+    For example:  'ORG $D000, $D000, "+RW"'  This tells the assembler to
+    set the Read and Write attributes for anything assembled after that
+    ORG statement (until the next ORG is encountered).
+    
+ -- Use MEMATTR to modify the memory attributes on a range.  You can
+    specify either a delta-change or an absolute change.  For example:
+    'MEMATTR $D000, $D7FF, "+RWB"'  This marks the range $D000 - $D7FF
+    as readable, writeable, and bankswitched.
+
+
+------------------------------------------------------------------------------
+  OTHER TOOLS:  ROM2BIN, BIN2ROM
+------------------------------------------------------------------------------
+
+SDK-1600 also provides two other utilities to support the Intellicart.
+
+BIN2ROM takes a BIN and CFG file, and generates a file in .ROM format.
+This format is the exact format that is used for communication with the
+Intellicart.  The following sections are a recognized by BIN2ROM:
+
+  ; Load word offsets $xxxx through $yyyy in BIN to Intellicart address 
+  ; $zzzz, and mark that range as direct-mapped readable in the address map:
+  [mapping]
+  $xxxx - $yyyy = $zzzz
+
+  ; Load word offsets $xxxx through $yyyy in BIN to Intellicart address
+  ; $zzzz.  Makes no changes to the memory attributes.
+  [preload]
+  $xxxx - $yyyy = $zzzz
+
+  ; Mark range $xxxx - $yyyy of Intellivision addrs as 8-bit or 16-bit RAM
+  ; or WOM (write-only memory).  Note that the Intellicart does not 
+  ; support 8-bit RAM/WOM, but some emulators that read the format do.
+  ; Note:  INTVPC and the Intellicart loader do not recognize WOM.
+  [memattr]
+  $xxxx - $yyyy = RAM 8
+  $xxxx - $yyyy = RAM 16
+  $xxxx - $yyyy = WOM 8
+  $xxxx - $yyyy = WOM 16
+
+  ; Mark range $xxxx - $yyyy of Intellivision addrs bank-switched.
+  [bankswitch]
+  $xxxx - $yyyy
+
+All other sections are ignored.  BIN2ROM does its best to honor the
+requested memory attributes.  If conflicting attributes are specified on
+a given 2K range, BIN2ROM generally builds a ROM that includes the superset
+of those attributes.  Be careful -- it can lead to some surprises if 
+you're sloppy.
+
+
+ROM2BIN goes in the opposite order.  It takes a ROM, and generates a BIN
+and corresponding CFG file.  The CFG file adheres to the above format,
+except that it will not output WOM ranges for compatibility reasons.
+(Neither will the assembler, for that matter.)  WOM ranges get converted
+to RAM, which may or may not be ok depending on your application.

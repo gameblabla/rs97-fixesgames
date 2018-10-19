@@ -1,0 +1,65 @@
+# Copyright (C) 2010 Amf
+#
+# Regression tests for Chroma's game engine
+#
+# This level tests a number of subtleties in Chroma's game engine. The stars
+# indicate where the player should move to trigger each test. After triggering,
+# in the top row of tests, pairs of red arrows should fall below the centre
+# line, whereas pairs of green arrows should fall above, and pairs of blue
+# arrows depend on how they were triggered - falling below if from the left,
+# and above if from the right.
+#
+# In the middle and bottom rows, the precedence of moving bombs is tested.
+# After triggering each the first four tests on each row, the green bombs
+# should detonate each other, exploding on the positions indicated by the dots.
+# The blue bombs should not detonate, but should instead stop on the dots.
+#
+# In the next two tests in the middle row, only the green arrows should be
+# destroyed. The final two tests in the middle row examine explosions - the
+# circle in the left hand chamber should be destroyed by the new explosion,
+# whereas the circle in the right hand chamber should pass through the dying
+# explosion and stop at the wall.
+#
+# Finally, the stack of bombs to the right of the bottom row is a minimal
+# example of a problematic arrangement of bombs - some care is required to
+# ensure there are no display glitches when undoing moves.
+
+chroma level
+
+title: chroma 0.01 : regression tests
+size: 50 32
+
+data:
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%1                                             %/%
+%           D                                  %%%
+%           .   d   D    d    h   H              %
+%        cd C.  *   *    *    *   *              %
+%   d     .d.d d d d.d d   h h.h h.h dD hh   l   %
+%%c*D*a%c*C..%%.D.%.b.%K.D.i%.F.%.F.%.* *.%k*.*i%%
+%   b     .b.b b.b b b b % f f f f f bb Ff   j   %
+%        cb C.                                   %
+%           .                                    %
+%           b                   %      d %o%%%o%%%
+%                     %         .      * %.a %.a %
+%  d%       .   Kd    ..% Kd    .% cgGc.%% b % b %
+%  *     Gd .    cd%       cd%     ccgk.%% b % b %
+%Gd ....  d .     c.        c.           % b % b %
+% dDb     cc. %  %A.*a     %C.*a   %%%%%%% b % b %
+% %%baa   %A *a  %aa       %aa       dd  % b % b %
+%     F   %aa    % baaa    % baaa    hd  %EbE% b %
+%           F         J         J    Hh  %   %EbE%
+%                     %         %    dl %%   %   %
+%2                                 c*..  %   % o %
+%                                    %%%%%%%%%%%%%
+%                                                %
+%    %      %      %      %%%    %%%    %%%      %
+%   d      d      d       % %    % %    % %  %%%%%
+%   * %%   *.%%   * %%  %%% %% %%%.%% %%% %% %DD %
+% g.D..% K.D..% K.D. %  g.B..% K.B..% K.B. % %DD %
+%   %b%%   %b%%   %b%%    *b%%   *b%%   *b%% %hD %
+%    F      j      b      bF     bj     bb   %HD %
+%                  J                     J    *. %
+%                                            %ooo%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+

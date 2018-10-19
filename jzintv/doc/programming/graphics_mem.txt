@@ -1,0 +1,191 @@
+==============================================================================
+  GRAPHICS ROM AND RAM      
+==============================================================================
+
+The Intellivision contains a 2K-byte Graphics ROM (GROM) and a 512-byte
+Graphics RAM.  This file describes their contents.
+
+------------------------------------------------------------------------------
+  ACCESSING GROM AND GRAM
+------------------------------------------------------------------------------
+
+The Graphics ROM is mapped at $3000 - $37FF in the Intellivision's
+memory map.  The Graphics RAM is mapped at $3800 - $3AFF.
+
+GRAM and GROM are visible to the CPU during the VBLANK period (see 
+"interrupts.txt" for details), and also when the display is blanked.  
+GRAM and GROM are not available to the CPU during active display, as the
+STIC requires these resources for generating the display.
+
+------------------------------------------------------------------------------
+  LAYOUT
+------------------------------------------------------------------------------
+
+The GROM and GRAM hold the 8x8 and 8x16 pictures that the STIC uses
+for displaying background cards and MOBs onscreen.  The GROM holds 256
+8x8 pictures, and the GRAM holds 64 8x8 pictures.  8x16 pictures are
+constructed by using two consecutive 8x8 pictures. 
+
+Each 8x8 picture is assigned a "card #".  Card #0 corresponds to the 
+first picture in GROM.  Each card # occupies 8 bytes and starts on an
+8-byte boundary.  Thus, card #0 occupies $3000 - $3007, card #1 occupies
+$3008 - $300F, and so on.  Card numbers are converted to addresses
+by the following formula:
+
+        address = $3000 + card_number * 8
+
+Altogether, the GROM and GRAM provide a total of 320 cards to programs.
+Card #0 through card #255 come from GROM, and card #256 through card #319
+come from GRAM.  Card #s 256 through #319 are sometimes referred to
+as "GRAM card #0" through "GRAM card #63", to distinguish cards in GRAM
+from cards in GROM.  The following formula converts a GRAM card number
+to a GRAM address:
+
+        address = $3800 + GRAM_card_number * 8
+
+------------------------------------------------------------------------------
+  PICTURE ENCODING IN GRAPHICS MEMORY
+------------------------------------------------------------------------------
+
+Each card stores a single 8x8 picture in a sequence of 8 bytes.  The first 
+byte of the sequence holds the topmost row of pixels.  The last byte holds
+the bottom row of pixels.  Bit 7 in each byte holds the leftmost column
+of pixels, and bit 0 in each byte holds the rightmost column.  Pictorally:
+
+                                    Bit #
+                               7 6 5 4 3 2 1 0  
+                              +---------------+
+                           0  |               |
+                        B  1  |               |
+                        y  2  |               |
+                        t  3  |               |
+                        e  4  |               |
+                           5  |               |
+                        #  6  |               |
+                           7  |               |
+                              +---------------+
+
+Suppose, for instance, we want to define a picture for the letter R.  That
+picture might look like so:  ('#' indicates pixels that are "on", and '.'
+indicates pixels that are "off")
+
+                                    Bit #
+                               7 6 5 4 3 2 1 0  
+                              +---------------+
+                           0  |# # # # # # . .|
+                        B  1  |. # # . . # # .|
+                        y  2  |. # # . . # # .|
+                        t  3  |. # # # # # . .|
+                        e  4  |. # # . . # # .|
+                           5  |. # # . . # # .|
+                        #  6  |. # # . . # # .|
+                           7  |# # # . . # # #|
+                              +---------------+
+
+All of the "on" pixels are represented with 1 bits, and all of the "off"
+pixels are represented with 0 bits.  The binary pattern for this character 
+would be:
+
+                             DECLE   %11111100
+                             DECLE   %01100110
+                             DECLE   %01100110
+                             DECLE   %01111100
+                             DECLE   %01100110
+                             DECLE   %01100110
+                             DECLE   %01100110
+                             DECLE   %11100111
+
+You could copy this exact bit pattern into one of the card slots in GRAM, 
+and voila!  You have a stylized R.
+
+------------------------------------------------------------------------------
+  GROM PICTURE CATALOG
+------------------------------------------------------------------------------
+
+As much as I'd like to place a visual reference to all the GROM pictures 
+here, I cannot.  However, if you have a copy of GROM.BIN, you can use the 
+utility "show_grom" (included in SDK-1600) to generate such a reference 
+yourself.  See the documentation for show_grom for details on how to 
+operate it.
+
+Although I can't provide a visual reference, I can describe its contents.
+GROM card #0 through #94 correspond directly to ASCII character codes
+#32 through #126.  Thus, you can convert an ASCII code to a GROM card #
+by simply subtracting 32.  The reason for this is that ASCII codes below
+32 are "control characters" -- these charactes have no pictures associated
+with them.  Therefore, the GROM starts with the first printable ASCII 
+character.
+
+The following table illustrates the ASCII character set, and how it
+corresponds to the first portion of the GROM.  Note that ASCII code #32
+is the "space character".
+
+        ASCII CODES    GROM CARDS   ASCII CHARCTERS
+        -----------    ----------   -------------------------------
+          32 - 47        0 - 15       ! " # $ % & ' ( ) * + , - . / 
+          48 - 63       16 - 31     0 1 2 3 4 5 6 7 8 9 : ; < = > ? 
+          64 - 79       32 - 47     @ A B C D E F G H I J K L M N O 
+          80 - 95       48 - 63     P Q R S T U V W X Y Z [ \ ] ^ _ 
+          96 - 111      64 - 79     ` a b c d e f g h i j k l m n o 
+         112 - 126      80 - 95     p q r s t u v w x y z { | } ~   
+
+The next table maps hexadecimal GROM card numbers to ASCII characters.  
+It is the same information as the above table, in a slightly different 
+form.  The column at the left gives the first hexadecimal digit, and
+the row across the top gives the second hexadecimal digit.  For instance,
+the letter A would be GROM card #$21.
+ 
+
+        +---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+        |x0 |x1 |x2 |x3 |x4 |x5 |x6 |x7 |x8 |x9 |xA |xB |xC |xD |xE |xF |
+   +----+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+   | 0x |   | ! | " | # | $ | % | & | ' | ( | ) | * | + | , | - | . | / | 
+   +----+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+   | 1x | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | : | ; | < | = | > | ? | 
+   +----+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+   | 2x | @ | A | B | C | D | E | F | G | H | I | J | K | L | M | N | O | 
+   +----+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+   | 3x | P | Q | R | S | T | U | V | W | X | Y | Z | [ | \ | ] | ^ | _ | 
+   +----+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+   | 4x | ` | a | b | c | d | e | f | g | h | i | j | k | l | m | n | o | 
+   +----+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+   | 5x | p | q | r | s | t | u | v | w | x | y | z | { | | | } | ~ |
+   +----+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+
+
+GROM card #s above #94 contain a variety of graphic pictures (mostly 
+various lines and filled areas), and also some pieces of EXEC ROM code (!).
+To see what these look like, use the show_grom utility mentioned above.
+
+
+------------------------------------------------------------------------------
+  RESTRICTIONS
+------------------------------------------------------------------------------
+
+VBLANK 
+
+As noted above, GROM and GRAM are only accessible during VBLANK.  The
+exact timing requirements here are described in "interrupts.txt".
+
+
+FOREGROUND/BACKGROUND MODE
+
+Card #s 64 through 255 are unavailable when the STIC is in Foreground/
+Background mode.  These cards are unavailable to both background cards
+and MOBs.
+
+
+DOUBLE-RESOLUTION MOBS
+
+MOBs can either be single-resolution (8x8 picture) or double-resolution
+(8x16 picture).  Double-resolution MOBs work by concatenating two
+consecutive pictures from GRAM or GROM to make the taller 8x16 bitmap.
+In this mode, the picture for the upper half must always come from an
+even card #, and the picture for the lower half must always come from
+an odd card #.
+
+The STIC ignores the LSB of the card # for double-resolution MOBs.  
+Therefore double-res MOB images must always start on an even card #.
+If the program specifies an odd card #, the STIC will effectively
+round the card # to the even # card before it, because it ignores that 
+bit.  That means programs can use the LSB to store flags or other data.

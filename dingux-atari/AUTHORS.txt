@@ -1,0 +1,11 @@
+Atari800 : Emulator for the 800, 800XL, 130XE and 5200 models of 
+           the Atari personal computer.
+
+  David Firth and Atari800 Development Team 
+
+PSPATARI      : Porting on PSP
+GP2X-Atari    : Porting on GP2X F100
+Wiz-Atari     : Porting on GP2X Wiz
+Dingux-Atari  : Porting on Dingoo/Dingux
+
+  Ludovic Jacomme (zx81.zx81@gmail.com)

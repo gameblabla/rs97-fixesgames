@@ -1,0 +1,54 @@
+This is a message intended for whoever maintains the "Good ROM" list
+from the author of SDK-1600, Joseph Zbiciak.
+
+Below are the names I'd prefer to see for the ROM images contained
+in this archive.  And yes, I do want "SDK-1600" in each name, so that
+it's clear that it's the version included in SDK-1600, and so that all
+the files appear together in an alphabetical listing (kinda like
+Song Player).
+
+
+Binary File       Name
+----------------- ------------------------------------------------------------
+balls1.bin        SDK-1600 Psycho Balls #1 (2002) (JZ)
+balls2.bin        SDK-1600 Psycho Balls #2 (2002) (JZ)
+bankdemo.bin      SDK-1600 Intellicart Bankswitching Demo (2002) (JZ)
+banktest.bin      SDK-1600 Intellicart Bankswitched Memory Test (2002) (JZ)
+bankworld.bin     SDK-1600 Intellicart Bankswitched Spinning World (2002) (JZ)
+bncpix.bin        SDK-1600 Bouncing Pixels (2002) (JZ)
+csumexec.bin      SDK-1600 ROM Checksummer (2002) (JZ)
+geese.bin         SDK-1600 Geese (2003) (PD)
+gram_scroll.bin   SDK-1600 GRAM-Based Scrolling Demo #1 (2002) (JZ)
+gram_scroll2.bin  SDK-1600 GRAM-Based Scrolling Demo #2 (2002) (JZ)
+handdemo.bin      SDK-1600 Hand Controller Scanning Demo (2002) (JZ)
+hello.bin         SDK-1600 Hello World (2002) (JZ)
+life.bin          SDK-1600 John Conway's Life (2002) (JZ)
+mazedemo.bin      SDK-1600 Maze Demo (2002) (JZ)
+mem_test.bin      SDK-1600 Intellicart Memory Test (2002) (JZ)
+mob_test.bin      SDK-1600 Movable Object Demo (2002) (JZ)
+tagalong.bin      SDK-1600 Tag-Along Todd #1 (2002) (JZ)
+tagalong2.bin     SDK-1600 Tag-Along Todd #2a (2002) (JZ)
+tagalong2b.bin    SDK-1600 Tag-Along Todd #2b (2002) (JZ)
+tagalong2v.bin    SDK-1600 Tag-Along Todd #2 Voice (2002) (JZ)
+world.bin         SDK-1600 Spinning World (2002) (JZ)
+
+
+Also, if you see any of my other programs out there (4-Tris, Song Player,
+Bouncing Pixels, etc.), please change the "(PD)" designation to either
+"(JZ)" or "(GPL)".  Those ROM images are NOT in the public domain.  I
+retain the copyright to them, and I'd like all of my Intellivision ROMs 
+distributed under the terms of the GNU General Public License.  The only
+ROM I have produced that *is* in the Public Domain is "Geese".
+
+All of the programs contained in this archive are licensed under the
+GNU General Public License as well.  You're welcome to distribute these as 
+much as you like.  All I ask is that you abide by the GPL.
+
+The source code can be found here:
+
+    http://sdk-1600.spatula-city.org/
+
+Thanks,
+
+--Joe
+

@@ -1,0 +1,198 @@
+/* REminiscence - Flashback interpreter
+ * Copyright (C) 2005-2011 Gregory Montoir
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+#ifndef INTERN_H__
+#define INTERN_H__
+
+#include <cstdio>
+#include <cstring>
+#include <cstdlib>
+#include <cassert>
+#include <stdint.h>
+
+#include "sys.h"
+#include "util.h"
+
+#define ABS(x) ((x)<0?-(x):(x))
+#define MAX(x,y) ((x)>(y)?(x):(y))
+#define MIN(x,y) ((x)<(y)?(x):(y))
+#define ARRAYSIZE(a) (sizeof(a)/sizeof(a[0]))
+
+template<typename T>
+inline void SWAP(T &a, T &b) {
+	T tmp = a;
+	a = b;
+	b = tmp;
+}
+
+enum Language {
+	LANG_FR,
+	LANG_EN,
+	LANG_DE,
+	LANG_SP
+};
+
+enum DifficultySetting {
+    SKILL_EASY = 0,
+    SKILL_NORMAL = 1,
+    SKILL_HARD = 2
+};
+
+enum ResourceType {
+	kResourceTypeAmiga,
+	kResourceTypePC
+};
+
+struct Color {
+	uint8 r;
+	uint8 g;
+	uint8 b;
+};
+
+struct Point {
+	int16 x;
+	int16 y;
+};
+
+struct Level {
+	const char *name;
+	const char *name2;
+	const char *nameAmiga;
+	uint16 cutscene_id;
+	uint8 spl;
+};
+
+struct InitPGE {
+	uint16 type;
+	int16 pos_x;
+	int16 pos_y;
+	uint16 obj_node_number;
+	uint16 life;
+	int16 counter_values[4];
+	uint8 object_type;
+	uint8 init_room;
+	uint8 room_location;
+	uint8 init_flags;
+	uint8 colliding_icon_num;
+	uint8 icon_num;
+	uint8 object_id;
+	uint8 skill;
+	uint8 mirror_x;
+	uint8 flags;
+	uint8 unk1C; // collidable, collision_data_len
+	uint16 text_num;
+};
+
+struct LivePGE {
+	uint16 obj_type;
+	int16 pos_x;
+	int16 pos_y;
+	uint8 anim_seq;
+	uint8 room_location;
+	int16 life;
+	int16 counter_value;
+	uint8 collision_slot;
+	uint8 next_inventory_PGE;
+	uint8 current_inventory_PGE;
+	uint8 unkF; // unk_inventory_PGE
+	uint16 anim_number;
+	uint8 flags;
+	uint8 index;
+	uint16 first_obj_number;
+	LivePGE *next_PGE_in_room;
+	InitPGE *init_PGE;
+};
+
+struct GroupPGE {
+	GroupPGE *next_entry;
+	uint16 index;
+	uint16 group_id;
+};
+
+struct Object {
+	uint16 type;
+	int8 dx;
+	int8 dy;
+	uint16 init_obj_type;
+	uint8 opcode2;
+	uint8 opcode1;
+	uint8 flags;
+	uint8 opcode3;
+	uint16 init_obj_number;
+	int16 opcode_arg1;
+	int16 opcode_arg2;
+	int16 opcode_arg3;
+};
+
+struct ObjectNode {
+	uint16 last_obj_number;
+	Object *objects;
+	uint16 num_objects;
+};
+
+struct ObjectOpcodeArgs {
+	LivePGE *pge; // arg0
+	int16 a; // arg2
+	int16 b; // arg4
+};
+
+struct AnimBufferState {
+	int16 x, y;
+	uint8 w, h;
+	const uint8 *dataPtr;
+	LivePGE *pge;
+};
+
+struct AnimBuffers {
+	AnimBufferState *_states[4];
+	uint8 _curPos[4];
+
+	void addState(uint8 stateNum, int16 x, int16 y, const uint8 *dataPtr, LivePGE *pge, uint8 w = 0, uint8 h = 0);
+};
+
+struct CollisionSlot {
+	int16 ct_pos;
+	CollisionSlot *prev_slot;
+	LivePGE *live_pge;
+	uint16 index;
+};
+
+struct BankSlot {
+	uint16 entryNum;
+	uint8 *ptr;
+};
+
+struct CollisionSlot2 {
+	CollisionSlot2 *next_slot;
+	int8 *unk2;
+	uint8 data_size;
+	uint8 data_buf[0x10]; // XXX check size
+};
+
+struct InventoryItem {
+	uint8 icon_num;
+	InitPGE *init_pge;
+	LivePGE *live_pge;
+};
+
+struct SoundFx {
+	uint32 offset;
+	uint16 len;
+	uint8 *data;
+};
+
+#endif // INTERN_H__

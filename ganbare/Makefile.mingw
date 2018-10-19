@@ -1,0 +1,16 @@
+CC = i586-mingw32msvc-gcc
+
+CFLAGS  = -Os -fomit-frame-pointer -I/usr/i586-mingw32msvc/include/SDL -I./src/gfx -DMINGW -DBUILD_DLL
+LDFLAGS = -lmingw32 -lSDLmain -lSDL -lSDL_mixer -mwindows
+OBJS  = src/ram.o src/util_snd.o src/function.o src/dconv.o src/scene.o src/title.o src/init.o src/act.o src/option.o src/ending.o src/logo.o
+SOURCES = $(patsubst %.o, %.c, $(OBJS))
+
+OUTPUT= gnp.exe
+
+all: $(OUTPUT)
+
+$(OUTPUT): $(OBJS)
+	$(CC) -o $@ $(OBJS) $(LDFLAGS)
+
+clean:
+	rm $(OBJS)

@@ -1,0 +1,19 @@
+==============================================================================
+  TEST_CART  -- Runs cart-reader through self-test
+==============================================================================
+
+This utility attempts to find a Nudds/Moeller style cartridge reader 
+attached to a parallel port.  If it finds one, it will run the reader
+through internal-loopback self test.
+
+Note:  test_cart requires root privileges to run under Linux.
+
+
+TEST_CART is not normally built by default and is not part of the binary
+distribution.  To build it, from the jzIntv source directory type:
+
+Linux:
+    make -f Makefile.linux ../bin/test_cart
+
+Win32:
+    make -f Makefile.w32 ../bin/test_cart.exe

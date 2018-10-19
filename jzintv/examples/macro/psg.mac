@@ -1,0 +1,93 @@
+;; ======================================================================== ;;
+;;  PSG.MAC                                             Default Macro Set   ;;
+;;  Joseph Zbiciak <intvnut AT gmail.com>                                   ;;
+;;  These macros are hereby released into the Public Domain.                ;;
+;; ======================================================================== ;;
+
+    IF NOT DEFINED _PSG_MAC
+_PSG_MAC QEQU 1
+
+;; ======================================================================== ;;
+;;  Write 'r' to channel 'c', where c == 0 to 3.  Channel 3 is the          ;;
+;;  envelope period "channel".  MVOPSG0 writes to PSG #0 in the             ;;
+;;  Intellivision.  MVOPSG1 writes to PSG #1 in the ECS.                    ;;
+;; ======================================================================== ;;
+MACRO   MVOPSG0 r, c                    ; PSG inside Intellivision
+        MVO     %r%, $1F0 + %c%
+        SWAP    %r%
+        MVO     %r%, $1F4 + %c%
+ENDM
+
+MACRO   MVOPSG1 r, c                    ; PSG inside ECS
+        MVO     %r%, $0F0 + %c%
+        SWAP    %r%
+        MVO     %r%, $0F4 + %c%
+ENDM
+
+;; ======================================================================== ;;
+;;  Like MVOPSG0, MVOPSG1, but instead takes pointer value in register 'p'. ;;
+;;  note that 'p' is assumed to be an auto-incrementing pointer.  This      ;;
+;;  macro leaves 'p' pointing at the next channel.                          ;;
+;; ======================================================================== ;;
+MACRO   MVOPSG@ r, p
+        MVO@    %r%, %p%
+        SWAP    %r%
+        ADDI    #3,  %p%
+        MVO@    %r%, %p%
+        SUBI    #4,  %p%
+ENDM
+
+
+
+;; ======================================================================== ;;
+;;  Read channel 'c' of PSG #0 into 'r', where c == 0 to 3.                 ;;
+;; ======================================================================== ;;
+MACRO   MVIPSG0 c, r
+        MVI     $1F4 + %c%, %r%
+        SWAP    %r%
+        XOR     $1F0 + %c%, %r%
+ENDM
+
+;; ======================================================================== ;;
+;;  Read channel 'c' of PSG #1 into 'r', where c == 0 to 3.                 ;;
+;; ======================================================================== ;;
+MACRO   MVIPSG1 c, r
+        MVI     $0F4 + %c%, %r%
+        SWAP    %r%
+        XOR     $0F0 + %c%, %r%
+ENDM
+
+;; ======================================================================== ;;
+;;  Like MVIPSG0, MVIPSG1, but instead takes pointer value in register 'p'. ;;
+;;  note that 'p' is assumed to be an auto-incrementing pointer.  This      ;;
+;;  macro leaves 'p' pointing at the next channel.                          ;;
+;; ======================================================================== ;;
+MACRO   MVIPSG@ p, r
+        ADDI    #4,     %p%
+        MVI@    %p%,    %r%
+        SWAP    %r%
+        SUBI    #5,     %p%
+        XOR@    %p%,    %r%
+ENDM
+
+;; ======================================================================== ;;
+;;  Calculate a period from a frequency...                                  ;;
+;; ======================================================================== ;;
+MACRO   tone_period_NTSC(f)
+        (3579545/((32)*(%f%)))
+ENDM
+MACRO   tone_period_PAL(f)
+        (4000000/((32)*(%f%)))
+ENDM
+MACRO	envp_period_NTSC(f)
+        (3579545/((512)*(%f%)))
+ENDM
+MACRO   envp_period_PAL(f)
+        (4000000/((512)*(%f%)))
+ENDM
+
+    ENDI
+
+;; ======================================================================== ;;
+;;  End of File:  psg.mac                                                   ;;
+;; ======================================================================== ;;

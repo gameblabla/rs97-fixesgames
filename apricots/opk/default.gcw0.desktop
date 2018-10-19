@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=Apricots
+Comment=A 2D arcade plane shooter
+Exec=apricots.elf
+Terminal=false
+Type=Application
+StartupNotify=true
+Icon=apricots
+Categories=games;

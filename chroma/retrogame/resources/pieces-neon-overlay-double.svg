@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Sodipodi ("http://www.sodipodi.com/") -->
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   id="chroma pieces"
+   sodipodi:version="0.32"
+   width="900"
+   height="1500"
+   sodipodi:docname="pieces-neon-overlay-double.svg"
+   inkscape:version="0.46"
+   sodipodi:docbase="/chroma"
+   inkscape:output_extension="org.inkscape.output.svg.inkscape"
+   version="1.0">
+  <metadata
+     id="metadata2386">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title>Chroma Neon (overlay double)</dc:title>
+        <dc:creator>
+          <cc:Agent>
+            <dc:title>Copyright (C) 2010 Amf</dc:title>
+          </cc:Agent>
+        </dc:creator>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs716">
+    <inkscape:perspective
+       sodipodi:type="inkscape:persp3d"
+       inkscape:vp_x="0 : 650 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_z="700 : 650 : 1"
+       inkscape:persp3d-origin="350 : 433.33333 : 1"
+       id="perspective175" />
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     inkscape:zoom="0.46354778"
+     inkscape:cx="609.02851"
+     inkscape:cy="733.95164"
+     inkscape:window-width="1266"
+     inkscape:window-height="885"
+     inkscape:window-x="0"
+     inkscape:window-y="36"
+     inkscape:current-layer="chroma pieces"
+     width="700px"
+     height="1300px"
+     showgrid="false"
+     inkscape:showpageshadow="false" />
+  <g
+     id="bomb_red"
+     transform="matrix(0,1,-1,0,200,300)"
+     inkscape:export-filename="/tmp/chroma/resources/glow/bomb.png"
+     inkscape:export-xdpi="115.2"
+     inkscape:export-ydpi="115.2">
+    <rect
+       style="font-size:12px;fill:#ffffff;fill-opacity:0;fill-rule:evenodd;stroke-width:1pt"
+       id="rect5310"
+       width="100"
+       height="100"
+       x="0"
+       y="0" />
+    <path
+       style="font-size:12px;fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:5;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:0"
+       d="M 10,5 L 50,95 L 90,5 L 10,5 z"
+       id="path5312" />
+  </g>
+  <g
+     id="bomb_green"
+     transform="matrix(0,1,-1,0,400,300)"
+     inkscape:export-filename="/tmp/chroma/resources/glow/bomb.png"
+     inkscape:export-xdpi="115.2"
+     inkscape:export-ydpi="115.2">
+    <rect
+       style="font-size:12px;fill:#ffffff;fill-opacity:0;fill-rule:evenodd;stroke-width:1pt"
+       id="rect2433"
+       width="100"
+       height="100"
+       x="0"
+       y="0" />
+    <path
+       style="font-size:12px;fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:5;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:0"
+       d="M 10,5 L 50,95 L 90,5 L 10,5 z"
+       id="path2435" />
+  </g>
+  <g
+     id="bomb_blue"
+     transform="matrix(0,1,-1,0,600,300)"
+     inkscape:export-filename="/tmp/chroma/resources/glow/bomb.png"
+     inkscape:export-xdpi="115.2"
+     inkscape:export-ydpi="115.2">
+    <rect
+       style="font-size:12px;fill:#ffffff;fill-opacity:0;fill-rule:evenodd;stroke-width:1pt"
+       id="rect2443"
+       width="100"
+       height="100"
+       x="0"
+       y="0" />
+    <path
+       style="font-size:12px;fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:5;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:0"
+       d="M 10,5 L 50,95 L 90,5 L 10,5 z"
+       id="path2445" />
+  </g>
+</svg>

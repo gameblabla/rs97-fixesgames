@@ -1,0 +1,26 @@
+==============================================================================
+  TEST_HCIF  -- Test the INTV2PC Hand Controller Interface
+==============================================================================
+
+This utility polls an INTV2PC Hand Controller Interface, showing its
+current status onscreen.  This is useful for verifying that the HCIF
+is working correctly.
+
+Usage:
+
+    test_hcif [port# [rate]]
+
+where "port#" is 1, 2, or 3 (for LPT1:, LPT2: or LPT3:), and "rate" is
+a number from 1 to 100 which indicates the query rate in Hz.
+
+Note:  test_hcif requires root privileges to run under Linux.
+
+
+TEST_HCIF is not normally built by default and is not part of the binary
+distribution.  To build it, from the jzIntv source directory type:
+
+Linux:
+    make -f Makefile.linux ../bin/test_hcif
+
+Win32:
+    make -f Makefile.w32 ../bin/test_hcif.exe

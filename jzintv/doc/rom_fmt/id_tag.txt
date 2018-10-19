@@ -1,0 +1,784 @@
+Draft Specification for Intellivision ROM Metadata Tag Format.
+By Joseph Zbiciak
+13-Feb-2001
+v0.04
+
+==============================================================================
+ Motivation
+------------------------------------------------------------------------------
+
+ The primary motivation behind this specification is to unify the existing
+ methods for specifying Intellivision cartridge meta-data by providing a
+ set of tags that can be appended to a cartridge ROM image an interpreted
+ by various emulators and other Intellivision game-related tools.
+
+ This specification may end up serving very diverse interests, ranging from
+ simply allowing existing game ROMs to be catalogued efficiently, to adding
+ useful debugging and documenting material to new titles.  While I think it
+ is useful to limit the scope of this specification in its initial form, I
+ would like to ensure that the specification can easily adapt to future
+ uses without breaking applications that don't comprehend the extensions.
+
+==============================================================================
+ Prior Art / Starting Point
+------------------------------------------------------------------------------
+
+ At present, the existing emulators use a flat ROM to hold the cartridge
+ image.  This ROM is augmented with a separate configuration file which
+ contains memory map information, and occasionally some additional 
+ information that is usually specific to the INTVPC emulator that originated
+ the format.  This format is referred to within this document as the
+ "BIN+CFG" format.  The BIN+CFG format has some desirable properties,
+ and several undesirable properties.
+
+ Desirable properties:
+
+  -- The files are fairly compact.  Because the binary files only contain
+     the cartridge's ROM image, they're not overly large.  Their size
+     could be further reduced using an "8 + 2" encoding for 10-bit ROM
+     images, although this isn't seen as necessary.  (Also, it doesn't
+     work for 16-bit ROM images anyway.)
+
+  -- Most ROM images are fairly easy to load.  Because a large number of
+     Intellivision ROM images fit into a standard memory map, it is easy
+     to load the ROM image.  Often, a ROM does not require a CFG file.
+
+  -- It is the current de-facto standard.  All (or nearly all) cartridge 
+     images that are floating around are available in this format.  Also,
+     the cartridges on the "Intellivision Lives!" CD-ROM happen to be in
+     this format.
+
+ Undesirable properties:
+
+  -- The CFG files are annoying to parse.  Their format seems semi-
+     arbitrary, and more importantly, it's poorly documented.  
+
+  -- Most of the functionality of the CFG file is specific to its
+     progenitor, the INTVPC emulator.  (For example, the CFG file
+     supports directives for configuring input controls and the 
+     debugger window that are very specific to INTVPC.)
+
+  -- The BIN+CFG format provides no means for specifying additional
+     cartridge metadata aside from INTVPC configuration directives.
+     Notably, there is no way to specify Author/Publisher/Title/etc
+     for a cartridge in this format.
+
+  -- The BIN+CFG file is not a self-contained format.  The information
+     is needlessly spread between two files.
+
+  -- The format does not comprehend ECS-style bankswitching.
+
+  -- Not easily extendable (at least, the BIN part isn't).  The problem
+     here is that the existing emulators read the entire contents of the
+     .BIN file into the Intellivision memory map (since nothing tells
+     them not to), and so this makes adding meta-data to the .BIN file
+     a dicey affair.
+
+  -- The format is a dead-end.  Carl Mueller, Jr. is not publicly
+     maintaining the INTVPC emulator any longer (apparently, he 
+     lacks the rights to distribute it, as he sold them to the Blue
+     Sky Rangers), and so updating this format is not feasible.
+
+ There are existing alternatives.  When Chad Schell developed Intellicart,
+ he devised a different format for encoding Intellivision ROMs that
+ encapsulated much of the same information as the CFG file into a single
+ file with the ROM image itself.  Also, since the Intellicart supports
+ interesting features such as bankswitching and writable memory, the
+ image contains a fairly expressive map of memory attributes in the image.
+ Because Chad's initial software output files of this format with the
+ extension ".ROM", this is referred to as the ".ROM" (pronounced "dot-ROM")
+ format.
+
+ As with the BIN+CFG format, the .ROM format offers several desirable 
+ and undesirable properties:
+
+ Desirable properties:
+
+  -- Still fairly compact.  For my 4-Tris cartridge, the conversion from
+     BIN+CFG to .ROM added only 57 bytes onto the 16K file.  Very nice.
+
+  -- Very expressive.  The .ROM format specifies the memory map for the
+     cartridge, including the properties of each span in the memory map.
+     These properties are largely orthogonal to each other, but there 
+     are of course some combinations that don't make tons of sense.  
+     Defined properties include:
+
+      -- Readability
+      -- Writeability
+      -- Bankswitchability
+
+     It is possible to define a span of memory that's writeable, but not
+     readable, for instance.  (Great for shadowing system memory in the 
+     cartridge, say if you're writing a debugger or something.)
+
+  -- Checksummed.  The header information and the cartridge data are both
+     protected with a CRC-16 checksum that allows for a quick sanity check.
+
+  -- Self-contained.  All of the information is in a single file.
+
+  -- Easily identified.  The first few bytes of the .ROM file have
+     a easily recognized structure that makes positive identification of 
+     a .ROM file very easy.
+
+  -- Extendable.  It turns out, in its present implementation, the 
+     Intellicart ignores anything that's transmitted after the currently
+     defined file boundaries.  Because the header specifies the size of
+     the ROM data, the Intellicart knows when to stop listening.  That
+     means we can add information beyond the end of file.
+
+ Undesirable properties:
+
+  -- Still lacks a means for specifying additional metadata.
+
+  -- Slightly more complex to parse.  (Although, honestly, if an SX-52
+     microcontroller can parse it easily, so can you.)
+
+  -- The memory map granularity is limited to 2K-word boundaries (with
+     some additional flexibility that offers 256-word granularity in
+     special cases).  No existing cartridge requires finer granularity,
+     so this is not yet perceived as a problem.
+
+  -- This format also does not comprehend ECS-style bankswitching,
+     though it does offer its own flavor of bankswitching support.
+
+ Given the two sets of properties, we're inclined to use the Intellicart
+ .ROM format as our starting point.  The remainder of this document
+ assumes that the tags we're defining are appended to such a file.
+ The actual existing .ROM file format is described elsewhere.
+ This document could be considered an Annex to that file format.
+
+==============================================================================
+ Design Criteria
+------------------------------------------------------------------------------
+
+ In order to guide the design of the cartridge metadata tags, I'd like
+ to apply a set of criteria.  This list may morph over time as additional
+ considerations are applied.
+
+  1.  It must NOT disturb the normal functioning of the actual 
+      Intellivision ROM itself.  In speaking with Chad Schell about
+      the Intellicart ROM format, this can be accomplished by merely
+      appending our tag data at the end of the file.
+
+  2.  All aspects of the metadata tags must be fully optional.  That is,
+      an emulator must be able to read and understand the .ROM file
+      without interpreting the additional metadata.  Also, the emulator
+      must be able to pick-and-choose which elements of the metadata it
+      does wish to read.
+
+  3.  The specification must be readily extendable.  The extensions
+      must adhere to a general framework that allows other emulators to
+      safely ignore the extensions (as stated in #2 above).
+
+  4.  The tags should be relatively easy to parse.  We're not here to
+      make lives difficult.  :-)
+
+  5.  Fairly common metadata tags should be standardized up front to
+      make sure we have the greatest amount of common functionality
+      across all of the Intellivision emulators.
+
+  6.  The encoding should be fairly compact.  We don't want bloatware.
+
+  7.  There should be some way of checking tag integrity.  This will
+      help identify corrupted .ROMs.
+
+  8.  We should use reasonable limits on tag structure to minimize the
+      burden on the decoding code in the emulators.  The exact definition
+      of "reasonable limits" is still somewhat vague.  This bullet is
+      a more specific statement of the general theme of critereon #4.
+
+  9.  It should be fairly easy to add/remove tags at any given time.
+
+  10. It should be fairly easy to find tags in a .ROM file.
+
+==============================================================================
+ Desired Tags, and Related Discussion
+------------------------------------------------------------------------------
+
+ Here are some proposed pieces of metadata that might be useful to store 
+ with a cartridge.  These are roughly sorted by my own priorities for
+ inclusion.
+
+ High:
+  -- Company/Publisher  (eg. Mattel, Imagic, Atarisoft, Activision, CBS, etc)
+  -- Authors  (if known.  Eg. John Park Sohl wrote Astrosmash)
+  -- Title
+  -- Year
+  -- Comments
+  -- Flags (Supports/Requires/Incompatible With/Don't Care) for
+      -- ECS 
+      -- 4 Controllers (w/ECS)   (one Soccer Game works this way with ECS)
+      -- Intellivoice
+      -- Keyboard Component
+
+      (For example, PacMan would be listed as "Incompatible With"
+      ECS, as a real Inty crashes in this combination.  Astrosmash
+      might list "Supports ECS" because the "Sucky" feature works
+      with Astrosmash, but "Don't Care" under "4 Controllers".
+      "Jetson's Way With Words" would list "Requires ECS" and 
+      "Incompatible With 4 Controllers" (it *requires* the keyboard
+      to be attached to the ECS).)
+
+ Medium:
+  -- URL to webpage with more info (eg. link to BSR's site, or author's
+     page if 3rd party game)
+  -- Controller definitions (human readable)
+  -- Flags:
+      -- 1 player / 2 player / 1 or 2 player
+ 
+ Low:
+  -- Known Easter Egg "reset values"
+      -- # of known Easter Eggs for this cart.
+      -- Values to place on both controllers (for, say, first full second)
+         to trigger Easter Egg.
+      -- Descriptions of each easter egg.
+ 
+      (For example, I know of several easter eggs in old APh-written
+      games.  Not sure how to handle Keyboard Component Easter Eggs.
+      There are some which require holding a pattern of keys on the
+      keyboard!)
+ 
+  -- Documentation?  :-)
+  -- The kitchen sink
+ 
+
+ Kyle Davis has noted that some of these proposed tags might contain
+ fairly subjective data, and so may not be appropriate for inclusion in
+ the format.  For example, "Comments" may tend to be a dumping ground
+ for whatever the particular individual setting the tag happens to want
+ to put in that field.  I agree somewhat, but I'm not convinced I should
+ remove the tag.  I'm interested in discussion on this topic.
+
+ Kyle also notes that some of the other tags might contain ephemeral
+ information, and so may quickly get out of date.  For instance, tags
+ with URLs may get out of date as websites move, etc.  This one is another
+ difficult one to solve.  Still, I'd like some way for 3rd party cart
+ writers to put their contact info on a cartridge, even if the info is
+ ephemeral.  I wonder if this could be solved by assigning each cartridge
+ a "globally unique identifier" of some sort, and then separately building
+ a public database of known cartridges that this transient data could be
+ kept in.  We already sorta have this kind of identifier with the existing
+ lists of BIN-file CRCs that are floating around.  Perhaps we can use that
+ as a starting point?
+
+
+==============================================================================
+ Mechanics:  The File Format Itself
+------------------------------------------------------------------------------
+
+ This is my first stab at defining the actual file format.  Please take it
+ with a grain of salt.
+
+ Identification:
+
+ Because the metadata tags will be placed after the end of the cartridge
+ ROM data in the .ROM file, it would be useful to have a means to quickly
+ identify whether a .ROM file has metadata tags attached, and where those
+ tags start.  However, since the existing .ROM file can end with an 
+ arbitrary sequence of bits, this isn't easily done.  So, instead, it's
+ necessary to parse through the .ROM file head-first to find the data.
+
+ Fortunately, that's fairly simple.  The following C code defines
+ an algorithm for scanning through the .ROM file to find the starting
+ point where the tag information would be.  (I use nearly identical code
+ in jzIntv at present.)
+
+    /* ================================================================ */
+    /*  FIND_TAG_OFS_IN_ROM -- Finds file offset of metadata tags in    */
+    /*                         an extended .ROM file.                   */
+    /* ================================================================ */
+    long find_tags(FILE *rom_image)
+    {
+        int  num_segments, i, seg_lo, seg_hi;
+        long end_of_file, tag_offset;
+
+        /* ------------------------------------------------------------ */
+        /*  First, find the filesize by seeking to end-of-file.         */
+        /* ------------------------------------------------------------ */
+        fseek(rom_image, 0, SEEK_END);
+        end_of_file = ftell(rom_image);
+        rewind(rom_image);
+
+        /* ------------------------------------------------------------ */
+        /*  Now start parsing the .ROM file.                            */
+        /* ------------------------------------------------------------ */
+        if (fgetc(rom_image) != 0xA8) return -1;  /* not a .ROM file. */
+
+        /* ------------------------------------------------------------ */
+        /*  Get the number of ROM segments and sanity-check it.         */
+        /* ------------------------------------------------------------ */
+        num_segments = fgetc(rom_image);
+
+        if (num_segments < 1 || num_segments > 32)
+             return -1;  /* Invalid # of ROM segments. */
+
+        if (num_segments != (0xFF ^ fgetc(rom_image)))
+             return -1;  /* Header consistency check failed. */
+
+        /* ------------------------------------------------------------ */
+        /*  Skip over the the ROM segments.                             */
+        /* ------------------------------------------------------------ */
+        for (i = 0; i < num_segments; i++)
+        {
+            /* -------------------------------------------------------- */
+            /*  Read the memory range of this ROM segment and apply a   */
+            /*  simple sanity check to it.                              */
+            /* -------------------------------------------------------- */
+            seg_lo = fgetc(rom_image);
+            seg_hi = fgetc(rom_image) + 1;
+
+            if (seg_lo >= seg_hi)
+                 return -1;  /* Address range is backwards! */
+
+            /* -------------------------------------------------------- */
+            /*  The segment range is in terms of 256-word pages.  Each  */
+            /*  256-word page is 512 bytes.  Skip over the segment and  */
+            /*  CRC-16.                                                 */
+            /* -------------------------------------------------------- */
+            if (fseek(rom_image, (seg_hi - seg_lo) * 512 + 2, SEEK_CUR) < 0 ||
+                ftell(rom_image) > end_of_file - 50)
+                return -1;   /* Bad ROM segment or truncated file. */
+        }
+
+        /* ------------------------------------------------------------ */
+        /*  Now skip over the enable tables.  These have a well-defined */
+        /*  and fixed size.                                             */
+        /* ------------------------------------------------------------ */
+        fseek(rom_image, 50, seek_cur);
+
+        /* ------------------------------------------------------------ */
+        /* Let's see where we ended up in the file.                     */
+        /* ------------------------------------------------------------ */
+        tag_offset = ftell(rom_image);
+
+        /* ------------------------------------------------------------ */
+        /*  Return 0 if there are no tags, or the file offset if there  */
+        /*  are any tags to be found.                                   */
+        /* ------------------------------------------------------------ */
+        return tag_offset < end_of_file ? tag_offset : 0;
+    }
+  
+
+ Parsing:
+
+ The Metadata tags are structured as a series of separate tags.  The tags
+ themselves effectively form a linked list.  The order of the list is
+ unimportant. 
+
+ Each tag has a short variable-length header and 2 byte footer.  The first
+ one to four bytes are the tag length (not including header and footer).
+ The remaining byte is the tag type #.  (Type numbers are defined below.)
+ The CRC footer is placed at the end to make it easier to process the
+ file in a sequential fashion.  This also matches the flow that the
+ original .ROM file has.
+
+ General tag structure:
+
+                      +----------+
+                      |  length  |  Byte 0 throuh N-1
+                      +----------+
+                      |  type #  |  Byte N
+                      +----------+
+                      |   ....   |  Byte N + 1
+                      |   ....   |
+                      |   body   |
+                      |   ....   |
+                      |   ....   |  Byte "N + length"
+                      +----------+
+                      | CRC16 hi |  Byte "N + length + 1"
+                      +----------+
+                      | CRC16 lo |  Byte "N + length + 2"
+                      +----------+
+
+ The length is encoded as a variable-length field to make the coding
+ more dense.  This reduces overhead for short-length packets, while
+ still allowing for longer packets.  The following scheme encodes
+ the packet length:
+
+            7     6     5     4     3     2     1     0
+         +-----+-----+-----+-----+-----+-----+-----+-----+
+         | Num Bytes |      6 LSBs of Packet Length      |  Byte 0
+         +-----+-----+-----+-----+-----+-----+-----+-----+
+         |       Bits 13 through 6 of Packet Length      |  Byte 1
+         +-----+-----+-----+-----+-----+-----+-----+-----+
+         |      Bits 21 through 14 of Packet Length      |  Byte 2
+         +-----+-----+-----+-----+-----+-----+-----+-----+
+         |      Bits 29 through 21 of Packet Length      |  Byte 3
+         +-----+-----+-----+-----+-----+-----+-----+-----+
+
+ The "Num Bytes" field contains a two-bit code which says how many
+ bytes are present in the length field.  "00" means only one byte,
+ "01" means two, "10" means three, and "11" means four.  This permits
+ sizes ranging from 0 to approx 1 billion -- definitely suitable for
+ our needs.  The following C fragment can decode the length easily:
+
+       int nb, ofs, len;
+       unsigned char *img; 
+
+       /* ------------------------------------------------------- */
+       /*  "img" points to .ROM image in memory.                  */
+       /*  "ofs" is our current offset in that image.             */
+       /* ------------------------------------------------------- */
+       nb  = img[ofs] >> 6;        /*  Find # of bytes in length  */
+       len = img[ofs++] & 0x3F;    /*  Get 6 LSBs of length.      */
+       for (i = 0; i < nb; i++)    /*  Process additional bytes.  */
+           len |= img[ofs++] << (6 + i*8);
+
+ All content-carrying tags have the general structure shown above.
+ As stated above, the tags form a linked list.  The list is terminated
+ with a "NUL tag".  This tag is one byte long, and consists solely of
+ a the length byte set to 0.  There is no footer on the NUL tag.
+
+ Predefined Tag Types:
+
+ The .ROM metadata format defines a set of standardized tag ID numbers
+ to reduce file storage requirements and to encourage commonality across
+ the various emulators.   I've broken down the tags into several ranges
+ of values according to their general purpose.
+
+ - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+   0x00 - 0x1F:  General Game Information
+ - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+   0x00   "Ignore" Tag.
+
+          Tags of this type should be ignored ALWAYS.  This type may
+          be of use to .ROM file editors for deleting a tag in-place,
+          but is otherwise here as a placeholder.
+
+   0x01   Cartridge Title.     
+
+          Format:  ASCII string.  No terminating NUL, as length is 
+          specified by the header.
+
+   0x02   Cartridge Publisher.  
+
+          The body should start a single byte to specify the 
+          publisher from the set below:
+
+           0x00  -- Mattel Electronics
+           0x01  -- INTV Corporation
+           0x02  -- Imagic
+           0x03  -- Activision
+           0x04  -- Atarisoft
+           0x05  -- Coleco
+           0x06  -- CBS  
+           0x07  -- Parker Brothers
+           (others?)
+           0xFF  -- Other
+
+          If "Other" is set, an ASCII string for the publisher should
+          be provided immediately after.  Again, no terminating NUL, as
+          that is specified by the header.
+
+   0x03   Cartridge Development Credits
+
+          A list of varying-length records that contain the developers'
+          names and what they're responsible for.  The first byte of
+          the record contains a set of flags which denote what each
+          individual was responsible for:
+
+           0x01  -- Programming
+           0x02  -- Game artwork (graphics)
+           0x04  -- Music
+           0x08  -- Sound effects
+           0x10  -- Voice samples (voice acting)
+           0x20  -- Documentation
+           0x40  -- Game concept/design
+           0x80  -- Box / other artwork
+
+          After the flag byte is either a single "code" byte in the range
+          0x80 to 0xFF that specifies a name from a predefined table
+          of names, or an ASCIIZ string.  Names in the coded name table
+          would conceivably include the BSRs, the APh folks, the Activision 
+          folks, etc...  (I've compiled a separate list of 127 names that
+          I scoured from online resources.)
+
+   0x04   Related URLs / Author Contact Info.
+
+          Hmm... Should I have this or not?  One possible idea:
+
+          Pairs of ASCIIZ strings provide related URLs.  First string
+          in each pair is human-readable description of the URL.
+          Second string in each pair provides the actual URL itself.
+          URLs could be mailto's, http links, or whatever.  Most useful
+          for "indie" games such as 4-Tris.
+
+   0x05   Cartridge Release Date
+
+          This entry is one to three bytes long.  The first byte
+          is the release year, specified in years relative to 1900.
+          (This will hold us all the way to 2155 for new cartridges.)
+          The second byte, if present, is the month (1-12).  The third
+          byte, if present, is the day (1-31).
+
+   0x06   Game Attribute / Compatibility Flags
+
+          This tag is at least three bytes long.  The first two bytes are
+          divided into two-bit fields:
+
+                7   6   5   4   3   2   1   0
+              +---+---+---+---+---+---+---+---+
+              |  ECS  | 4CTRL | VOICE | KEYBD |    byte 0
+              +---+---+---+---+---+---+---+---+
+
+              +---+---+---+---+---+---+---+---+
+              | rsvd  | rsvd  | rsvd  | INTY2 |    byte 0
+              +---+---+---+---+---+---+---+---+
+
+          The defined fields correspond to the following peripherals:
+
+              ECS    -- The Entertainment Computer System.
+              4CTRL  -- The ECS configured with two additional controllers.
+              VOICE  -- The Intellivoice Speech Synthesizer
+              KEYBD  -- The Keyboard Component (not ECS).
+              INTY2  -- The Intellivision 2
+
+          Each field holds a two-bit code which specifies whether the
+          cartridge is compatible with or requires a particular 
+          peripheral.  The four codes are:
+
+              00 -- Don't Care.  The cartridge works with or without
+                    the peripheral.  The peripheral is ignored.
+
+              01 -- Supports.  The cartridge works with the peripheral
+                    and may provide extra functionality when used with
+                    this peripheral.  (eg.  original Mattel carts work
+                    with the "SUCKY" feature of ECS BASIC.)
+
+              10 -- Requires.  The cartridge will not work without this
+                    particular peripheral.
+
+              11 -- Incompatible.  The peripheral must not be used with
+                    this cartridge, because the two are not compatible.
+                    (For example, Pac-Man is incompatible with the ECS.
+                    Jetson's Way With Words is incompatible with 4-
+                    Controller mode on the ECS.)
+
+          The third byte specifies game attributes:
+
+                7    6    5    4    3    2    1    0
+                +----+----+----+----+----+----+----+----+
+                |rsvd|rsvd|rsvd|rsvd|EGGS|MULT| NPLAYER |
+                +----+----+----+----+----+----+----+----+
+
+              NPLAYER -- 00=1 player, 01=2 player, 10=1 or 2, 11=Up to 4
+              MULT    -- This cart is a multi-cart
+              EGGS    -- This cart has known easter-eggs (drop this?)
+
+          Additional flag bytes may be specified in the future.
+          Those additional bytes should be ignored by emulators that
+          don't expect them.
+  
+   0x07   Controller Bindings
+
+          This tag contains human-readable descriptions of the actions
+          bound to each key.  Altogether, there are 16 different inputs
+          defined on each controller:  The 12 keypad keys, the three
+          action buttons, and the direction disc.  Given four possible
+          controllers, there are 64 possible controller inputs.  
+          Additionally, functions may be bound to the 48 keys on the
+          ECS keyboard.
+ 
+          The various input sources are assigned to the following
+          ranges of coded values:
+
+              0x80 - 0x8F -- Controller 0 inputs
+              0x90 - 0x9F -- Controller 1 inputs
+              0xA0 - 0xAF -- Controller 2 inputs
+              0xB0 - 0xBF -- Controller 3 inputs
+              0xC0 - 0xCF -- Controller 0, 1, 2, or 3 inputs
+              0xD0 - 0xFF -- Keyboard keys.
+
+          The "0xC?" range is intended to mean "The game doesn't 
+          distinguish between controllers".
+
+          For the controllers, the 16 inputs are defined like so:
+
+              0x?0 - 0x?9 -- Keypad digits 0 through 9
+              0x?A        -- Clear
+              0x?B        -- Enter
+              0x?C        -- Top Action Buttons
+              0x?D        -- Lower Left Action Button
+              0x?E        -- Lower Right Action Button
+              0x?F        -- Direction Disc
+         
+          For the ECS keyboard, I need to construct a table.  For now,
+          I plan to just read off the keyboard layout left to right,
+          and assign codes linearly.  Perhaps a different mapping makes
+          more sense?
+
+          Because multiple keys may be bound to the same action,
+          the records are structured as lists of coded input sources
+          followed by an ASCII string.  Because the coded input
+          sources are all >= 0x80, no separators are needed.  
+
+          For example, suppose the DISC moves the player, and the
+          three Action Buttons fire.  Also, suppose the game makes no
+          distinction between the controllers.  This might be coded as 
+          follows:  (line-wrapped for clarity only)
+
+              +------+-----+-----+-----+-----+------+------+------+
+              | 0xCF | 'M' | 'O' | 'V' | 'E' | 0xCC | 0xCD | 0xCE | 
+              +------+-----+-----+-----+-----+------+------+------+
+         
+              +-----+-----+-----+-----+
+              | 'F' | 'I' | 'R' | 'E' |
+              +-----+-----+-----+-----+
+
+
+   0x08 - 0x1F  RESERVED
+
+ - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+   0x20 - 0x3F:  Debugging / Development Related Information
+ - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+   0x20   Symbol Table 
+
+          This tag contains at least a fragment of the symbol table
+          for the ROM image.  This information could be used by a 
+          debugger to show the names of locations that the programmer
+          used when writing his program.  The assembler or other tool
+          should append this record.
+
+          The symbol table is fairly straightforward, consisting of
+          records in the following format:
+
+                       +------------------+
+                       |  Addr (Hi Half)  |  Byte 0
+                       +------------------+
+                       |  Addr (Lo Half)  |  Byte 1
+                       +------------------+
+                       |      ....        |  Byte 2
+                       |  ASCIIZ String   |   ...  
+                       |      ....        |  Byte N - 1
+                       +------------------+
+
+          No additional header or other information is provided.
+
+   0x21   Fine-Grain Memory Attribute Table
+
+          Because the Intellivision makes no real distinction between
+          what's code and what's data, it's useful to have a means of
+          denoting what's what within the ROM.  Again, this is primarily
+          of use to debuggers and disassemblers, so that they correctly
+          display code and data.
+
+          Memory attributes are recorded with word granularity in this
+          section.  Because many contiguous words may have the same 
+          attribute, these attributes are encoded as spans.  Each span
+          is four bytes long, and has the following format:
+
+                       +------------------+
+                       |  Addr (Hi Half)  |  Byte 0
+                       +------------------+
+                       |  Addr (Lo Half)  |  Byte 1
+                       +---------+--------+
+                       |  FLAGS  | Length |  Byte 2
+                       +---------+--------+
+                       |      Length      |  Byte 3
+                       +------------------+
+
+          The length is stored as a 12-bit quantity, with the upper four
+          bits kept in the lower four bits of Byte 2.  The actual
+          attribute flags are stored in the upper four bits of Byte 2.
+
+          The following four attributes are tracked:
+
+                       0x10   --   Code 
+                       0x20   --   Data
+                       0x40   --   Double-Byte Data
+                       0x80   --   ASCII String
+
+          The list of spans is terminated with a record of all-zeros.
+
+          Note that spans marked ASCII string may include some words
+          that fall outside the normal printable-ASCII range.  Emulators
+          interpreting this tag should consider such words as "Data"
+          when displaying the span.  This allows ASCII strings with
+          "special characters" to be marked as a single span, as it is
+          likely that's how they'll be specified in the original source.
+
+
+   0x22   Line-number Mapping Table
+
+          This table maps spans of addresses back to lines in an assembler
+          listing file.  I haven't decided what I want the exact format
+          of this section to be, although I think it could be a fairly
+          useful tool.  I'm still thinking about the format of this,
+          but I'm definitely leaving this in.
+
+   0x23 - 0x3F  RESERVED
+
+ - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+   0x40 - 0xDF:  Unassigned / RESERVED
+ - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+ - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+   0xF0 - 0xFF:  Extended Tags.
+ - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+   0xF0 - 0xFF  Extended tags
+
+          The extended tags have an additional level of header to allow
+          other programs to at least identify the name of the tag, even
+          if they can not use the contents.  The body of the extended tag
+          starts off with a 4 character Creator Code that specifies the
+          "owner" of the tag.  The Creator Code is intended to be a short
+          fixed-length ASCII string that identifies the creator.
+
+          All-uppercase Creator Codes are to be assigned and controlled
+          by this specification.  Mixed-cases, lowercase and non-ASCII
+          Creator Codes are outside the control of this specification.
+
+          It is up to the individual creators to specify the contents
+          and structure of their extended tags.  
+
+          A total of 16 extended tags are provided, and the individual
+          creators are allowed to assign whatever meaning they like to
+          their own extended tags.
+
+          Currently assigned creators:
+
+              BSKY      -- Intellivision Productions, and their various emus.
+              INPC      -- Carl Mueller Jr. -- IntvPC
+              INWN      -- John Dullea      -- IntvWin
+              INDS      -- John Dullea      -- IntvDOS
+              BLIS      -- Kyle Davis       -- Bliss
+              JZIN      -- Joseph Zbiciak   -- jzIntv
+              MESS      -- Frank Palazzolo  -- M.E.S.S. Intellivision driver
+              CART      -- Chad Schell      -- Intellicart
+
+==============================================================================
+ Closed (?) Issues
+------------------------------------------------------------------------------
+
+ -- Is a "list of tags" format the right way, or should I go for more of
+    as "Table of Contents"/"Central Directory" approach a'la Zip?
+
+    DECISION:  Keep the list-of-tags approach for now.
+
+ -- Should I assign ranges of tags to various emulators, or leave that
+    to the Extended Tags?  These tags could be useful for emulator-specific
+    configuration, or for storing user's preferences (eg. keybindings, etc.)
+
+    DECISION:  Leave this in the Extended Tag 0xF0, and add an additional
+    4-byte "Creator Code".  All-upper creator-codes are controlled by
+    the "Central Metadata Tag Authority", which is presently me.  :-)
+    Any mixed-case or lowercase creator codes are not controlled by
+    this specification.
+
+ -- And should I drop the "Related Info" tags?
+
+    DECISION:  Kyle doesn't like it, but enough other people do.  It stays.
+
+==============================================================================
+ Open Issues
+------------------------------------------------------------------------------
+
+ -- What about tags for documentation, etc?  What format?  Text, RTF, HTML,
+    MS-Word DOC?
+
+ -- Zip-style compression for tags?
+
+ -- Unicode instead of ASCIIZ?
+
+ -- Tags for overlays, box scans, etc?
+

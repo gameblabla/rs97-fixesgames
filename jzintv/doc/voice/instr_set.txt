@@ -1,0 +1,677 @@
+==============================================================================
+ SP0256 Instruction Set
+ Revised:  22-Mar-2000, J. Zbiciak
+ Reverse Engineered by Joe Zbiciak and Frank Palazzolo.
+==============================================================================
+
+------------------------------------------------------------------------------
+ General Notes:
+------------------------------------------------------------------------------
+
+ -- On instructions that accept a repeat count, a repeat count of
+    ZERO causes the instruction to NOT EXECUTE, which means that
+    NO DATA BLOCK FOLLOWS THE INSTRUCTION in that case.  (The
+    disassembler currently does not handle this case.)
+
+ -- As a matter of convention in this document, bits are packed 
+    into bytes left-to-right, with the leftmost bit going in the 
+    MSB of the first byte, and the LSB of the first byte being
+    logically adjacent to the MSB of the second byte.  This is likely
+    backwards from how the hardware looks at it, but it is the
+    most natural for a human interpreting the data, as it reads
+    from left-to-right.
+ 
+ -- Most bit fields, except those which specify branch targets, 
+    are bit reversed, meaning the left-most bit is the LSB.
+    
+ -- Bit fields narrower than 8 bits are "MSB justified" unless 
+    specified otherwise, meaning that the least significant bits 
+    are the ones that are missing.  These LSBs are filled with
+    zeros.
+
+
+Key:
+
+ AAAAAAAA    Amplitude bits. The 3 rightmost bits are the exponent.
+             The exponent determines what power of 2 is applied to
+             the lower 5 bits.
+
+ PPPPPPPP    Pitch period.  When set to 0, the impulse switches to
+             random noise.  For timing purposes, noise and silence
+             have an effective period equivalent to period==64.
+
+ BBBBBBBS    B coefficient data.  The 'S' is the sign bit, if present.  If
+             there is no 'S' on a given field, the sign is assumed to be 0.
+
+ FFFFFFFS    F coefficient data.
+
+ RRRR        Repeat bits.  On Opcode 1000, the repeat bits go to the two
+             MSBs of the repeat count for the NEXT instruction.  On all
+             other instructions, the repeat bits go to the four LSBs of
+             the repeat count for THAT instruction.
+
+ MM          Mode bits.  These are set by Opcode 1000, and they control
+             the data format for a number of other instructions.
+
+ LLLLLLLL    Byte address for a branch target.  Branch targets are 16
+             bits long, with the lower 12 bits being specified with
+             the JMP/JSR instruction, and the upper 4 bits being provided
+             from the PAGE register.  The PAGE register is modified via
+             the SETPAGE instruction, Opcode 0000.
+
+ aaaaa       Amplitude delta.  (unsigned)
+ ppppp       Pitch delta.      (unsigned)
+
+ aaas        Amplitude delta.  (2s complement)
+ ppps        Pitch delta.      (2s complement)
+
+ bbbs fffs   Filter coefficient deltas.  (2s complement)
+
+
+For reference, each 2nd order filter section looks like so.  Note
+that "1/Z" represents a single unit delay.  Altogether, there are
+6 such stages.  The exact ordering of the stages with respect to
+the coefficient data formats is not yet known, although the
+order appears to be "4, 2, 0, 5, 3, 1", meaning that "coefficient
+pair 0" is used by "stage 4",  etc..., where "stage 0" is the
+first stage processed, and "stage 5" is the last stage processed.
+
+
+          ---->(+)-------->(+)----------+------->
+                ^           ^           |
+                |           |           |
+                |           |           |
+               [B]        [2*F]         |
+                ^           ^           |
+                |           |           |
+                |           |           |
+                +---[1/Z]<--+---[1/Z]<--+
+
+------------------------------------------------------------------------------
+ Instruction Set Quick Reference
+------------------------------------------------------------------------------
+
+ OPCODE 0000:  RTS/SETPAGE  Return OR set the PAGE register
+ OPCODE 0001:  LOADALL      Load All Parameters
+ OPCODE 0010:  LOAD_2       Load Pitch, Ampl, Coeffs, and Interp.
+ OPCODE 0011:  SETMSB_3     Load Pitch, Ampl, MSBs of 3 Coeffs, and Interp
+ OPCODE 0100:  LOAD_4       Load Pitch, Amplitude, Coeffs (2 or 3 stages)
+ OPCODE 0101:  SETMSB_5     Load Pitch, Amplitude, and MSBs of 3 Coeffs
+ OPCODE 0110:  SETMSB_6     Load Amplitude and MSBs of 2 or 3 Coeffs
+ OPCODE 0111:  JMP          Jump to 12-bit/16-bit Absolute Address
+ OPCODE 1000:  SETMODE      Set the Mode bits and Repeat MSBs
+ OPCODE 1001:  DELTA_9      Delta update Amplitude, Pitch and 5 or 6 Coeffs
+ OPCODE 1010:  SETMSB_A     Load Amplitude and MSBs of 3 Coeffs
+ OPCODE 1011:  JSR          Jump to Subroutine
+ OPCODE 1100:  LOAD_C       Load Pitch, Amplitude, Coeffs (5 or 6 stages)
+ OPCODE 1101:  DELTA_D      Delta update Amplitude, Pitch and 2 or 3 Coeffs
+ OPCODE 1110:  LOAD_E       Load Pitch, Amplitude
+ OPCODE 1111:  PAUSE        Silent pause
+
+------------------------------------------------------------------------------
+ OPCODE 0000:  RTS/SETPAGE  Return OR set the PAGE register
+------------------------------------------------------------------------------
+
+  Format:
+    LLLL 0000
+
+  Action:
+    It slices, it dices, it juliennes!  It's a floor wax!  It's a
+    dessert topping!  It's two instructions in one!
+
+    SETPAGE:
+
+    When LLLL is non-zero, this instruction sets the PAGE register to the
+    value in LLLL.  The PAGE register determines which 4K page (eg. the
+    upper four bits of the address for) the next JMP or JSR will jump to.
+    (Note that address loads via ALD appear to ignore PAGE, and
+    set the four MSBs to $1000.  However, ALDs do not modify PAGE,
+    so subsequent JMP/JSR instructions will jump according to the
+    value in PAGE.)
+
+    The PAGE register retains its setting until the next SETPAGE
+    is encountered.  Valid values for PAGE are in the range $1..$F.
+    The RESROM starts at address $1000, and no code exists below
+    that address.
+
+    RTS:
+
+    When LLLL is zero, this opcode causes the microcontroller to pop
+    the PC stack into the PC, and resume execution there.  The contents
+    of the stack are replaced with 0x0xxx.  If the address that was
+    popped was itself 0x0xxx, execution Halts, pending a new address
+    write via ALD.  (Of course, if an address was previously written
+    via ALD and is pending, control transfers to that address right
+    away.)
+
+
+------------------------------------------------------------------------------
+ OPCODE 0001:  LOADALL      Load All Parameters
+------------------------------------------------------------------------------
+
+  Format:
+    RRRR 0001 [data]
+
+  Data formats, by mode prefix:
+    Mode x0: AAAAAAAA PPPPPPPP
+             BBBBBBBS FFFFFFFS   (coeff pair 0)
+             BBBBBBBS FFFFFFFS   (coeff pair 1)
+             BBBBBBBS FFFFFFFS   (coeff pair 2)
+             BBBBBBBS FFFFFFFS   (coeff pair 3)
+             BBBBBBBS FFFFFFFS   (coeff pair 4)
+             BBBBBBBS FFFFFFFS   (coeff pair 5)
+
+    Mode x1: AAAAAAAA PPPPPPPP
+             BBBBBBBS FFFFFFFS   (coeff pair 0)
+             BBBBBBBS FFFFFFFS   (coeff pair 1)
+             BBBBBBBS FFFFFFFS   (coeff pair 2)
+             BBBBBBBS FFFFFFFS   (coeff pair 3)
+             BBBBBBBS FFFFFFFS   (coeff pair 4)
+             BBBBBBBS FFFFFFFS   (coeff pair 5)
+             aaaaaaas ppppppps   (pitch and amplitude interpolation)
+
+  Action:
+    Loads amplitude, pitch, and all coefficient pairs at full 8-bit
+    precision.
+
+  Notes:
+    -- The pitch and amplitude deltas that are available in Mode 01 and 11
+       are applied EVERY pitch period, not just once.  Wraparound is allowed
+       to occur.  If the Pitch goes to zero, the periodic excitation
+       switches to noise.
+
+------------------------------------------------------------------------------
+ OPCODE 0010:  LOAD_2       Load Pitch, Ampl, Coeffs, and Interp.
+------------------------------------------------------------------------------
+
+  Format:
+    RRRR 0010 [data]
+
+  Data formats, by prefix:
+    Mode 00: AAAAAA   PPPPPPPP
+             BBB      FFFFS      (coeff pair 0)
+             BBB      FFFFS      (coeff pair 1)
+             BBB      FFFFS      (coeff pair 2)
+             BBBB     FFFFFS     (coeff pair 3)
+             BBBBBBS  FFFFFS     (coeff pair 4)
+             aaaaa    ppppp      (Interpolation register LSBs)
+
+    Mode 01: AAAAAA   PPPPPPPP
+             BBB      FFFFS      (coeff pair 0)
+             BBB      FFFFS      (coeff pair 1)
+             BBB      FFFFS      (coeff pair 2)
+             BBBB     FFFFFS     (coeff pair 3)
+             BBBBBBS  FFFFFS     (coeff pair 4)
+             BBBBBBBS FFFFFFFS   (coeff pair 5)
+             aaaaa    ppppp      (Interpolation register LSBs)
+
+    Mode 10: AAAAAA   PPPPPPPP
+             BBBBBB   FFFFFS     (coeff pair 0)
+             BBBBBB   FFFFFS     (coeff pair 1)
+             BBBBBB   FFFFFS     (coeff pair 2)
+             BBBBBB   FFFFFFS    (coeff pair 3)
+             BBBBBBBS FFFFFFFS   (coeff pair 4)
+             aaaaa    ppppp      (Interpolation register LSBs)
+
+    Mode 11: AAAAAA   PPPPPPPP
+             BBBBBB   FFFFFS     (coeff pair 0)
+             BBBBBB   FFFFFS     (coeff pair 1)
+             BBBBBB   FFFFFS     (coeff pair 2)
+             BBBBBB   FFFFFFS    (coeff pair 3)
+             BBBBBBBS FFFFFFFS   (coeff pair 4)
+             BBBBBBBS FFFFFFFS   (coeff pair 5)
+             aaaaa    ppppp      (Interpolation register LSBs)
+
+  Action:
+    Loads new amplitude and pitch parameters.  Also loads a set of new
+    filter coefficients, setting the unspecified coefficients to zero.
+    The exact combination and precision of filter coefficients that are
+    loaded is determined by which prefix is used.  Opcode 1000 provides
+    the prefix bits.
+
+  Notes:
+    -- For all Modes, the Sign bit for B0, B1, B2 and B3 (the B coeffs for
+       pair 0 thru pair 3) has an implied value of 0.
+
+    -- This opcode is identical to Opcode C, except that it also loads
+       new values into the Amplitude and Pitch Interpolation Registers.
+
+
+------------------------------------------------------------------------------
+ OPCODE 0011:  SETMSB_3     Load Pitch, Ampl, MSBs of 3 Coeffs, and Interp
+------------------------------------------------------------------------------
+
+  Format:
+    RRRR 0011 [data]
+
+  Data formats, by mode prefix:
+    Mode 0x: AAAAAA
+             FFFFS               (New F0 MSBs)
+             FFFFS               (New F1 MSBs)
+             FFFFS               (New F2 MSBs)
+             aaaaa    ppppp      (Interpolation register LSBs)
+
+    Mode 1x: AAAAAA
+             FFFFFS              (New F0 MSBs)
+             FFFFFS              (New F1 MSBs)
+             FFFFFS              (New F2 MSBs)
+             aaaaa    ppppp      (Interpolation register LSBs)
+
+  Action:
+    Loads new amplitude.  Also updates the MSBs of a set of new filter
+    coefficients.  The Mode prefix bits controls the update process as
+    noted below.  Opcode 1000 profides the prefix bits.
+
+  Notes:
+    -- When Mode is 00 or 10, the parameter load sets the 5 or 6
+       MSBs of F0, F1, and F2 from the data provided.  F5 and B5
+       are set to all 0s.  All other coefficient bits are unaffected.
+
+    -- When Mode is 01 or 11, the parameter load sets the 5 or 6 MSBs
+       of F0, F1, and F2 from the data provided.  F5 and B5 are
+       not modified.  All other coefficient bits are unaffected.
+
+    -- This opcode is identical to Opcodes 5 and A, except that is also
+       includes the Interpolation registers, and like Opcode A, it
+       does not set the pitch register.
+
+------------------------------------------------------------------------------
+ OPCODE 0100:  LOAD_4       Load Pitch, Amplitude, Coeffs (2 or 3 stages)
+------------------------------------------------------------------------------
+
+  Formats:
+    RRRR 0100 [data]
+
+  Data formats, by prefix:
+    Mode 00: AAAAAA   PPPPPPPP
+             BBBB     FFFFFS     (coeff pair 3)
+             BBBBBBS  FFFFFS     (coeff pair 4)
+
+    Mode 01: AAAAAA   PPPPPPPP
+             BBBB     FFFFFS     (coeff pair 3)
+             BBBBBBS  FFFFFS     (coeff pair 4)
+             BBBBBBBS FFFFFFFS   (coeff pair 5)
+
+    Mode 10: AAAAAA   PPPPPPPP
+             BBBBBB   FFFFFFS    (coeff pair 3)
+             BBBBBBBS FFFFFFFS   (coeff pair 4)
+
+    Mode 11: AAAAAA   PPPPPPPP
+             BBBBBB   FFFFFFS    (coeff pair 3)
+             BBBBBBBS FFFFFFFS   (coeff pair 4)
+             BBBBBBBS FFFFFFFS   (coeff pair 5)
+
+  Action:
+    Loads new amplitude and pitch parameters.  Also loads a set of new
+    filter coefficients, setting the unspecified coefficients to 0.
+    The exact combination and precision of filter coefficients that are
+    loaded is determined by which prefix is used.  Opcode 1000 profides
+    the prefix bits.
+
+  Notes:
+    -- For all modes, the Sign bit for B0 (the B coefficient for
+       pair 0) has an implied value of 0.
+
+
+------------------------------------------------------------------------------
+ OPCODE 0101:  SETMSB_5     Load Pitch, Amplitude, and MSBs of 3 Coeffs
+------------------------------------------------------------------------------
+
+  Formats:
+    RRRR 0101 [data]
+
+  Data formats, by mode prefix:
+    Mode 0x: AAAAAA PPPPPPPP
+             FFFFS               (New F0 MSBs)
+             FFFFS               (New F1 MSBs)
+             FFFFS               (New F2 MSBs)
+
+    Mode 1x: AAAAAA PPPPPPPP
+             FFFFFS              (New F0 MSBs)
+             FFFFFS              (New F1 MSBs)
+             FFFFFS              (New F2 MSBs)
+
+  Action:
+    Loads new amplitude and pitch parameters.  Also updates the MSBs of
+    a set of new filter coefficients.  The Mode prefix bits controls
+    the update process as noted below.  Opcode 1000 profides the
+    prefix bits.
+
+  Notes:
+    -- When Mode is 00 or 10, the parameter load sets the 5 or 6
+       MSBs of F0, F1, and F2 from the data provided.  F5 and B5
+       are set to all 0s.  All other coefficient bits are unaffected.
+
+    -- When Mode is 01 or 11, the parameter load sets the 5 or 6 MSBs
+       of F0, F1, and F2 from the data provided.  F5 and B5 are
+       not modified.  All other coefficient bits are unaffected.
+
+    -- This opcode is identical to Opcodes 3 and A, only Pitch IS modified,
+       and unlike Opcode 3, the interpolation registers are not set.
+
+------------------------------------------------------------------------------
+ OPCODE 0110:  SETMSB_6     Load Amplitude and MSBs of 2 or 3 Coeffs
+------------------------------------------------------------------------------
+
+  Formats:
+    RRRR 0110 [data]
+
+  Data formats, by mode prefix:
+    Mode 00: AAAAAA
+             FFFFFS              (New F3 6 MSBs)
+             FFFFFS              (New F4 6 MSBs)
+
+    Mode 01: AAAAAA
+             FFFFFS              (New F3 6 MSBs)
+             FFFFFS              (New F4 6 MSBs)
+             FFFFFFFS            (New F5 8 MSBs)
+
+    Mode 10: AAAAAA
+             FFFFFFS             (New F3 7 MSBs)
+             FFFFFFFS            (New F4 8 MSBs)
+
+    Mode 11: AAAAAA
+             FFFFFFS             (New F3 7 MSBs)
+             FFFFFFFS            (New F4 8 MSBs)
+             FFFFFFFS            (New F5 8 MSBs)
+
+  Action:
+    Loads new amplitude and pitch parameters.  Also updates the MSBs of
+    a set of new filter coefficients.  The Mode prefix bits controls
+    the update process as noted below.  Opcode 1000 profides the
+    prefix bits.
+
+  Notes:
+    -- In Modes 00 and 10, coefficients B5 and F5 are set to zero.
+
+    -- In Modes 01 and 11, coefficient F5 is set from the last 8 bits
+       of the data provided, and B5 is not modified.
+
+    -- In Modes 00 and 01, the 6 MSBs of F3 and F4 are set from the
+       first 12 bits provided.  The other bits of F3 and F4 are not
+       modified.
+
+    -- In Modes 10 and 11, the 7 MSBs of F3 and the 8 MSBs of F4 are
+       set from the first 12 bits provided.  The LSB of F3 is not
+       modified.
+
+-----------------------------------------------------------------------------
+ OPCODE 0111:  JMP          Jump to 12-bit/16-bit Absolute Address
+------------------------------------------------------------------------------
+
+  Format:
+    LLLL 0111 LLLLLLLL
+
+  Action:
+    Performs a jump to the specified 12-bit address, where the four MSBs
+    are specified by the PAGE register.  At power-up, the PAGE register
+    defaults to the value 0001.  Its value may be set using the SETPAGE
+    instruction, Opcode 0000.
+
+------------------------------------------------------------------------------
+ OPCODE 1000:  SETMODE      Set the Mode bits and Repeat MSBs
+------------------------------------------------------------------------------
+
+  Format:
+    RRMM 1000
+
+  Action:
+    Serves as a prefix to many other instructions.  The upper two
+    bits of the immediate constant are loaded into the upper two bits
+    of the 6-bit repeat register.  These two bits combine with the
+    four LSBs that are provided by most parameter-load instructions
+    to provide longer repetition periods.
+
+    The two MM bits select the data format / coefficient count for
+    many of the parameter load instructions.
+
+    This opcode is known to have NO effect on JMP/JSR instructions
+    and JMP/JSR instructions have no effect on it.
+
+    NOTE:  The MM bits are "sticky", meaning that they stay in effect
+    until the next Opcode 1000 instruction!  The RR bits are not, however.
+
+------------------------------------------------------------------------------
+ OPCODE 1001:  DELTA_9      Delta update Amplitude, Pitch and 5 or 6 Coeffs
+------------------------------------------------------------------------------
+
+  Format:
+    RRRR 0010 [data]
+
+  Data formats, by prefix:
+    Mode 00: aaas     pppps      (Amplitude 6 MSBs, Pitch LSBs.)
+             bbs      ffs        (B0 4 MSBs, F0 5 MSBs.)
+             bbs      ffs        (B1 4 MSBs, F1 5 MSBs.)
+             bbs      ffs        (B2 4 MSBs, F2 5 MSBs.)
+             bbs      fffs       (B3 5 MSBs, F3 6 MSBs.)
+             bbbs     fffs       (B4 6 MSBs, F4 6 MSBs.)
+
+    Mode 01: aaas     pppps      (Amplitude 6 MSBs, Pitch LSBs.)
+             bbs      ffs        (B0 4 MSBs, F0 5 MSBs.)
+             bbs      ffs        (B1 4 MSBs, F1 5 MSBs.)
+             bbs      ffs        (B2 4 MSBs, F2 5 MSBs.)
+             bbs      fffs       (B3 5 MSBs, F3 6 MSBs.)
+             bbbs     fffs       (B4 6 MSBs, F4 6 MSBs.)
+             bbbbs    ffffs      (B5 8 MSBs, F5 8 MSBs.)
+
+    Mode 10: aaas     pppps      (Amplitude 6 MSBs, Pitch LSBs.)
+             bbbs     fffs       (B0 7 MSBs, F0 6 MSBs.)
+             bbbs     fffs       (B1 7 MSBs, F1 6 MSBs.)
+             bbbs     fffs       (B2 7 MSBs, F2 6 MSBs.)
+             bbbs     ffffs      (B3 7 MSBs, F3 7 MSBs.)
+             bbbbs    ffffs      (B4 8 MSBs, F4 8 MSBs.)
+
+    Mode 11: aaas     pppps      (Amplitude 6 MSBs, Pitch LSBs.)
+             bbbs     fffs       (B0 7 MSBs, F0 6 MSBs.)
+             bbbs     fffs       (B1 7 MSBs, F1 6 MSBs.)
+             bbbs     fffs       (B2 7 MSBs, F2 6 MSBs.)
+             bbbs     ffffs      (B3 7 MSBs, F3 7 MSBs.)
+             bbbbs    ffffs      (B4 8 MSBs, F4 8 MSBs.)
+             bbbbs    ffffs      (B5 8 MSBs, F5 8 MSBs.)
+
+  Action:
+    Performs a delta update, adding small 2s complement numbers to
+    a series of coefficients.  The 2s complement updates for the
+    various filter coefficients only update some of the MSBs -- the
+    LSBs are unaffected.  The exact bits which are updated are noted
+    above.
+
+  Notes:
+    -- The delta update is applied exactly once, as long as the repeat
+       count is at least 1.  If the repeat count is greater than 1,
+       the updated value is held through the repeat period, but the
+       delta update is not reapplied.
+
+    -- The delta updates are applied to the 8-bit encoded forms of
+       the coefficients, not the 10-bit decoded forms.
+
+    -- Normal 2s complement arithmetic is performed, and no protection
+       is provided against overflow.  Adding 1 to the largest value
+       for a bit field wraps around to the smallest value for that
+       bitfield.
+
+    -- The update to the amplitude register is a normal 2s complement
+       update to the ENTIRE register.  This means that any carry/borrow
+       from the mantissa will change the value of the exponent.  The
+       update doesn't know anything about the format of that register.
+
+------------------------------------------------------------------------------
+ OPCODE 1010:  SETMSB_A     Load Amplitude and MSBs of 3 Coeffs
+------------------------------------------------------------------------------
+
+  Data formats, by mode prefix:
+    Mode 0x: AAAAAA
+             FFFFS               (New F0 MSBs)
+             FFFFS               (New F1 MSBs)
+             FFFFS               (New F2 MSBs)
+
+    Mode 1x: AAAAAA
+             FFFFFS              (New F0 MSBs)
+             FFFFFS              (New F1 MSBs)
+             FFFFFS              (New F2 MSBs)
+
+  Action:
+    Loads new amplitude.  Also updates the MSBs of a set of new filter
+    coefficients.  The Mode prefix bits controls the update process as
+    noted below.  Opcode 1000 profides the prefix bits.
+
+  Notes:
+    -- When Mode is 00 or 10, the parameter load sets the 5 or 6
+       MSBs of F0, F1, and F2 from the data provided.  F5 and B5
+       are set to all 0s.  All other coefficient bits are unaffected.
+
+    -- When Mode is 01 or 11, the parameter load sets the 5 or 6 MSBs
+       of F0, F1, and F2 from the data provided.  F5 and B5 are
+       not modified.  All other coefficient bits are unaffected.
+
+    -- This opcode is identical to Opcodes 3 and 5, only Pitch is NOT
+       modified, and the interpolation registers are not set.
+
+
+------------------------------------------------------------------------------
+ OPCODE 1011:  JSR          Jump to Subroutine
+------------------------------------------------------------------------------
+
+  Format:
+    LLLL 1011 LLLLLLLL
+
+  Action:
+    Performs a jump to the specified 12-bit address, where the four MSBs
+    are specified by the PAGE register.  At power-up, the PAGE register
+    defaults to the value 0001.  Its value may be set using the SETPAGE
+    instruction, Opcode 0000.
+
+    This variant pushes the byte-aligned return address onto the
+    PC stack.  The previous contents of the PC stack are lost, as the
+    PC stack is only one entry deep.
+
+------------------------------------------------------------------------------
+ OPCODE 1100:  LOAD_C       Load Pitch, Amplitude, Coeffs (5 or 6 stages)
+------------------------------------------------------------------------------
+
+  Formats:
+    RRRR 1100 [data]
+
+  Data formats, by mode prefix:
+    Mode 00: AAAAAA   PPPPPPPP
+             BBB      FFFFS      (coeff pair 0)
+             BBB      FFFFS      (coeff pair 1)
+             BBB      FFFFS      (coeff pair 2)
+             BBBB     FFFFFS     (coeff pair 3)
+             BBBBBBS  FFFFFS     (coeff pair 4)
+
+    Mode 01: AAAAAA   PPPPPPPP
+             BBB      FFFFS      (coeff pair 0)
+             BBB      FFFFS      (coeff pair 1)
+             BBB      FFFFS      (coeff pair 2)
+             BBBB     FFFFFS     (coeff pair 3)
+             BBBBBBS  FFFFFS     (coeff pair 4)
+             BBBBBBBS FFFFFFFS   (coeff pair 5)
+
+    Mode 10: AAAAAA   PPPPPPPP
+             BBBBBB   FFFFFS     (coeff pair 0)
+             BBBBBB   FFFFFS     (coeff pair 1)
+             BBBBBB   FFFFFS     (coeff pair 2)
+             BBBBBB   FFFFFFS    (coeff pair 3)
+             BBBBBBBS FFFFFFFS   (coeff pair 4)
+
+    Mode 11: AAAAAA   PPPPPPPP
+             BBBBBB   FFFFFS     (coeff pair 0)
+             BBBBBB   FFFFFS     (coeff pair 1)
+             BBBBBB   FFFFFS     (coeff pair 2)
+             BBBBBB   FFFFFFS    (coeff pair 3)
+             BBBBBBBS FFFFFFFS   (coeff pair 4)
+             BBBBBBBS FFFFFFFS   (coeff pair 5)
+
+
+  Action:
+    Loads new amplitude and pitch parameters.  Also loads a set of new
+    filter coefficients, setting the unspecified coefficients to zero.
+    The exact combination and precision of filter coefficients that are
+    loaded is determined by which prefix is used.  Opcode 1000 provides
+    the prefix bits.
+
+  Notes:
+    -- For all Modes, the Sign bit for B0, B1, B2 and B3 (the B coeffs for
+       pair 0 thru pair 3) has an implied value of 0.
+
+
+------------------------------------------------------------------------------
+ OPCODE 1101:  DELTA_D      Delta update Amplitude, Pitch and 2 or 3 Coeffs
+------------------------------------------------------------------------------
+
+  Format:
+    RRRR 1101 [data]
+
+  Data formats, by prefix:
+    Mode 00: aaas     pppps      (Amplitude 6 MSBs, Pitch LSBs.)
+             bbs      fffs       (B3 5 MSBs, F3 6 MSBs.)
+             bbbs     fffs       (B4 7 MSBs, F4 6 MSBs.)
+
+    Mode 01: aaas     pppps      (Amplitude 6 MSBs, Pitch LSBs.)
+             bbs      fffs       (B3 5 MSBs, F3 6 MSBs.)
+             bbbs     fffs       (B4 7 MSBs, F4 6 MSBs.)
+             bbbbs    ffffs      (B5 8 MSBs, F5 8 MSBs.)
+
+    Mode 10: aaas     pppps      (Amplitude 6 MSBs, Pitch LSBs.)
+             bbbs     ffffs      (B3 7 MSBs, F3 7 MSBs.)
+             bbbbs    ffffs      (B4 8 MSBs, F4 8 MSBs.)
+
+    Mode 11: aaas     pppps      (Amplitude 6 MSBs, Pitch LSBs.)
+             bbbs     ffffs      (B3 7 MSBs, F3 7 MSBs.)
+             bbbbs    ffffs      (B4 8 MSBs, F4 8 MSBs.)
+             bbbbs    ffffs      (B5 8 MSBs, F5 8 MSBs.)
+
+  Action:
+    Performs a delta update, adding small 2s complement numbers to
+    a series of coefficients.  The 2s complement updates for the
+    various filter coefficients only update some of the MSBs -- the
+    LSBs are unaffected.  The exact bits which are updated are noted
+    above.
+
+  Notes:
+    -- The delta update is applied exactly once, as long as the repeat
+       count is at least 1.  If the repeat count is greater than 1,
+       the updated value is held through the repeat period, but the
+       delta update is not reapplied.
+
+    -- The delta updates are applied to the 8-bit encoded forms of
+       the coefficients, not the 10-bit decoded forms.
+
+    -- Normal 2s complement arithmetic is performed, and no protection
+       is provided against overflow.  Adding 1 to the largest value
+       for a bit field wraps around to the smallest value for that
+       bitfield.
+
+    -- The update to the amplitude register is a normal 2s complement
+       update to the ENTIRE register.  This means that any carry/borrow
+       from the mantissa will change the value of the exponent.  The
+       update doesn't know anything about the format of that register.
+
+------------------------------------------------------------------------------
+ OPCODE 1110:  LOAD_E       Load Pitch, Amplitude
+------------------------------------------------------------------------------
+
+  Format:
+    RRRR 1110 AAAAAA PPPPPPPP
+
+  Action:
+    Loads new amplitude and pitch parameters.  Data format does not seem
+    to be affected by the Opcode 1000 prefix, although the repeat count
+    may be extended using the Opcode 1000 prefix.
+
+------------------------------------------------------------------------------
+ OPCODE 1111:  PAUSE        Silent pause
+------------------------------------------------------------------------------
+
+  Format:
+    RRRR 1111
+
+  Action:
+    Provides a silent pause of various lengths.  The length of the
+    pause is given by the 4-bit immediate constant.  The pause duration
+    can be extended with the Opcode 1000 prefix.
+
+  Notes:
+    -- The pause behaves identially to a pitch with Amplitude == 0 and
+       Period == 64.  All coefficients are cleared, as well.

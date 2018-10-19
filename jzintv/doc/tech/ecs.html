@@ -1,0 +1,208 @@
+<HEAD>
+    <TITLE>
+        Entertainment Computer System
+    </TITLE>
+</HEAD>
+<BODY BGCOLOR=#BBCCDD>
+<H1>Entertainment Computer System</H1>
+<P>
+    Currently, this document is a place-holder until I get more info here.
+</P>
+<P>
+    Quick rundown of what I know:
+</P>
+<UL>
+    <LI>
+        Bankswitched 4K ROMs at locations $2000-$2FFF, $7000-$7FFF,
+        and $E000-$EFFF.
+    <LI>
+        Bankswitching is performed by writing $xA5y to location $xFFF
+        to switch the ROM that covers the range $x000 - $xFFF.
+        The value of <B>y</B> selects which 4K page to switch in out
+        of a possible set of 16 pages.
+    <LI>
+        The 12K of ROM in the ECS resides in $2000 Page 1, $7000 Page 0,
+        and $E000 Page 1.
+    <LI>
+        The ECS comes out of reset with page 0 selected on all ROMs,
+        meaning that only the $7000 ROM is visible at RESET time.
+    <LI>
+        There is a second PSG at locations $00F0-$00FF.
+    <LI>
+        The cassette/printer UART exists at locations $E0-$E3.
+    <LI>
+        The keyboard is matrix scanned -- it changes one of the PSG's 
+        I/O ports to an output for scanning the keyboard.
+</UL>
+
+<HR>
+<P>
+Here's an email I received from John Dullea explaining certain aspects
+of the ECS.  I've interjected comments in italics in a few places, either
+to correct or to clarify.
+</P>
+
+<BLOCKQUOTE>
+<P>
+Here's what I found out, through experimentation:
+</P>
+<P>
+The ECS has ROMs at 2000-2FFFh, 7000-7FFFh, and
+E000-EFFFh, but there are some wrinkles:
+</P>
+
+<OL>
+<LI>
+<P>
+You can plug your ECS directly into your reader and
+get the "2" and "7" ROMs, but the "E" ROM isn't
+directly accessible.  There is a bankswitching
+mechanism that can disable it, and you can't get to it
+unelss the ECS is powered up.  I had to perform a
+really dicey maneuver like "power-down the reader,
+insert a powered-down ECS, power on the ECS, wait two
+seconds, read the ROM, power off the ECS, remove the
+ECS", or something like that.  If you try this, BE
+CAREFUL! It may be easy to fry the ECS (it's easier if
+I simply send you the ROM dump, which is, of course,
+legal, since you're writing an emulator and need them
+for educational purposes :) ).  Let me know if you
+want them...  <I>[ See my notes on bankswitching at the top
+of the page. --JZ ]</I>
+</P>
+
+<LI><P> World Series Major League Baseball, an ECS game,
+also has a ROM at E000-EFFFh!  Here's where the
+bankswitching comes in.  You have to trap writes to
+memory location EFFFh.  Writng EA50h to that location
+loads the ROM from the GAME into E000-EFFF (that is,
+it disables the ECS ROM there and allows the cart's
+ROM to take over).  Writing EA51h to that location
+overrides the cart's ROM at E000-EFFF and places the
+ECS's ROM there.  I don't know why Mattel chose those
+numbers to perform the bankswitching; I found this out
+by analyzing the ROM code in the game and ECS.  In the
+emulator I save the ECS "E" ROM and any game "E" ROM
+and act accordingly when a write to EFFFh occurs.
+<I>[ See my notes on bankswitching at the top of the page. --JZ ]</I></P>
+
+<LI> <P>The ECS has 8-bit RAM at 4700h-47FFh. <I>[ Actually, this
+RAM is from $4000 to $47FF.  Locations $4000 - $403F are usually
+unused since they alias the STIC. --JZ ]</I> This is
+important when dealing with World Cup Soccer, which I
+found out is ENHANCED when plugged into the ECS--it
+supports four simultaneous players.  World Cup Soccer
+stores a byte of information at 47CDh (don't ask me
+why).  If you are NOT emulating the ECS, you have to
+trap this write (or any writes to the ECS RAM range)
+and force those locations to hold 0000h.  <I>[ Actually,
+you want unimplemented memory to always read as $FFFF. --JZ ]</I>
+If you ARE
+emulating the ECS, allow the write but force the high
+8 bits to zero (i.e. writing D5B2h results in 00B2h
+being stored there).</P>
+
+<LI> <P>The ECS's PSG resides at F0-FFh, and must be
+treated accordingly.</P>
+
+<LI> <P>The ECS controllers are read from 00FEh and 00FFh,
+BUT the high eight bits muct be 0FFh at all times (I
+don't know why). <I> [ I suspect other problems in
+his code.  For me the PSG on the ECS always forces the
+upper 8 bits low. --JZ ]</I></P>
+
+<LI> <P>The ECS keyboard is only active if bits 7,6 of
+00F8h are 0,1--that is, if (00F8h & 0xC0) == 0x40 (I
+don't know why). <I> [ This places one of the PSG's 8-bit
+I/O ports into output mode, so that the ECS can matrix-scan
+the keyboard. --JZ ]</I></P>
+
+<LI> <P>The ECS keyboard table is:</P>
+
+<BR>
+<UL>
+<PRE>
+
+00FEh|                  00FFh bits
+bits |   0       1    2  3  4    5        6      7
+-----+------------------------------------------------
+  0  | left,   comma, n, v, x, space,   [n/a], [n/a]
+  1  | period, m,     b, c, z, down,    [n/a], [n/a]
+  2  | scolon, k,     h, f, s, up,      [n/a], [n/a]
+  3  | p,      i,     y, r, w, q,       [n/a], [n/a]
+  4  | esc,    9,     7, 5, 3, 1,       [n/a], [n/a]
+  5  | 0,      8,     6, 4, 2, right,   [n/a], [n/a]
+  6  | enter,  o,     u, t, e, ctl,     [n/a], [n/a]
+  7  | [n/a],  l,     j, g, d, a,       shift, [n/a]
+</PRE>
+</UL>
+</OL>
+
+<P>
+Basically you scan the bits and consult the table to
+see if a key is pressed...
+</P>
+
+<P>
+I think that's everything I know regarding the ECS.  I
+don't know if anyone's still updating the
+Intellivision FAQ, but perhaps this stuff should be
+included...
+</P>
+</BLOCKQUOTE>
+
+<BR><HR><BR>
+
+<P>
+Here's some additional information on the ECS's cassette interface
+from some other email discussions:
+</P>
+<BLOCKQUOTE><PRE>
+
+> 
+> 
+> Joe, $e0-$e2 seems to control the casette recorder.  Here is the data I
+> collected on it:
+> 
+> ECS UART
+> 
+>   $E0 = UART STATUS BYTE
+> 
+>     08 07 06 05 04 03 02 01 00
+>      ?  ?  ?  ?  ?  ?  ?  w  r
+>     where:
+>       r = data is available for reading
+>       w = data is ok to write
+> 
+>   $E1 = UART DATA R/W PORT
+> 
+>   $E2 = WRITE = END OF TRANSFER ??
+> 
+> Carl
+> 
+> 
+
+Cool.  As for $E2, it is some sort of configuration register.
+Among its duties are selecting between printer and cassette.  It
+also turns the cassette motor on an off via a relay.  If you listen
+closely, the ECS makes a 'click' when doing a CSAV/CLOD.  I just
+ran an experiment with my own ECS, and the relay is controlled by
+bit 4 in location $E2.
+
+John Dullea sent me some information on these registers as well.
+It said basically the same thing, although it had a little more to
+say about $E2.  The ECS writes $39 to it when saving to cassette,
+and $23 when printing.  Otherwise, he just looks at accesses to
+$E0 and $E1 to figure out what's going on.  (By so doing, he makes
+a few assumptions about how the ECS BASIC code accesses these
+registers.)
+
+</PRE></BLOCKQUOTE>
+
+
+
+<BR><HR><BR>
+<FONT SIZE=-1>$Id: ecs.html,v 1.4 2000/12/11 05:21:52 im14u2c Exp $</FONT>
+
+</BODY>
+</HTML>

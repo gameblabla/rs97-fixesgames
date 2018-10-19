@@ -1,0 +1,12 @@
+file /home/anonymous/Documents/Dev/rs97-source/gamebatte/libgambatte/SConstruct,line 61:
+	Configure(confdir = .sconf_temp)
+scons: Configure: Checking for C header file zlib.h... 
+.sconf_temp/conftest_0.c <-
+  |
+  |#include <zlib.h>
+  |
+  |
+/opt/rs97-toolchain/bin/mipsel-linux-gcc -o .sconf_temp/conftest_0.o -c -Wall -Wextra -O2 -fomit-frame-pointer -ffunction-sections -ffast-math -fsingle-precision-constant -G0 -I/opt/rs97-toolchain/usr/mipsel-buildroot-linux-uclibc/sysroot/usr/include/SDL -DHAVE_STDINT_H -Isrc -Iinclude -I/home/anonymous/Documents/Dev/rs97-source/gamebatte/common .sconf_temp/conftest_0.c
+scons: Configure: yes
+
+

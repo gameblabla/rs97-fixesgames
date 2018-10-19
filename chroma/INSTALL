@@ -1,0 +1,50 @@
+Installation
+============
+Chroma uses the standard procedure for compilation and installation:
+
+    ./configure
+    make
+    make install
+
+By default, this will attempt to build both the graphical (SDL) and the
+terminal (curses) versions of Chroma, although the configure script may be
+given either '--disable-curses' or '--disable-sdl' as options if required.
+
+Dependencies
+============
+The SDL version of Chroma requires the following libraries:
+
+    * SDL
+      http://www.libsdl.org/
+
+    * SDL_image
+      http://www.libsdl.org/projects/SDL_image/
+
+    * FreeType 2
+      http://www.freetype.org/
+
+It also uses the font "DejaVu Sans" - see graphics/font.txt for its licence:
+
+    * DejaVu fonts
+      http://dejavu.sourceforge.net/ 
+
+The curses version of Chroma requires a curses library such as:
+
+    * ncurses
+      http://www.gnu.org/software/ncurses/
+
+Both versions require:
+
+    * gettext
+      http://www.gnu.org/software/gettext/
+
+Most linux distributions should have pre-built packages for all of these. Note
+that you will require both the library and development (often -devel) packages.
+
+Cross-compilation for Windows
+=============================
+Chroma may be cross-compiled for Windows using MinGW (http://www.mingw.org/).
+A separate Makefile.mingw is provided for this purpose, although you will need
+to ensure the libraries mentioned above are present in your MinGW installation.
+PDCurses (http://pdcurses.sourceforge.net/) may be used in place of ncurses.
+

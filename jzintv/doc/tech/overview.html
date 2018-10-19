@@ -1,0 +1,270 @@
+<HTML>
+<HEAD>
+<TITLE>
+    Intellivision Overview
+</TITLE>
+</HEAD>
+<BODY>
+
+<H1> Intellivision Overview </H1>
+
+<P>
+    This is just a quick overview of what the Intellivision is.
+    It's not nearly as comprehensive as, say, De Re Intellivision or
+    the historical information available on the 
+    <B><I>Intellivision
+    Lives!</I></B> CD-ROM.
+</P>
+<P>
+    For a more comprehensive history, please find a copy of De Re
+    Intellivison, go buy a copy of
+    <B><I><A HREF="http://www.intellivisionlives.com/">Intellivision
+    Lives!</A></I></B>, or visit the <A
+    HREF="http://www.makingit.com/bluesky/">The Blue Sky Rangers</A>
+    homepage.
+
+<H2> The Quick and Dirty History of Intellivision </H2>
+
+<P>
+    This is the short version.  The Intellivision was the world's
+    first 16-bit home video game system.  It was introduced in the
+    early 80s and it competed against the Atari 2600, and later
+    the Colecovision.  It was produced by Mattel Electronics until
+    early 1984, when Mattel Electronics was dissolved.  
+</P>
+<P>
+    As Mattel Electronics was being dissolved, a new, independent
+    company was formed, Intellivision, Inc., which purchased the
+    rights to the Intellivision name.  It specialized in selling
+    Mattel's remaining inventory.  It also began introducing games
+    that were complete but not released at the time Mattel closed.
+</P>
+<P>
+    Later, Intellivision, Inc. became INTV, Inc.  INTV introduced
+    more Intellivision games and even new Master Components.  INTV
+    kept the Intellivision name alive until it folded in 1990.
+</P>
+
+<H2> What's in the Intellivision? </H2>
+
+<P>
+    The Intellivision Master Component consists of the following
+    pieces, most of which are from General Instruments:
+</P>
+<UL>
+    <LI>CP-1610 CPU.  This is a 16-bit microprocessor whose
+        instruction set is reminiscent of the PDP-8, so I'm told.
+
+    <LI>AY-3-8910 Programmable Sound Generator.  Arguably, this
+        sound chip is the most popular sound chip of the early
+        80s. 
+
+    <LI>AY-3-8900 Standard Television Interface Chip.  This puts
+        our favorite Running Man on the screen.
+
+    <LI>Two controller pads
+
+    <LI>Various RAM and ROM, described in the table below.
+</UL>
+
+<TABLE BORDER=1 WIDTH=100%>
+    <CAPTION>
+        RAM and ROM in the Intellivision Master Component
+    </CAPTION>
+
+    <TR>
+        <TH>
+            Type of Memory
+        </TH>
+        <TH>
+            Number of Words / Locations
+        </TH>
+        <TH>
+            Width of Memory (bits)
+        </TH>
+        <TH>
+            Part number
+        </TH>
+        <TH COLSPAN=2>
+            Address Range
+        </TD>
+        <TH>
+            Name
+        </TH>
+        <TH>
+            Description
+        </TH>
+    </TR>
+
+    <TR>
+        <TD>
+            RAM
+        </TD>
+        <TD>
+            240
+        </TD>
+        <TD>
+            8
+        </TD>
+        <TD>
+            GTE-3539
+        </TD>
+        <TD>
+            $0100
+        </TD>
+        <TD>
+            $01EF
+        </TD>
+        <TD>
+            Scratchpad RAM.  
+        </TD>
+        <TD>
+            This RAM is used by the EXEC and game
+            programs to store variables, etc.  Note that the actual
+            RAM chip is a 256-byte chip, but locations $1F0..$1FF 
+            are overlapped by the Programmable Sound Generator.
+        </TD>
+    </TR>
+
+    <TR>
+        <TD>
+            RAM
+        </TD>
+        <TD>
+            352
+        </TD>
+        <TD>
+            16
+        </TD>
+        <TD>
+            RA-3-9600
+        </TD>
+        <TD>
+            $0200
+        </TD>
+        <TD>
+            $035F
+        </TD>
+        <TD>
+            System RAM.  
+        </TD>
+        <TD>
+            This RAM contains the display memory,
+            stack, and 16-bit memory that is used by the EXEC
+            and game programs for variables.  The System
+            RAM also incorporates a special interface for
+            the STIC which isolates the STIC's memory bus
+            from the CPU bus during active display while the
+            display is being generated, and also allows the
+            CPU to access the STIC during vertical blanking.
+        </TD>
+    </TR>
+
+    <TR>
+        <TD ROWSPAN=3>
+            ROM
+        </TD>
+        <TD>
+            4096
+        </TD>
+        <TD ROWSPAN=3>
+            10
+        </TD>
+        <TD ROWSPAN=2>
+            Intellivision 1: RO-3-9502, RO-3-9504
+        </TD>
+        <TD ROWSPAN=2>
+            $1000
+        </TD>
+        <TD ROWSPAN=2>
+            $1FFF
+        </TD>
+        <TD ROWSPAN=3>
+            EXEC ROM.  
+        </TD>
+        <TD ROWSPAN=3>
+            The Intellivision "OS" lives here.  On
+            the Intellivision 1, this is held in two 2K ROMs.
+            On the Intellivision 2, this is a single 4.25K ROM
+            with an extra, undocumented segment at $0400-$04FF.
+        </TD>
+    </TR>
+    <TR>
+        <TD ROWSPAN=2>
+            4352
+        </TD>
+    </TR>
+    <TR>
+        <TD>
+            Intellivision 2: RO-3-9506
+        </TD>
+        <TD>
+            $0400
+        </TD>
+        <TD>
+            $04FF
+        </TD>
+    </TR>
+
+    <TR>
+        <TD>
+            ROM
+        </TD>
+        <TD>
+            2048
+        </TD>
+        <TD>
+            8
+        </TD>
+        <TD>
+            RO-3-9503
+        </TD>
+        <TD>
+            $3000
+        </TD>
+        <TD>
+            $37FF
+        </TD>
+        <TD>
+            Graphics ROM.  
+        </TD>
+        <TD>
+            This holds the fixed character images 
+            that the Intellivision can display.  It also holds a
+            small amount of EXEC code that didn't fit in the EXEC
+            ROM.
+        </TD>
+    </TR>
+
+    <TR>
+        <TD>
+            RAM
+        </TD>
+        <TD>
+            512
+        </TD>
+        <TD>
+            8
+        </TD>
+        <TD>
+            two GTE-3539's
+        </TD>
+        <TD>
+            $3800
+        </TD>
+        <TD>
+            $39FF
+        </TD>
+        <TD>
+            Graphics RAM.  
+        </TD>
+        <TD>
+            This holds the cartridge-defined
+            images for the Intellivision to display.  Up to 64
+            unique 8x8 blocks can be stored here.  Note that
+            locations $3A00-$3FFF apparently contain read
+            aliases of $3800-$39FF, but none of these alias
+            locations is writable.  Weird.
+        </TD>
+    </TR>
+</TABLE>

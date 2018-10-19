@@ -1,0 +1,871 @@
+;; ======================================================================== ;;
+;;  CART.MAC                                                                ;;
+;;                                                                          ;;
+;;  Cartridge Support Routines                                              ;;
+;;                                                                          ;;
+;;  The macros and code in this file are intended to manage the memory map  ;;
+;;  of your Intellivision cartridge.  This includes allocating your code    ;;
+;;  to its ROM segments, and allocating variables in the Intellivision's    ;;
+;;  8-bit scratch and 16-bit system memories.                               ;;
+;;                                                                          ;;
+;;  This file provides several useful macros.                               ;;
+;;                                                                          ;;
+;;  ROM functions:                                                          ;;
+;;                                                                          ;;
+;;      ROMSETUP    Sets memory map & stack for cart; Provides ROM header.  ;;
+;;      ROMSEG      Switches between ROM segments when assembling           ;;
+;;      ROMSEGSZ    Select ROM segment with room for at least "size" words  ;;
+;;      ROMEND      Used at end of program to detect any assembly errors    ;;
+;;                                                                          ;;
+;;  Misc functions:                                                         ;;
+;;                                                                          ;;
+;;      REQ_ECS     Mark ECS as required for this game.  This MUST be       ;;
+;;                  before ROMSETUP.  Will give an error screen if the      ;;
+;;                  ECS is not attached.  If REQ_ECS set, then              ;;
+;;                  BYTEVAR/BYTEARRAY will allocate from ECS RAM also.      ;;
+;;                                                                          ;;
+;;      REQ_JLP     Mark JLP as required for this game.  This MUST be       ;;
+;;                  before ROMSETUP.  Will give an error screen if the      ;;
+;;                  JLP is not attached.  This flag is also required for    ;;
+;;                  correct function in memory maps that include RAM        ;;
+;;                  at $8xxx - $9xxx that also use JLP features.            ;;
+;;                                                                          ;;
+;;  RAM functions:                                                          ;;
+;;                                                                          ;;
+;;      BYTEVAR     Allocates a single byte variable in 8-bit RAM           ;;
+;;      WORDVAR     Allocates a single word variable in 16-bit RAM          ;;
+;;      BYTEARRAY   Allocates a multibyte variable in 8-bit RAM             ;;
+;;      WORDARRAY   Allocates a multiword variable in 16-bit RAM            ;;
+;;                                                                          ;;
+;;  Alternate RAM functions:                                                ;;
+;;                                                                          ;;
+;;      SCRATCH     Allocates memory in 8-bit scratch RAM ($102-$1EF)       ;;
+;;      SYSTEM      Allocates memory in 16-bit system RAM ($2F0-$35F)       ;;
+;;      ECSRAM      Allocates memory in 8-bit ECS RAM ($4040-$47FF)         ;;
+;;      CARTRAM     Allocates memory in 16-bit cartridge RAM ($8040-$9EFF)  ;;
+;;                                                                          ;;
+;; ======================================================================== ;;
+
+        ROMW    16
+_m.ECS  QSET    0       ; can be overridden by REQ_ECS
+_m.JLP  QSET    0       ; can be overridden by REQ_JLP
+
+;; ======================================================================== ;;
+;;  REQ_ECS     Mark the ECS as *required* for this game.                   ;;
+;; ======================================================================== ;;
+MACRO   REQ_ECS
+        LISTING "off"
+        IF  (DEFINED _m.map)
+            ERR "REQ_ECS directive must appear before ROMSETUP"
+        ENDI
+_m.ECS  QSET    1
+        LISTING "prev"
+ENDM
+
+;; ======================================================================== ;;
+;;  REQ_JLP     Mark JLP as *required* for this game.                       ;;
+;; ======================================================================== ;;
+MACRO   REQ_JLP
+        LISTING "off"
+        IF  (DEFINED _m.map)
+            ERR "REQ_JLP directive must appear before ROMSETUP"
+        ENDI
+_m.JLP  QSET    1
+        LISTING "prev"
+ENDM
+
+;; ======================================================================== ;;
+;;  ROMSETUP    Sets memory map & stack for cart; Provides ROM header       ;;
+;;                                                                          ;;
+;;  This macro must be called very early in your program, probably before   ;;
+;;  anything else.  It configures your memory map (as seen by the ROMSEG,   ;;
+;;  SYSTEM and CARTMEM macros), and gives you a simple and well defined     ;;
+;;  cartridge header.                                                       ;;
+;;                                                                          ;;
+;;  USAGE                                                                   ;;
+;;                                                                          ;;
+;;      ROMSETUP map, year, "title", startaddr, stacksize                   ;;
+;;                                                                          ;;
+;;  where:                                                                  ;;
+;;                                                                          ;;
+;;      "map" is one of "16K" or "42K".  "16K" sets the cartridge up for    ;;
+;;      the historic Mattel 16K-word memory map and "42K" sets things up    ;;
+;;      for a much more aggressive memory map that offers 2.5x the space.   ;;
+;;                                                                          ;;
+;;      "year" is the copyright year (e.g. 2008).                           ;;
+;;                                                                          ;;
+;;      "title" is the title of the game, in quotes.                        ;;
+;;                                                                          ;;
+;;      "startaddr" is the label of the entry point for the game.           ;;
+;;                                                                          ;;
+;;      "stacksize" is the number of words to reserve for the stack.        ;;
+;;      32 words is usually a reasonable number.                            ;;
+;;                                                                          ;;
+;;  EXAMPLE                                                                 ;;
+;;                                                                          ;;
+;;      ROMSETUP 16K, 2008, "Hello World", MAIN, 32                         ;;
+;;                                                                          ;;
+;;  DETAILS                                                                 ;;
+;;                                                                          ;;
+;;      ROMSETUP lets you pick between two memory maps.  The 16K memory     ;;
+;;      map corresponds to the historic Mattel 16K-word ROM memory map.     ;;
+;;      Games such as Stonix and Space Patrol adhere to this memory map.    ;;
+;;                                                                          ;;
+;;      That memory map has three ROM segments:                             ;;
+;;                                                                          ;;
+;;      SEGMENT     RANGE                                                   ;;
+;;         0        $5000 - $6FFF                                           ;;
+;;         1        $D000 - $DFFF                                           ;;
+;;         2        $F000 - $FFFF                                           ;;
+;;                                                                          ;;
+;;      You can switch between segments using the ROMSEG macro.  This       ;;
+;;      makes it easy to put portions of code in each of the three ROM      ;;
+;;      segments and make the most use of the available ROM space.          ;;
+;;                                                                          ;;
+;;      The 42K mapping has six ROM segments:                               ;;
+;;                                                                          ;;
+;;      SEGMENT     RANGE                                                   ;;
+;;         0        $5000 - $6FFF                                           ;;
+;;         1        $A000 - $C020                                           ;;
+;;         2        $C022 - $FFFF                                           ;;
+;;         3        $2000 - $2FFF                                           ;;
+;;         4        $7100 - $7FFF                                           ;;
+;;         5        $4810 - $4FFF                                           ;;
+;;                                                                          ;;
+;;      It also contains an additional RAM segment from $8040 - $9EFF.      ;;
+;;      This memory map is available on the CC3, the Intellicart, and       ;;
+;;      the JLP home brew production cart.                                  ;;
+;;                                                                          ;;
+;;      Both memory maps insert a ROM header that configures the basics,    ;;
+;;      bypasses the EXEC, configures a stack and then jumps to the user    ;;
+;;      code.  The 42K map also includes a small stub at $4800 that goes    ;;
+;;      and switches out the ECS ROMs at $2xxx, $7xxx and $Exxx, so they    ;;
+;;      do not interfere with the user's program.                           ;;
+;;                                                                          ;;
+;;  When the memory map is 118K_a, there are 10 ROM segments and an add'l   ;;
+;;  RAM segment:                                                            ;;
+;;                                                                          ;;
+;;      SEGMENT     RANGE                                                   ;;
+;;         0        $5000 - $6FFF              8K                           ;;
+;;         1        $A000 - $BFFF              8K                           ;;
+;;         2        $2000 - $2FFF PAGE $F      4K                           ;;
+;;         3        $4810 - $4FFF              2K                           ;;
+;;         A        $C022 - $FFFF PAGE $A      16K                          ;;
+;;         B        $C022 - $FFFF PAGE $B      16K                          ;;
+;;         C        $C022 - $FFFF PAGE $C      16K                          ;;
+;;         D        $C022 - $FFFF PAGE $D      16K                          ;;
+;;         E        $C022 - $FFFF PAGE $E      16K                          ;;
+;;         F        $C022 - $FFFF PAGE $F      16K                          ;;
+;;                                                                          ;;
+;;  When the memory map is 118K_b, there are 16 ROM segments and an add'l   ;;
+;;  RAM segment:                                                            ;;
+;;                                                                          ;;
+;;      SEGMENT     RANGE                                                   ;;
+;;         0        $5000 - $6FFF              8K                           ;;
+;;         1        $A000 - $C020              8K                           ;;
+;;         2        $2000 - $2FFF PAGE $F      4K                           ;;
+;;         3        $4810 - $4FFF              2K                           ;;
+;;         4        $C022 - $DFFF              8K                           ;;
+;;         5        $E000 - $FFFF PAGE $5      8K                           ;;
+;;         6        $E000 - $FFFF PAGE $6      8K                           ;;
+;;         7        $E000 - $FFFF PAGE $7      8K                           ;;
+;;         8        $E000 - $FFFF PAGE $8      8K                           ;;
+;;         9        $E000 - $FFFF PAGE $9      8K                           ;;
+;;         A        $E000 - $FFFF PAGE $A      8K                           ;;
+;;         B        $E000 - $FFFF PAGE $B      8K                           ;;
+;;         C        $E000 - $FFFF PAGE $C      8K                           ;;
+;;         D        $E000 - $FFFF PAGE $D      8K                           ;;
+;;         E        $E000 - $FFFF PAGE $E      8K                           ;;
+;;         F        $E000 - $FFFF PAGE $F      8K                           ;;
+;;                                                                          ;;
+;; ======================================================================== ;;
+MACRO   ROMSETUP map, year, title, startaddr, stacksize
+
+        LISTING "code"
+
+_m.map  QSET    _m.%map%
+_m.edis QSET    0
+
+
+        IF  _m.map = _m.16K
+        __m_rom_seg 0, $5000, $6FFF, -1
+        __m_rom_seg 1, $D000, $DFFF, -1
+        __m_rom_seg 2, $F000, $FFFF, -1
+        __m_rom_seg 3, 0, 0, -1
+        __m_rom_seg 4, 0, 0, -1
+        __m_rom_seg 5, 0, 0, -1
+        __m_rom_seg 6, 0, 0, -1
+        __m_rom_seg 7, 0, 0, -1
+        __m_rom_seg 8, 0, 0, -1
+        __m_rom_seg 9, 0, 0, -1
+        __m_rom_seg A, 0, 0, -1
+        __m_rom_seg B, 0, 0, -1
+        __m_rom_seg C, 0, 0, -1
+        __m_rom_seg D, 0, 0, -1
+        __m_rom_seg E, 0, 0, -1
+        __m_rom_seg F, 0, 0, -1
+_m.rams QSET    $0000
+_m.rame QSET    $0000
+        ENDI
+
+        IF  _m.map = _m.42K
+        __m_rom_seg 0, $5000, $6FFF, -1
+        __m_rom_seg 1, $A000, $C020, -1
+        __m_rom_seg 2, $C022, $FFFF, -1
+        __m_rom_seg 3, $2000, $2FFF, -1
+        __m_rom_seg 4, $7100, $7FFF, -1
+        __m_rom_seg 5, $4810, $4FFF, -1
+        __m_rom_seg 6, 0, 0, -1
+        __m_rom_seg 7, 0, 0, -1
+        __m_rom_seg 8, 0, 0, -1
+        __m_rom_seg 9, 0, 0, -1
+        __m_rom_seg A, 0, 0, -1
+        __m_rom_seg B, 0, 0, -1
+        __m_rom_seg C, 0, 0, -1
+        __m_rom_seg D, 0, 0, -1
+        __m_rom_seg E, 0, 0, -1
+        __m_rom_seg F, 0, 0, -1
+_m.rams QSET    $8040
+_m.rame QSET    $9EFF
+_m.edis QSET    1           ; disable ECS
+        ENDI
+
+        IF  _m.map = _m.118K_a
+        __m_rom_seg 0, $5000, $6FFF, -1
+        __m_rom_seg 1, $A000, $BFFF, -1
+        __m_rom_seg 2, $2000, $2FFF, $F
+        __m_rom_seg 3, $4810, $4FFF, -1
+        __m_rom_seg 4, 0, 0, -1
+        __m_rom_seg 5, 0, 0, -1
+        __m_rom_seg 6, 0, 0, -1
+        __m_rom_seg 7, 0, 0, -1
+        __m_rom_seg 8, 0, 0, -1
+        __m_rom_seg 9, 0, 0, -1
+        __m_rom_seg A, $C022, $FFFF, $A
+        __m_rom_seg B, $C022, $FFFF, $B
+        __m_rom_seg C, $C022, $FFFF, $C
+        __m_rom_seg D, $C022, $FFFF, $D
+        __m_rom_seg E, $C022, $FFFF, $E
+        __m_rom_seg F, $C022, $FFFF, $F
+_m.rams QSET    $8040
+_m.rame QSET    $9EFF
+_m.edis QSET    1           ; disable ECS
+        ENDI
+
+        IF  _m.map = _m.118K_b
+        __m_rom_seg 0, $5000, $6FFF, -1
+        __m_rom_seg 1, $A000, $BFFF, -1
+        __m_rom_seg 2, $2000, $2FFF, $F
+        __m_rom_seg 3, $4810, $4FFF, -1
+        __m_rom_seg 4, $C022, $DFFF, -1
+        __m_rom_seg 5, $E000, $FFFF, $5
+        __m_rom_seg 6, $E000, $FFFF, $6
+        __m_rom_seg 7, $E000, $FFFF, $7
+        __m_rom_seg 8, $E000, $FFFF, $8
+        __m_rom_seg 9, $E000, $FFFF, $9
+        __m_rom_seg A, $E000, $FFFF, $A
+        __m_rom_seg B, $E000, $FFFF, $B
+        __m_rom_seg C, $E000, $FFFF, $C
+        __m_rom_seg D, $E000, $FFFF, $D
+        __m_rom_seg E, $E000, $FFFF, $E
+        __m_rom_seg F, $E000, $FFFF, $F
+_m.rams QSET    $8040
+_m.rame QSET    $9EFF
+_m.edis QSET    1           ; disable ECS
+        ENDI
+
+
+        IF _m.edis = 1
+        ORG     $4800
+        ; Disable ECS ROMs so that they don't conflict with us
+        MVII    #$2A5F, R0
+        MVO     R0,     $2FFF
+        MVII    #$7A5F, R0
+        MVO     R0,     $7FFF
+        MVII    #$EA5F, R0
+        MVO     R0,     $EFFF
+        B       $1041       ; resume boot
+        ENDI
+
+.CARTMEM    QSET    _m.rams
+
+        IF (_m.rams > 0) AND (_m.JLP = 0)
+            ORG     _m.rams, _m.rams, "=RW"
+            RMB     _m.rame - _m.rams + 1
+        ENDI
+
+        ORG     $5000
+        BIDECLE $500D       ; 5000  MOB picture base   (points to NULL list)
+        BIDECLE $500D       ; 5002  Process table      (points to NULL list)
+        BIDECLE %startaddr% ; 5004  Program start address
+        BIDECLE $500D       ; 5006  Bkgnd picture base (points to NULL list)
+        BIDECLE $500F       ; 5008  GRAM pictures      (points to NULL list)
+        BIDECLE $5014       ; 500A  Cartridge title/date
+        DECLE   $03C0       ; 500C  Skip ECS, run code after title, no clicks
+        DECLE   $0000       ; 500D  Screen border control
+        DECLE   $0000       ; 500E  0 = color stack, 1 = f/b mode
+        DECLE   1,1,1,1,1   ; 500F  Initial color stack 0 and 1: Blue
+       
+        IF %year% < 2000    ; Y2K hurray!
+            IF %year% < 78
+                DECLE  %year% + 100 ; $5014
+            ELSE
+                DECLE  %year%       ; $5014
+            ENDI
+        ELSE
+            DECLE  %year% - 1900    ; $5014
+        ENDI
+       
+        STRING      %title%, 0
+        WORDARRAY   _m.stk, %stacksize%     ; allocate stack in 16-bit RAM
+        MVII        #_m.stk, R6
+
+        ; If the JLP is required, detect it and error out if it's not here.
+        IF          _m.JLP = 1
+        MVO         PC,     $9F80           ; \_ do an unsigned MPY
+        MVO         PC,     $9F81           ; /
+        MVII        #$FFFF AND ($ * ($ - 2)), R0
+        MVII        #_m.no_jlp_err, R2
+        CMP         $9F8E,  R0
+        BNEQ        _m.boot_err
+        ENDI
+
+        ; If the ECS is not required just jump to the start address
+        IF          _m.ECS = 0
+        B           %startaddr%
+
+        ELSE
+        ; If the ECS is *required*, detect it and error out if it's not here
+        MVII        #_m.no_ecs_err, R2
+        MVII        #$A5,   R0  
+        MVO         R0,     $4111
+        CMP         $4111,  R0
+        BNEQ        _m.boot_err
+        MVII        #$5A,   R0
+        MVO         R0,     $4111
+        CMP         $4111,  R0
+        BEQ         %startaddr%
+        ENDI
+
+        IF          (_m.ECS + _m.JLP) > 0
+_m.boot_err
+        MVII        #_m.boot_err, R0      
+        MVO         R0,     $100
+        SWAP        R0
+        MVO         R0,     $101
+
+        MVII        #_m.stk, R6
+        
+        MVO         R0,     $20
+        MVI         $21,    R0
+                   
+        MVII        #2,     R0
+        MVO         R0,     $28
+        MVO         R0,     $2C
+
+        MVII        #$200,  R4
+_m.boot_err_clr
+        MVO@        R0,     R4
+        CMPI        #$2F0,  R4
+        BNEQ        _m.boot_err_clr
+                   
+        MVII        #$200+6*20+1, R4
+        MOVR        R2,     R5
+        MVII        #18,    R1
+_m.boot_err_loop     
+        MVI@        R5,     R0
+        MVO@        R0,     R4
+        DECR        R1
+        BNEQ        _m.boot_err_loop
+        EIS
+        DECR        PC
+
+        ENDI
+                   
+        IF          _m.ECS = 1
+_m.no_ecs_err:     
+_m.eidx QSET        0
+        REPEAT      18
+        DECLE       (ASC("ECS Unit Required!", _m.eidx) - 32) * 8 + 6
+_m.eidx QSET        _m.eidx + 1
+        ENDR
+        ENDI
+                   
+        IF          _m.JLP = 1
+_m.no_jlp_err:     
+_m.eidx QSET        0
+        REPEAT      18
+        DECLE       (ASC("JLP Cart Required!", _m.eidx) - 32) * 8 + 6
+_m.eidx QSET        _m.eidx + 1
+        ENDR
+        ENDI
+
+_m.cur  QSET    0
+_m.0pos QSET    $
+
+        __m_set_range 0
+
+        LISTING "prev"
+ENDM
+
+;; ======================================================================== ;;
+;;  ROMSEG  Switch between one of the various ROM segments.                 ;;
+;;                                                                          ;;
+;;  USAGE                                                                   ;;
+;;      ROMSEG s                                                            ;;
+;;                                                                          ;;
+;;  where s is 0..n-1, and 'n' is the number of segments, determined by a   ;;
+;;  previous call to ROMSETUP.                                              ;;
+;;                                                                          ;;
+;;  When the memory map is 16K, there are 3 ROM segments:                   ;;
+;;                                                                          ;;
+;;      SEGMENT     RANGE                                                   ;;
+;;         0        $5000 - $6FFF                                           ;;
+;;         1        $D000 - $DFFF                                           ;;
+;;         2        $F000 - $FFFF                                           ;;
+;;                                                                          ;;
+;;  When the memory map is 42K, there are 6 ROM segments and an add'l RAM   ;;
+;;  segment:                                                                ;;
+;;                                                                          ;;
+;;      SEGMENT     RANGE                                                   ;;
+;;         0        $5000 - $6FFF                                           ;;
+;;         1        $A000 - $C020                                           ;;
+;;         2        $C022 - $FFFF                                           ;;
+;;         3        $2000 - $2FFF                                           ;;
+;;         4        $7100 - $7FFF                                           ;;
+;;         5        $4800 - $4FFF                                           ;;
+;;                                                                          ;;
+;;                                                                          ;;
+;;  Memory maps beyond this point require ECS-style paging support.         ;;
+;;                                                                          ;;
+;;  When the memory map is 118K_a, there are 10 ROM segments and an add'l   ;;
+;;  RAM segment:                                                            ;;
+;;                                                                          ;;
+;;      SEGMENT     RANGE                                                   ;;
+;;         0        $5000 - $6FFF              8K                           ;;
+;;         1        $A000 - $BFFF              8K                           ;;
+;;         2        $2000 - $2FFF              4K                           ;;
+;;         3        $4800 - $4FFF              2K                           ;;
+;;         A        $C022 - $FFFF PAGE $A      16K                          ;;
+;;         B        $C022 - $FFFF PAGE $B      16K                          ;;
+;;         C        $C022 - $FFFF PAGE $C      16K                          ;;
+;;         D        $C022 - $FFFF PAGE $D      16K                          ;;
+;;         E        $C022 - $FFFF PAGE $E      16K                          ;;
+;;         F        $C022 - $FFFF PAGE $F      16K                          ;;
+;;                                                                          ;;
+;;  When the memory map is 118K_b, there are 16 ROM segments and an add'l   ;;
+;;  RAM segment:                                                            ;;
+;;                                                                          ;;
+;;      SEGMENT     RANGE                                                   ;;
+;;         0        $5000 - $6FFF              8K                           ;;
+;;         1        $A000 - $C020              8K                           ;;
+;;         2        $2000 - $2FFF              4K                           ;;
+;;         3        $4800 - $4FFF              2K                           ;;
+;;         4        $C022 - $DFFF              8K                           ;;
+;;         5        $E000 - $FFFF PAGE $5      8K                           ;;
+;;         6        $E000 - $FFFF PAGE $6      8K                           ;;
+;;         7        $E000 - $FFFF PAGE $7      8K                           ;;
+;;         8        $E000 - $FFFF PAGE $8      8K                           ;;
+;;         9        $E000 - $FFFF PAGE $9      8K                           ;;
+;;         A        $E000 - $FFFF PAGE $A      8K                           ;;
+;;         B        $E000 - $FFFF PAGE $B      8K                           ;;
+;;         C        $E000 - $FFFF PAGE $C      8K                           ;;
+;;         D        $E000 - $FFFF PAGE $D      8K                           ;;
+;;         E        $E000 - $FFFF PAGE $E      8K                           ;;
+;;         F        $E000 - $FFFF PAGE $F      8K                           ;;
+;;                                                                          ;;
+;; ======================================================================== ;;
+MACRO   ROMSEG s
+
+    LISTING "code"
+    IF __m_valid_seg(%s%)
+        __m_chk_range
+        __m_rec_range
+        __m_set_range %s%
+    ELSE
+        ERR "Invalid segment number for memory map."
+    ENDI
+
+    LISTING "prev"
+ENDM
+
+;; ======================================================================== ;;
+;;  ROMSEGSZ  Switch to a segment with room for at least "size" words.      ;;
+;;            Only picks among non-bankswitched segments.                   ;;
+;; ======================================================================== ;;
+MACRO   ROMSEGSZ s
+
+    LISTING "code"
+        __m_chk_range
+        __m_rec_range
+_m.cur  QSET -1
+        __m_try_range 5, %s%
+        __m_try_range 4, %s%
+        __m_try_range 3, %s%
+        __m_try_range 2, %s%
+        __m_try_range 1, %s%
+        __m_try_range 0, %s%
+        IF (_m.cur = -1)
+            ERR "ROMSEGSZ could not find a segment with %s% words available"
+        ENDI
+    LISTING "prev"
+ENDM
+
+;; ======================================================================== ;;
+;;  ROMEND  Close any open segment, and set symbols in the assembler's own  ;;
+;;          symbol table to indicate how much space was used and how much   ;;
+;;          was left.                                                       ;;
+;; ======================================================================== ;;
+MACRO   ROMEND
+    LISTING "code"
+        __m_chk_range
+        __m_rec_range
+        __m_sz_avail 0
+        __m_sz_avail 1
+        __m_sz_avail 2
+        __m_sz_avail 3
+        __m_sz_avail 4
+        __m_sz_avail 5
+        __m_sz_avail 6
+        __m_sz_avail 7
+        __m_sz_avail 8
+        __m_sz_avail 9
+        __m_sz_avail A
+        __m_sz_avail B
+        __m_sz_avail C
+        __m_sz_avail D
+        __m_sz_avail E
+        __m_sz_avail F
+_m.size  SET _m.0sz + _m.1sz + _m.2sz + _m.3sz + _m.4sz 
+_m.size  SET _m.5sz + _m.6sz + _m.7sz + _m.8sz + _m.9sz          + _m.size
+_m.size  SET _m.Asz + _m.Bsz + _m.Csz + _m.Dsz + _m.Esz + _m.Fsz + _m.size
+_m.avail SET _m.0av + _m.1av + _m.2av + _m.3av + _m.4av 
+_m.avail SET _m.5av + _m.6av + _m.7av + _m.8av + _m.9av          + _m.avail
+_m.avail SET _m.Aav + _m.Bav + _m.Cav + _m.Dav + _m.Eav + _m.Fav + _m.avail
+    LISTING "prev"
+ENDM
+
+;; ======================================================================== ;;
+;;  ROMREPORT   Give a report of how much memory is used in each ROM        ;;
+;;              segment.                                                    ;;
+;; ======================================================================== ;;
+MACRO   ROMREPORT
+    LISTING "code"
+    IF (DEFINED _m.size) = 0
+        ERR "Call ROMEND before ROMREPORT."
+    ELSE
+        SMSG "================================================================="
+        SMSG $("          Program size:        $",$$(_m.size)," (", $#(_m.size)," dec) words" )
+        SMSG $("          ROM available:       $",$$(_m.avail)," (", $#(_m.avail)," dec) words" )
+        SMSG "-----------------------------------------------------------------"
+        SMSG   "       Range    Start    End          :     Used    Avail"
+        __m_sho_range 0
+        __m_sho_range 1
+        __m_sho_range 2
+        __m_sho_range 3
+        __m_sho_range 4
+        __m_sho_range 5
+        __m_sho_range 6
+        __m_sho_range 7
+        __m_sho_range 8
+        __m_sho_range 9
+        __m_sho_range A
+        __m_sho_range B
+        __m_sho_range C
+        __m_sho_range D
+        __m_sho_range E
+        __m_sho_range F
+        SMSG "================================================================="
+    ENDI
+ENDM
+
+_m      PROC
+@@16K   QEQU 0 ; default $5000-$6FFF, $D000-$DFFF, $F000-$FFFF
+@@42K   QEQU 1 ; $4800-$6FFF, $7100-$7FFF, $A000-$C020, $C022-$FFFF,
+               ; ... RAM $8040 - $9EFF
+@@118K_a QEQU 2
+@@118K_b QEQU 3
+        ENDP
+
+MACRO   __m_sz_avail r
+        IF _m.%r%s
+_m.%r%sz  SET _m.%r%pos - _m.%r%s
+_m.%r%av  SET _m.%r%e - _m.%r%pos + 1
+        ELSE
+_m.%r%sz  SET 0
+_m.%r%av  SET 0
+        ENDI
+ENDM
+
+MACRO   __m_set_range_ r
+
+        IF  _m.cur = $%r%
+_m.cs   QSET _m.%r%s
+_m.ce   QSET _m.%r%e
+_m.cpag QSET _m.%r%p
+_m.cpos QSET _m.%r%pos
+        ENDI
+        IF _m.cp < 0
+            ORG _m.cpos
+        ELSE
+            ORG _m.cpos:_m.cpag
+        ENDI
+ENDM
+
+MACRO   __m_rec_range_ r
+
+        IF  _m.cur = $%r%
+_m.%r%pos QSET $
+        ENDI
+ENDM
+
+MACRO   __m_set_range s
+        
+_m.cur  QSET $%s%
+        __m_set_range_ 0
+        __m_set_range_ 1
+        __m_set_range_ 2
+        __m_set_range_ 3
+        __m_set_range_ 4
+        __m_set_range_ 5
+        __m_set_range_ 6
+        __m_set_range_ 7
+        __m_set_range_ 8
+        __m_set_range_ 9
+        __m_set_range_ A
+        __m_set_range_ B
+        __m_set_range_ C
+        __m_set_range_ D
+        __m_set_range_ E
+        __m_set_range_ F
+ENDM
+
+MACRO   __m_rec_range
+        
+        __m_rec_range_ 0
+        __m_rec_range_ 1
+        __m_rec_range_ 2
+        __m_rec_range_ 3
+        __m_rec_range_ 4
+        __m_rec_range_ 5
+        __m_rec_range_ 6
+        __m_rec_range_ 7
+        __m_rec_range_ 8
+        __m_rec_range_ 9
+        __m_rec_range_ A
+        __m_rec_range_ B
+        __m_rec_range_ C
+        __m_rec_range_ D
+        __m_rec_range_ E
+        __m_rec_range_ F
+ENDM
+
+MACRO   __m_overflow n
+    IF _m.cur = $%n%
+        ERR "Segment overflow in segment %n%"
+    ENDI
+ENDM
+
+MACRO   __m_chk_range
+
+    IF  ($ < _m.cs) OR ($ - 1 > _m.ce)
+        __m_overflow 0
+        __m_overflow 1
+        __m_overflow 2
+        __m_overflow 3
+        __m_overflow 4
+        __m_overflow 5
+        __m_overflow 6
+        __m_overflow 7
+        __m_overflow 8
+        __m_overflow 9
+        __m_overflow A
+        __m_overflow B
+        __m_overflow C
+        __m_overflow D
+        __m_overflow E
+        __m_overflow F
+    ENDI
+ENDM
+
+MACRO   __m_try_range r, s
+
+    IF ( __m_valid_seg(%r%) ) AND (_m.%r%pos + %s% <= _m.%r%e + 1) AND (_m.%r%p < 0)
+        __m_set_range %r%
+    ENDI
+ENDM
+
+MACRO __m_sho_range r
+
+    IF (_m.%r%s > 0) AND (_m.%r%p < 0)
+        SMSG $("         %r%:     $", $$(_m.%r%s), " - $", $$(_m.%r%e), "          :    $", $$(_m.%r%sz), "    $", $$(_m.%r%av) )
+    ENDI
+    IF (_m.%r%s > 0) AND (_m.%r%p >= 0)
+        SMSG $("         %r%:     $", $$(_m.%r%s), " - $", $$(_m.%r%e), " PAGE $", $$(_m.%r%p),"  :    $", $$(_m.%r%sz), "    $", $$(_m.%r%av) )
+    ENDI
+ENDM
+
+MACRO   __m_rom_seg r, s, e, p
+
+_m.tmp          QSET    ASC("%r%",0)
+_m.vseg[_m.tmp] QEQU (%s% <> 0)
+_m.%r%s         QEQU    %s%
+_m.%r%e         QEQU    %e%
+_m.%r%p         QEQU    %p%
+_m.%r%pos       QSET    %s%
+ENDM
+
+MACRO   __m_valid_seg(r)
+_m.vseg[ASC("%r%",0)]
+ENDM
+
+.SCRMEM     SET     $102
+.SYSMEM     SET     $2F0
+.ECSMEM     SET     $4040
+
+;; ======================================================================== ;;
+;;  _equorg Implement "EQU" by abusing "ORG" to avoid warnings              ;;
+;; ======================================================================== ;;
+MACRO       _equorg label, addr
+
+_m.curorg   QSET    $
+            LISTING "on"
+%label%     ORG     %addr%
+            LISTING "prev"
+            ORG     _m.curorg
+ENDM
+
+
+;; ======================================================================== ;;
+;;  BYTEVAR   label                                                         ;;
+;;  WORDVAR   label                                                         ;;
+;;  BYTEARRAY label, len                                                    ;;
+;;  WORDARRAY label, len                                                    ;;
+;;                                                                          ;;
+;;  BYTEVAR and WORDVAR allocate single 8-bit and 16-bit variables in RAM,  ;;
+;;  respectively, setting the labels to point to the allocated bytes/words. ;;
+;;                                                                          ;;
+;;  BYTEARRAY and WORDARRAY allocate blocks of 8-bit and 16-bit variables   ;;
+;;  in RAM.  All locations in the block are contiguous.                     ;;
+;;                                                                          ;;
+;;  The WORDVAR and WORDARRAY macros will allocate from System RAM first,   ;;
+;;  and then cartridge RAM second (if available).  The BYTEVAR and          ;;
+;;  BYTEARRAY macros will allocate from Scratchpad RAM only, unless         ;;
+;;  the program specifies "REQ_ECS" before ROMSETUP.                        ;;
+;; ======================================================================== ;;
+MACRO       BYTEARRAY label, len
+
+            LISTING "off"
+            IF .SCRMEM + %len% < $1F1
+_m.alloc        QSET .SCRMEM
+.SCRMEM         SET  .SCRMEM + %len%
+            ELSE
+                IF (_m.ECS = 0) OR (.ECSMEM + %len% > $4800)
+                    ERR "8-bit RAM overflow allocating %label%"
+                ENDI
+_m.alloc        QSET .ECSMEM
+.ECSMEM         SET  .ECSMEM + %len%
+            ENDI
+
+            _equorg %label%, _m.alloc
+            LISTING "prev"
+ENDM
+
+MACRO       WORDARRAY label, len
+
+            LISTING "off"
+            IF .SYSMEM + %len% < $361
+_m.alloc        QSET .SYSMEM
+.SYSMEM         SET  .SYSMEM + %len%
+            ELSE
+                IF .CARTMEM + %len% > _m.rame + 1
+                    ERR "16-bit RAM overflow allocating %label%"
+                ENDI
+_m.alloc        QSET .CARTMEM
+.CARTMEM        SET  .CARTMEM + %len%
+            ENDI
+
+            _equorg %label%, _m.alloc
+            LISTING "prev"
+ENDM
+
+MACRO       BYTEVAR a
+
+            LISTING "off"
+            BYTEARRAY %a%, 1
+            LISTING "prev"
+ENDM
+
+MACRO       WORDVAR a
+
+            LISTING "off"
+            WORDARRAY %a%, 1
+            LISTING "prev"
+ENDM
+
+;; ======================================================================== ;;
+;;  label   SCRATCH len                                                     ;;
+;;  label   SYSTEM  len                                                     ;;
+;;  label   ECSRAM  len                                                     ;;
+;;  label   CARTRAM len                                                     ;;
+;;                                                                          ;;
+;;  Each of these macros allocates RAM from the same pools of memory as     ;;
+;;  BYTEVAR, WORDVAR, etc.   There is a slight difference in syntax,        ;;
+;;  though.  Also, SYSTEM/CARTRAM make explicit which memory you allocate   ;;
+;;  from, whereas WORDVAR/WORDARRAY just allocates from the first memory    ;;
+;;  with space available.                                                   ;;
+;;                                                                          ;;
+;;  The ECSRAM directive is special:  It always allocates from ECSRAM,      ;;
+;;  regardless of whether a cartridge *requires* the ECS.  This makes it    ;;
+;;  possible to allocate variables to the ECS that will only get used if    ;;
+;;  the ECS is present.  The BYTEVAR/BYTEARRAY directives won't allocate    ;;
+;;  from ECS's RAM unless you set REQ_ECS.                                  ;;
+;; ======================================================================== ;;
+MACRO       SCRATCH len
+            EQU     .SCRMEM
+            LISTING "off"
+.SCRMEM     SET     .SCRMEM + %len%
+
+            IF      .SCRMEM >= $1F0
+                ERR "8-bit Scratch RAM overflow"
+            ENDI
+            LISTING "prev"
+ENDM
+
+MACRO       ECSRAM  len
+            EQU     .ECSMEM
+            LISTING "off"
+.ECSMEM     SET     .ECSMEM + %len%
+
+            IF      .ECSMEM >= $4800
+                ERR "8-bit ECS RAM overflow"
+            ENDI
+            LISTING "prev"
+ENDM
+
+
+MACRO       SYSTEM   len
+            EQU     .SYSMEM
+            LISTING "off"
+.SYSMEM     SET     .SYSMEM + %len%
+
+            IF      .SYSMEM >= $360
+                ERR "16-bit System RAM overflow"
+            ENDI
+            LISTING "prev"
+ENDM
+
+MACRO       CARTRAM len
+            EQU     .CARTMEM
+            LISTING "off"
+.CARTMEM    SET     .CARTMEM + %len%
+
+            IF      .CARTMEM > _m.rame
+                ERR "16-bit Cartridge RAM overflow"
+            ENDI
+            LISTING "prev"
+ENDM
+
+;; ======================================================================== ;;
+;;  End of file:  cart.mac                                                  ;;
+;; ======================================================================== ;;

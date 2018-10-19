@@ -1,0 +1,980 @@
+# English translations for PACKAGE package.
+# Copyright (C) 2009 THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# amf, 2009.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2009-12-30 15:52+0000\n"
+"PO-Revision-Date: 2009-12-30 15:53+0000\n"
+"Last-Translator: amf\n"
+"Language-Team: English <en@translate.freefriends.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=ISO-8859-1\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: ../editor.c:782
+#, c-format
+msgid "%d degrees"
+msgstr "%d degrees"
+
+#: ../editor.c:536
+#, c-format
+msgid "%d error found"
+msgstr "%d error found"
+
+#: ../editor.c:538
+#, c-format
+msgid "%d errors found"
+msgstr "%d errors found"
+
+#: ../cursesdisplay.c:297 ../menu.c:584 ../sdldisplay.c:908
+#, c-format
+msgid "%d lost"
+msgstr "%d lost"
+
+#: ../sdldisplay.c:2475 ../sdldisplay.c:2478 ../sdldisplay.c:2481
+#: ../sdldisplay.c:2484
+#, c-format
+msgid "%d milliseconds"
+msgstr "%d milliseconds"
+
+#: ../menu.c:593
+#, c-format
+msgid "%d moves"
+msgstr "%d moves"
+
+#: ../sdldisplay.c:2761
+#, c-format
+msgid "%d x %d (%d bits per pixel)"
+msgstr "%d x %d (%d bits per pixel)"
+
+#: ../cursesdisplay.c:1035 ../cursesdisplay.c:1049
+#, c-format
+msgid "%d00 milliseconds"
+msgstr "%d00 milliseconds"
+
+#: ../graphics.c:1538 ../graphics.c:1547 ../graphics.c:1557
+#, c-format
+msgid "%s bevelling requires five images"
+msgstr "%s bevelling requires five images"
+
+#: ../validate.c:91
+#, c-format
+msgid "%s: insufficient arguments\n"
+msgstr "%s: insufficient arguments\n"
+
+#: ../validate.c:85
+#, c-format
+msgid "%s: too many arguments\n"
+msgstr "%s: too many arguments\n"
+
+#: ../cursesdisplay.c:1304 ../sdldisplay.c:2891
+msgid "(fixed)"
+msgstr "(fixed)"
+
+#: ../sdldisplay.c:2815
+msgid "(none)"
+msgstr "(none)"
+
+#: ../main.c:196
+msgid "(not while pieces in motion)"
+msgstr "(not while pieces in motion)"
+
+#: ../main.c:184
+msgid "(only after changes)"
+msgstr "(only after changes)"
+
+#: ../main.c:211
+msgid "(only at start of a level)"
+msgstr "(only at start of a level)"
+
+#: ../editor.c:786
+msgid "(only for Chroma levels)"
+msgstr "(only for Chroma levels)"
+
+#: ../editor.c:192
+msgid "** NO LEVEL LOADED **"
+msgstr "** NO LEVEL LOADED **"
+
+#: ../colours.c:353 ../cursesdisplay.c:1018 ../graphics.c:368
+#: ../sdldisplay.c:2516 ../sdldisplay.c:2534 ../sdldisplay.c:3173
+msgid "** NONE **"
+msgstr "** NONE **"
+
+#: ../editor.c:166
+msgid "Abort Editor and Return to Main Menu"
+msgstr "Abort Editor and Return to Main Menu"
+
+#: ../main.c:177
+msgid "Abort Level and Return to Selection"
+msgstr "Abort Level and Return to Selection"
+
+#: ../sdldisplay.c:2468 ../sdldisplay.c:2492
+#, c-format
+msgid "Auto (%d x %d)"
+msgstr "Auto (%d x %d)"
+
+#: ../sdldisplay.c:2511
+#, c-format
+msgid "Auto (%d)"
+msgstr "Auto (%d)"
+
+#: ../sdldisplay.c:3167
+#, c-format
+msgid "Automatic (%d x %d)"
+msgstr "Automatic (%d x %d)"
+
+#: ../sdldisplay.c:2727 ../sdldisplay.c:3175
+msgid "Automatic sizing"
+msgstr "Automatic sizing"
+
+#: ../xmlparser.c:287
+#, c-format
+msgid "Badly nested tags on line %d (expecting '/%s', found '%s')"
+msgstr "Badly nested tags on line %d (expecting '/%s', found '%s')"
+
+#: ../sdldisplay.c:3055
+#, c-format
+msgid "Button %d"
+msgstr "Button %d"
+
+#: ../cursesdisplay.c:997 ../sdldisplay.c:2445
+msgid "Change Keys"
+msgstr "Change Keys"
+
+#: ../sdldisplay.c:2446
+msgid "Change Mouse"
+msgstr "Change Mouse"
+
+#: ../main.c:103
+msgid "Choose a level"
+msgstr "Choose a level"
+
+#: ../editor.c:714 ../main.c:73
+msgid "Chroma"
+msgstr "Chroma"
+
+#: ../graphics.c:958
+msgid "Clone loop"
+msgstr "Clone loop"
+
+#: ../cursesdisplay.c:990 ../sdldisplay.c:2429
+msgid "Colour Scheme"
+msgstr "Color Scheme"
+
+#: ../colours.c:345
+msgid "Colour Schemes"
+msgstr "Color Schemes"
+
+#: ../editor.c:224
+msgid "Confirm Save"
+msgstr "Confirm Save"
+
+#: ../menu.c:388
+msgid "Create new level"
+msgstr "Create new level"
+
+#: ../sdldisplay.c:3112
+msgid "Current action is:"
+msgstr "Current action is:"
+
+#: ../colours.c:350
+msgid "Current colour scheme:"
+msgstr "Current color scheme:"
+
+#: ../graphics.c:365
+msgid "Current graphics scheme:"
+msgstr "Current graphics scheme:"
+
+#: ../sdldisplay.c:3163
+msgid "Current graphics size:"
+msgstr "Current graphics size:"
+
+#: ../sdldisplay.c:2760
+msgid "Current screen size:"
+msgstr "Current screen size:"
+
+#: ../editor.c:182
+msgid "Currently editing:"
+msgstr "Currently editing:"
+
+#: ../main.c:224
+msgid "Currently playing:"
+msgstr "Currently playing:"
+
+#: ../sdldisplay.c:2752
+#, c-format
+msgid "Custom (%d x %d)"
+msgstr "Custom (%d x %d)"
+
+#: ../cursesdisplay.c:1011 ../cursesdisplay.c:1350 ../sdldisplay.c:2461
+#: ../sdldisplay.c:3222
+msgid "Debug Options"
+msgstr "Debug Options"
+
+#: ../cursesdisplay.c:982 ../editor.c:180 ../main.c:80 ../main.c:222
+#: ../sdldisplay.c:2419
+msgid "Display Options"
+msgstr "Display Options"
+
+#: ../cursesdisplay.c:1356 ../sdldisplay.c:3228
+msgid "Display order of movers"
+msgstr "Display order of movers"
+
+#: ../editor.c:226
+msgid "Do you wish to overwrite:"
+msgstr "Do you wish to overwrite:"
+
+#: ../editor.c:159
+msgid "Editing Menu"
+msgstr "Editing Menu"
+
+#: ../main.c:79
+msgid "Editor"
+msgstr "Editor"
+
+#: ../editor.c:745
+msgid "Enigma"
+msgstr "Enigma"
+
+#: ../sdldisplay.c:2434
+msgid "Fullscreen"
+msgstr "Fullscreen"
+
+#: ../main.c:174
+msgid "Game Options"
+msgstr "Game Options"
+
+#: ../graphics.c:445
+msgid "Graphics Errors"
+msgstr "Graphics Errors"
+
+#: ../sdldisplay.c:2428
+msgid "Graphics Level"
+msgstr "Graphics Level"
+
+#: ../sdldisplay.c:2426
+msgid "Graphics Scheme"
+msgstr "Graphics Scheme"
+
+#: ../graphics.c:360
+msgid "Graphics Schemes"
+msgstr "Graphics Schemes"
+
+#: ../sdldisplay.c:2427 ../sdldisplay.c:3158
+msgid "Graphics Size"
+msgstr "Graphics Size"
+
+#: ../main.c:78 ../main.c:349
+msgid "How to Play"
+msgstr "How to Play"
+
+#: ../graphics.c:456
+#, c-format
+msgid "In file '%s':\n"
+msgstr "In file '%s':\n"
+
+#: ../graphics.c:1261
+msgid "Invalid bevel type"
+msgstr "Invalid bevel type"
+
+#: ../graphics.c:1211 ../graphics.c:1327 ../graphics.c:1404
+msgid "Invalid colour"
+msgstr "Invalid color"
+
+#: ../graphics.c:1385
+#, c-format
+msgid "Invalid filename '%s'"
+msgstr "Invalid filename '%s'"
+
+#: ../editor.c:404
+#, c-format
+msgid "Invalid piece %s at (%d,%d)"
+msgstr "Invalid piece %s at (%d,%d)"
+
+#: ../graphics.c:961
+msgid "Invalid piece for clone"
+msgstr "Invalid piece for clone"
+
+#: ../graphics.c:1247
+msgid "Invalid piece name"
+msgstr "Invalid piece name"
+
+#: ../graphics.c:1128
+msgid "Invalid shadow"
+msgstr "Invalid shadow"
+
+#: ../graphics.c:1101
+msgid "Invalid size"
+msgstr "Invalid size"
+
+#: ../cursesdisplay.c:1253 ../sdldisplay.c:2837
+msgid "Keys"
+msgstr "Keys"
+
+#: ../editor.c:683
+msgid "Level Mode"
+msgstr "Level Mode"
+
+#: ../editor.c:177 ../editor.c:601
+msgid "Level Options"
+msgstr "Level Options"
+
+#: ../editor.c:692 ../editor.c:723 ../editor.c:738 ../editor.c:755
+msgid "Level height"
+msgstr "Level height"
+
+#: ../editor.c:721
+msgid "Level height (Chroma standard is 23)"
+msgstr "Level height (Chroma standard is 23)"
+
+#: ../editor.c:753
+msgid "Level height (Enigma standard is 20)"
+msgstr "Level height (Enigma standard is 20)"
+
+#: ../editor.c:736
+msgid "Level height (XOR standard is 32)"
+msgstr "Level height (XOR standard is 32)"
+
+#: ../editor.c:687 ../editor.c:718 ../editor.c:733 ../editor.c:750
+msgid "Level width"
+msgstr "Level width"
+
+#: ../editor.c:716
+msgid "Level width (Chroma standard is 32)"
+msgstr "Level width (Chroma standard is 32)"
+
+#: ../editor.c:748
+msgid "Level width (Enigma standard is 36)"
+msgstr "Level width (Enigma standard is 36)"
+
+#: ../editor.c:731
+msgid "Level width (XOR standard is 32)"
+msgstr "Level width (XOR standard is 32)"
+
+#: ../menu.c:408
+msgid "Levels under Construction"
+msgstr "Levels under Construction"
+
+#: ../sdldisplay.c:3229
+msgid "List movers on stderr"
+msgstr "List movers on stderr"
+
+#: ../editor.c:170 ../editor.c:267
+msgid "Load Level"
+msgstr "Load Level"
+
+#: ../main.c:189 ../main.c:277
+msgid "Load Position"
+msgstr "Load Position"
+
+#: ../xmlparser.c:334 ../xmlparser.c:348
+#, c-format
+msgid "Malformed attribute on line %d (in '%s')"
+msgstr "Malformed attribute on line %d (in '%s')"
+
+#: ../sdldisplay.c:3045
+msgid "Mouse"
+msgstr "Mouse"
+
+#: ../cursesdisplay.c:993 ../sdldisplay.c:2439
+msgid "Move Speed"
+msgstr "Move Speed"
+
+#: ../editor.c:241 ../sdldisplay.c:2473
+msgid "No"
+msgstr "No"
+
+#: ../editor.c:430 ../editor.c:441 ../editor.c:451 ../editor.c:483
+#: ../editor.c:493 ../editor.c:503 ../editor.c:513
+#, c-format
+msgid "No %s"
+msgstr "No %s"
+
+#: ../sdlscreen.c:64
+msgid "No resolutions available"
+msgstr "No resolutions available"
+
+#: ../graphics.c:891
+msgid "No size specified"
+msgstr "No size specified"
+
+#: ../colours.c:213
+msgid "Out of memory in colours_load()"
+msgstr "Out of memory in colors_load()"
+
+#: ../graphics.c:678 ../graphics.c:1084 ../graphics.c:1112 ../graphics.c:1150
+msgid "Out of memory in graphics_load()"
+msgstr "Out of memory in graphics_load()"
+
+#: ../menu.c:678 ../menu.c:685
+msgid "Out of memory in menu_levelentries()"
+msgstr "Out of memory in menu_levelentries()"
+
+#: ../menu.c:51 ../menu.c:56
+msgid "Out of memory in menu_new()"
+msgstr "Out of memory in menu_new()"
+
+#: ../menu.c:306 ../menu.c:317 ../menu.c:328
+msgid "Out of memory in menuentry_extratext()"
+msgstr "Out of memory in menuentry_extratext()"
+
+#: ../menu.c:174 ../menu.c:239 ../menu.c:255
+msgid "Out of memory in menuentry_newwithvalue()"
+msgstr "Out of memory in menuentry_newwithvalue()"
+
+#: ../menu.c:288
+msgid "Out of memory in menuentry_text()"
+msgstr "Out of memory in menuentry_text()"
+
+#: ../menu.c:275
+msgid "Out of memory in menuentry_value()"
+msgstr "Out of memory in menuentry_value()"
+
+#: ../xmlparser.c:41 ../xmlparser.c:58
+msgid "Out of memory in parser_new()"
+msgstr "Out of memory in parser_new()"
+
+#: ../xmlparser.c:378
+msgid "Out of memory in parser_parse()"
+msgstr "Out of memory in parser_parse()"
+
+#: ../xmlparser.c:87
+msgid "Out of memory in parser_push()"
+msgstr "Out of memory in parser_push()"
+
+#: ../editor.c:694
+msgid "Padding on bottom edge"
+msgstr "Padding on bottom edge"
+
+#: ../editor.c:688
+msgid "Padding on left edge"
+msgstr "Padding on left edge"
+
+#: ../editor.c:689
+msgid "Padding on right edge"
+msgstr "Padding on right edge"
+
+#: ../editor.c:693
+msgid "Padding on top edge"
+msgstr "Padding on top edge"
+
+#: ../sdldisplay.c:2438
+msgid "Player Speed"
+msgstr "Player Speed"
+
+#: ../cursesdisplay.c:1309 ../sdldisplay.c:2895
+msgid "Press a key to add or remove it from this list."
+msgstr "Press a key to add or remove it from this list."
+
+#: ../main.c:76
+msgid "Press any key to play"
+msgstr "Press any key to play"
+
+#: ../main.c:81
+msgid "Quit"
+msgstr "Quit"
+
+#: ../colours.c:347 ../cursesdisplay.c:1255 ../cursesdisplay.c:1294
+#: ../graphics.c:362 ../main.c:351 ../sdldisplay.c:2724 ../sdldisplay.c:2839
+#: ../sdldisplay.c:2881 ../sdldisplay.c:3047 ../sdldisplay.c:3099
+#: ../sdldisplay.c:3160
+msgid "Quit and return to previous menu"
+msgstr "Quit and return to previous menu"
+
+#: ../main.c:205 ../main.c:210 ../main.c:306
+msgid "Replay Saved Position"
+msgstr "Replay Saved Position"
+
+#: ../cursesdisplay.c:994 ../sdldisplay.c:2440
+msgid "Replay Speed"
+msgstr "Replay Speed"
+
+#: ../editor.c:165
+msgid "Return to Editor"
+msgstr "Return to Editor"
+
+#: ../main.c:176
+msgid "Return to Level"
+msgstr "Return to Level"
+
+#: ../editor.c:162
+msgid "Return to Main Menu"
+msgstr "Return to Main Menu"
+
+#: ../editor.c:353
+msgid "Return to Previous Menu"
+msgstr "Return to Previous Menu"
+
+#: ../cursesdisplay.c:984 ../cursesdisplay.c:1352 ../cursesdisplay.c:1407
+#: ../editor.c:668 ../graphics.c:447 ../menu.c:382 ../sdldisplay.c:2421
+#: ../sdldisplay.c:3224 ../sdldisplay.c:3291
+msgid "Return to previous menu"
+msgstr "Return to previous menu"
+
+#: ../main.c:180 ../main.c:183
+msgid "Revert to Original Position"
+msgstr "Revert to Original Position"
+
+#: ../editor.c:697
+msgid "Rotate"
+msgstr "Rotate"
+
+#: ../editor.c:171 ../editor.c:206
+msgid "Save Level"
+msgstr "Save Level"
+
+#: ../cursesdisplay.c:987 ../sdldisplay.c:2422
+msgid "Save Options"
+msgstr "Save Options"
+
+#: ../main.c:192 ../main.c:195 ../main.c:260
+msgid "Save Position"
+msgstr "Save Position"
+
+#: ../main.c:255
+msgid "Save Solution"
+msgstr "Save Solution"
+
+#: ../menu.c:385
+msgid "Save as new position"
+msgstr "Save as new position"
+
+#: ../menu.c:394
+msgid "Saved Positions"
+msgstr "Saved Positions"
+
+#: ../sdldisplay.c:2722
+msgid "Screen Size"
+msgstr "Screen Size"
+
+#: ../sdldisplay.c:2433
+msgid "Screen size"
+msgstr "Screen size"
+
+#: ../sdldisplay.c:3096
+#, c-format
+msgid "Set action for button %d in %s"
+msgstr "Set action for button %d in %s"
+
+#: ../cursesdisplay.c:1291 ../sdldisplay.c:2878
+#, c-format
+msgid "Set keys for '%s'"
+msgstr "Set keys for '%s'"
+
+#: ../sdldisplay.c:3230
+msgid "Show frames per second"
+msgstr "Show frames per second"
+
+#: ../cursesdisplay.c:1357 ../sdldisplay.c:3231
+msgid "Show hidden items"
+msgstr "Show hidden items"
+
+#: ../menu.c:401
+msgid "Solved Positions"
+msgstr "Solved Positions"
+
+#: ../xmlparser.c:89
+msgid "Stack overflow in parser_push()"
+msgstr "Stack overflow in parser_push()"
+
+#: ../main.c:218
+msgid "Stop Replaying Position"
+msgstr "Stop Replaying Position"
+
+#: ../editor.c:172
+msgid "Test Level"
+msgstr "Test Level"
+
+#: ../editor.c:671
+msgid "Title"
+msgstr "Title"
+
+#: ../editor.c:458 ../editor.c:465 ../editor.c:475 ../editor.c:485
+#: ../editor.c:495 ../editor.c:505 ../editor.c:515
+#, c-format
+msgid "Too many %s"
+msgstr "Too many %s"
+
+#: ../util.c:100
+#, c-format
+msgid "Unable to create directory '%s': %s"
+msgstr "Unable to create directory '%s': %s"
+
+#: ../sdlscreen.c:100
+msgid "Unable to create screen in screen_size"
+msgstr "Unable to create screen in screen_size"
+
+#: ../sdlfont.c:156
+msgid "Unable to create stroker"
+msgstr "Unable to create stroker"
+
+#: ../sdldisplay.c:154
+#, c-format
+msgid "Unable to initalise SDL: %s"
+msgstr "Unable to initalise SDL: %s"
+
+#: ../sdlfont.c:123
+#, c-format
+msgid "Unable to initialise freetype: error=%d"
+msgstr "Unable to initialise freetype: error=%d"
+
+#: ../sdlfont.c:128
+#, c-format
+msgid "Unable to load font: error=%d"
+msgstr "Unable to load font: error=%d"
+
+#: ../sdlfont.c:367
+msgid "Unable to open font"
+msgstr "Unable to open font"
+
+#: ../sdlfont.c:148
+msgid "Unable to set font size"
+msgstr "Unable to set font size"
+
+#: ../sdldisplay.c:2441
+msgid "Undo Speed"
+msgstr "Undo Speed"
+
+#: ../editor.c:418
+#, c-format
+msgid "Unsupported %s resting on %s at (%d,%d)"
+msgstr "Unsupported %s resting on %s at (%d,%d)"
+
+#: ../main.c:352
+msgid "Use [UP] and [DOWN] to scroll"
+msgstr "Use [UP] and [DOWN] to scroll"
+
+#: ../editor.c:173 ../editor.c:351
+msgid "Verify Level"
+msgstr "Verify Level"
+
+#: ../editor.c:728
+msgid "XOR"
+msgstr "XOR"
+
+#: ../cursesdisplay.c:1412 ../sdldisplay.c:3296
+msgid "XOR Display"
+msgstr "XOR Display"
+
+#: ../cursesdisplay.c:1411 ../sdldisplay.c:3295
+msgid "XOR Engine"
+msgstr "XOR Engine"
+
+#: ../cursesdisplay.c:1004 ../cursesdisplay.c:1405 ../sdldisplay.c:2454
+#: ../sdldisplay.c:3289
+msgid "XOR Options"
+msgstr "XOR Options"
+
+#: ../editor.c:242 ../sdldisplay.c:2473
+msgid "Yes"
+msgstr "Yes"
+
+#: ../menu.c:416
+msgid "[DELETE] to delete a position"
+msgstr "[DELETE] to delete a position"
+
+#: ../colours.c:355 ../colours.c:384 ../cursesdisplay.c:1020
+#: ../sdldisplay.c:2536
+msgid "[untitled colours]"
+msgstr "[untitled colors]"
+
+#: ../graphics.c:370 ../graphics.c:401 ../sdldisplay.c:2499
+#: ../sdldisplay.c:2502
+msgid "[untitled graphics]"
+msgstr "[untitled graphics]"
+
+#: ../editor.c:187 ../editor.c:229 ../editor.c:235 ../main.c:226 ../menu.c:574
+msgid "[untitled level]"
+msgstr "[untitled level]"
+
+#: ../cursesdisplay.c:1029 ../cursesdisplay.c:1043
+#, c-format
+msgid "after a key is pressed"
+msgstr "after a key is pressed"
+
+#: ../cursesdisplay.c:1417 ../sdldisplay.c:3301
+msgid "approximate"
+msgstr "approximate"
+
+#: ../sdldisplay.c:2490
+#, c-format
+msgid "curses"
+msgstr "curses"
+
+#: ../cursesdisplay.c:1417 ../sdldisplay.c:3301
+msgid "exact"
+msgstr "exact"
+
+#: ../cursesdisplay.c:267 ../menu.c:591 ../sdldisplay.c:849
+#, c-format
+msgid "failed"
+msgstr "failed"
+
+#: ../cursesdisplay.c:1418 ../sdldisplay.c:3302
+msgid "full"
+msgstr "full"
+
+#: ../cursesdisplay.c:1032 ../cursesdisplay.c:1046
+#, c-format
+msgid "instantaneous"
+msgstr "instantaneous"
+
+#: ../cursesdisplay.c:1362 ../cursesdisplay.c:1363 ../sdldisplay.c:3236
+#: ../sdldisplay.c:3237 ../sdldisplay.c:3238 ../sdldisplay.c:3239
+msgid "no"
+msgstr "no"
+
+#: ../cursesdisplay.c:1418 ../sdldisplay.c:3302
+msgid "partial"
+msgstr "partial"
+
+#: ../cursesdisplay.c:258 ../cursesdisplay.c:263 ../sdldisplay.c:840
+#: ../sdldisplay.c:845
+msgid "paused "
+msgstr "paused "
+
+#: ../cursesdisplay.c:259 ../sdldisplay.c:841
+msgid "replay "
+msgstr "replay "
+
+#: ../cursesdisplay.c:300 ../menu.c:588 ../menu.c:612 ../sdldisplay.c:911
+#, c-format
+msgid "solved"
+msgstr "solved"
+
+#: ../cursesdisplay.c:464 ../cursesdisplay.c:472 ../sdldisplay.c:785
+msgid "testing: "
+msgstr "testing: "
+
+#: ../main.c:83
+#, c-format
+msgid "version %s"
+msgstr "version %s"
+
+#: ../editor.c:232
+msgid "with:"
+msgstr "with:"
+
+#: ../cursesdisplay.c:1362 ../cursesdisplay.c:1363 ../sdldisplay.c:3236
+#: ../sdldisplay.c:3237 ../sdldisplay.c:3238 ../sdldisplay.c:3239
+msgid "yes"
+msgstr "yes"
+
+# translated level titles *must* begin with the English word "chroma"
+msgid "chroma 1 : initiation"
+msgstr "chroma 1 : initiation"
+
+msgid "for beginners"
+msgstr "for beginners"
+
+msgid "chroma 1.01 : invitation"
+msgstr "chroma 1.01 : invitation"
+
+msgid "chroma 1.02 : illustration"
+msgstr "chroma 1.02 : illustration"
+
+msgid "chroma 1.03 : elaboration"
+msgstr "chroma 1.03 : elaboration"
+
+msgid "chroma 1.04 : detonation"
+msgstr "chroma 1.04 : detonation"
+
+msgid "chroma 1.05 : complication"
+msgstr "chroma 1.05 : complication"
+
+msgid "chroma 1.06 : transportation"
+msgstr "chroma 1.06 : transportation"
+
+msgid "chroma 1.07 : collaboration"
+msgstr "chroma 1.07 : collaboration"
+
+msgid "chroma 1.08 : preparation"
+msgstr "chroma 1.08 : preparation"
+
+msgid "chroma 1.09 : application"
+msgstr "chroma 1.09 : application"
+
+msgid "chroma 2 : coronation"
+msgstr "chroma 2 : coronation"
+
+msgid "for experts"
+msgstr "for experts"
+
+msgid "chroma 2.01 : inauguration"
+msgstr "chroma 2.01 : inauguration"
+
+msgid "chroma 2.02 : manipulation"
+msgstr "chroma 2.02 : manipulation"
+
+msgid "chroma 2.03 : edification"
+msgstr "chroma 2.03 : edification"
+
+msgid "chroma 2.04 : disintegration"
+msgstr "chroma 2.04 : disintegration"
+
+msgid "chroma 2.05 : triplication"
+msgstr "chroma 2.05 : triplication"
+
+msgid "chroma 2.06 : orchestration"
+msgstr "chroma 2.06 : orchestration"
+
+msgid "chroma 2.07 : augmentation"
+msgstr "chroma 2.07 : augmentation"
+
+msgid "chroma 2.08 : conflagration"
+msgstr "chroma 2.08 : conflagration"
+
+msgid "chroma 2.09 : restoration"
+msgstr "chroma 2.09 : restoration"
+
+msgid "chroma 2.10 : perturbation"
+msgstr "chroma 2.10 : perturbation"
+
+msgid "chroma 2.11 : bifurcation"
+msgstr "chroma 2.11 : bifurcation"
+
+msgid "chroma 2.12 : culmination"
+msgstr "chroma 2.12 : culmination"
+
+msgid "chroma 0 : regression"
+msgstr "chroma 0 : regression"
+
+msgid "for hackers"
+msgstr "for hackers"
+
+msgid "chroma 0.00 : pieces"
+msgstr "chroma 0.00 : pieces"
+
+msgid "chroma 0.01 : regression tests"
+msgstr "chroma 0.01 : regression tests"
+
+# Actions
+msgid "Click to move player"
+msgstr "Click to move player"
+
+msgid "Click to move player, drag to scroll screen"
+msgstr "Click to move player, drag to scroll screen"
+
+msgid "Click to set piece"
+msgstr "Click to set piece"
+
+msgid "Click to set piece, drag to scroll screen"
+msgstr "Click to set piece, drag to scroll screen"
+
+msgid "Click to swap player"
+msgstr "Click to swap player"
+
+msgid "Do nothing"
+msgstr "Do nothing"
+
+msgid "Drag to scroll screen"
+msgstr "Drag to scroll screen"
+
+msgid "Fast"
+msgstr "Fast"
+
+msgid "Faster"
+msgstr "Faster"
+
+msgid "Hide screen"
+msgstr "Hide screen"
+
+msgid "Mouse click"
+msgstr "Mouse click"
+
+msgid "Mouse drag"
+msgstr "Mouse drag"
+
+msgid "Mouse drag or click"
+msgstr "Mouse drag or click"
+
+msgid "Move down"
+msgstr "Move down"
+
+msgid "Move left"
+msgstr "Move left"
+
+msgid "Move right"
+msgstr "Move right"
+
+msgid "Move up"
+msgstr "Move up"
+
+msgid "Page down"
+msgstr "Page down"
+
+msgid "Page up"
+msgstr "Page up"
+
+msgid "Pause"
+msgstr "Pause"
+
+msgid "Piece left"
+msgstr "Piece left"
+
+msgid "Piece left / Page up"
+msgstr "Piece left / Page up"
+
+msgid "Piece right"
+msgstr "Piece right"
+
+msgid "Piece right / Page down"
+msgstr "Piece right / Page down"
+
+msgid "Redo move"
+msgstr "Redo move"
+
+msgid "Redraw screen"
+msgstr "Redraw screen"
+
+msgid "Select entry"
+msgstr "Select entry"
+
+msgid "Slower"
+msgstr "Slower"
+
+msgid "Swap players / Select"
+msgstr "Swap players / Select"
+
+msgid "Undo move"
+msgstr "Undo move"
+
+msgid "Undo move / Delete"
+msgstr "Undo move / Delete"
+
+# Graphics schemes
+msgid "Chroma Marble"
+msgstr "Chroma Marble"
+
+msgid "Chroma Neon"
+msgstr "Chroma Neon"
+
+msgid "Chroma Zen"
+msgstr "Chroma Zen"
+
+msgid "Curses Emulation"
+msgstr "Curses Emulation"
+
+msgid "Default Fallback"
+msgstr "Default Fallback"
+
+# Colour schemes
+msgid "Chroma Curses Enhanced"
+msgstr "Chroma Curses Enhanced"
+
+msgid "Chroma Curses Enigma"
+msgstr "Chroma Curses Enigma"
+
+msgid "Chroma Curses Monochrome"
+msgstr "Chroma Curses Monochrome"
+
+msgid "Chroma Curses Reverse"
+msgstr "Chroma Curses Reverse"
+
+msgid "Chroma Curses Standard"
+msgstr "Chroma Curses Standard"

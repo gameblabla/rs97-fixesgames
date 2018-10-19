@@ -1,0 +1,62 @@
+o2xiv, Open2X Image Viewer
+
+- OpenDingux version, 2014-04-26 -
+
+== Table of contents ==
+1. Controls in the file selector
+2. Controls while viewing images
+3. Options
+4. Exiting o2xiv
+5. Credits
+6. Source code
+
+== Controls in the file selector ==
+
+> D-pad Up/Down: Move the selection by one entry, file or directory.
+> L/R shoulder buttons: Move the selection by one page of entries.
+> A/B: Select the image for viewing.
+
+Select the '../' entry to go up one directory. The current path is displayed at the top of the screen. The file selector starts out in your home directory. You can browse screenshots in the internal memory by selecting 'screenshots/', and photos on the external microSD card by going to /media/sdcard; that is, back to / via multiple '../' entries, then 'media/', then 'sdcard/'.
+
+== Controls while viewing images ==
+
+> Start: Options, including Quit (see below).
+> Select: Return to the file selector.
+> L/R shoulder buttons: Load the previous or next image in the same directory.
+> Y: Zoom in (up to 4x).
+> X: Zoom out (up to 1/100x).
+> D-pad: Pan, when the image is too large for the screen to show at the current zoom level.
+> B: Rotate clockwise 90 degrees.
+> A: Rotate counter-clockwise 90 degrees.
+
+Rotations are not written to the original files. They only apply during a run of o2xiv.
+
+== Options ==
+
+After pressing Start while viewing an image, you are greeted with the following commands and options.
+
+> Original size: Set the zoom level to 100%, exact pixels.
+> Fit inside: Set the zoom level automatically to show the entire image, showing black bars along one dimension of the image if it's shorter.
+> Fit outside: Set the zoom level automatically to fill the entire screen, cropping one dimension of the image if it's longer.
+> Auto-fit: If this setting is enabled, selecting new images shows them as if by the 'Fit inside' command. It is enabled by default.
+> Auto-rotate: If this setting is enabled, selecting new images shows them rotated if their width and height would fill more of the screen if they were reversed.
+> Browse...: Return to the file selector. Equivalent to pressing Select.
+> Show hidden: If this setting is enabled, hidden (starting with a '.' character) files and directories are visible in the browser. It is disabled by default.
+> Return: Return to the image. Equivalent to pressing Start again.
+
+== Exiting o2xiv ==
+
+To exit o2xiv, press Start, navigate to Quit and press A or B. This works even from the file selector when there are no images to display.
+
+== Credits ==
+
+Original code: The Open2X team
+Port and font: Nebuleon
+
+== Source code ==
+Find the source code for this release of o2xiv at:
+  https://github.com/Nebuleon/o2xiv
+This is a fork of only the o2xiv part of the Open2X repository, which contains multiple gigabytes of code, at:
+  http://sourceforge.net/p/open2x/code/HEAD/tree/
+The code is licensed under the GNU General Public License, version 2 or later at your option.
+The font is dual-licensed under the GNU General Public License, version 2 or later at your option, and the Creative Commons Attribution-ShareAlike 3.0 license.

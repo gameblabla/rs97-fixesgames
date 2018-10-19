@@ -1,0 +1,38 @@
+==============================================================================
+  FROMHEX  -- Binary File Generation Utility
+==============================================================================
+
+This utility takes a textual hexdump (such as what 'tohex' produces)
+and generates a binary file as its output.  This can be useful for
+editing binary files with an ordinary text editor.  Also, it can be
+useful for creating new binary files from scratch using a human-readable
+source format.
+
+Usage:
+
+    fromhex [input [output]]
+
+Where 'input' is the input filename, and 'output' is the output filename.
+If the input filename is not specified, or is given as '-', then the
+input is taken from stdin.  If the output filename is not specified,
+or is given as '-', then the output will go to stdout.
+
+The input format is quite simple.  Fromhex expects 1 or 2 digit
+hexadecimal numbers separated by one or more characters of whitespace.
+Case does not matter--that is, "1a" and "1A" are both equally valid
+hexadecimal numbers.  All text to the right of a '#' is ignored.
+This can be useful for writing comments, or whatever.
+
+The astute reader will notice that the above rules allow 'fromhex'
+to take the output from 'tohex' seamlessly.  This is purposeful.
+Fromhex does not require rigid adherence to the 'tohex' output format
+though.
+
+Example:
+
+  ## FONT FILE
+  01 02 04 08 10 20 40 80       # slash character
+  00 66 FF FF 7E 3C 18 00       # heart character
+
+The above will generate a 16-byte file.
+

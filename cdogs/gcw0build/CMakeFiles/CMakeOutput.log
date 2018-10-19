@@ -1,0 +1,761 @@
+The target system is: Buildroot -  - mipsel
+The host system is: Linux - 4.18.11-gnu - x86_64
+Compiling the C compiler identification source file "CMakeCCompilerId.c" succeeded.
+Compiler: /opt/rs97-toolchain/usr/bin/mipsel-buildroot-linux-musl-gcc 
+Build flags: -D_LARGEFILE_SOURCE;-D_LARGEFILE64_SOURCE;-D_FILE_OFFSET_BITS=64;-Ofast;-mno-abicalls;-mplt
+Id flags:  
+
+The output was:
+0
+/home/anonymous/Documents/Dev/rs97-toolchain/bin/../lib/gcc/mipsel-buildroot-linux-musl/7.3.0/../../../../mipsel-buildroot-linux-musl/bin/ld: /tmp/ccd9gCKj.o: warning: linking abicalls files with non-abicalls files
+
+
+Compilation of the C compiler identification source "CMakeCCompilerId.c" produced "a.out"
+
+The C compiler identification is GNU, found in "/home/anonymous/Documents/Dev/rs97-source/cdogs/gcw0build/CMakeFiles/3.12.3/CompilerIdC/a.out"
+
+Determining if the C compiler works passed with the following output:
+Change Dir: /home/anonymous/Documents/Dev/rs97-source/cdogs/gcw0build/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_3ff13/fast"
+/usr/bin/make -f CMakeFiles/cmTC_3ff13.dir/build.make CMakeFiles/cmTC_3ff13.dir/build
+make[1]: Entering directory '/home/anonymous/Documents/Dev/rs97-source/cdogs/gcw0build/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_3ff13.dir/testCCompiler.c.o
+/opt/rs97-toolchain/usr/bin/mipsel-buildroot-linux-musl-gcc --sysroot=/opt/rs97-toolchain/usr/mipsel-buildroot-linux-musl/sysroot   -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -Ofast -mno-abicalls -mplt   -DNDEBUG   -o CMakeFiles/cmTC_3ff13.dir/testCCompiler.c.o   -c /home/anonymous/Documents/Dev/rs97-source/cdogs/gcw0build/CMakeFiles/CMakeTmp/testCCompiler.c
+Linking C executable cmTC_3ff13
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_3ff13.dir/link.txt --verbose=1
+/opt/rs97-toolchain/usr/bin/mipsel-buildroot-linux-musl-gcc --sysroot=/opt/rs97-toolchain/usr/mipsel-buildroot-linux-musl/sysroot -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -Ofast -mno-abicalls -mplt   -DNDEBUG    CMakeFiles/cmTC_3ff13.dir/testCCompiler.c.o  -o cmTC_3ff13 
+/home/anonymous/Documents/Dev/rs97-toolchain/bin/../lib/gcc/mipsel-buildroot-linux-musl/7.3.0/../../../../mipsel-buildroot-linux-musl/bin/ld: CMakeFiles/cmTC_3ff13.dir/testCCompiler.c.o: warning: linking abicalls files with non-abicalls files
+make[1]: Leaving directory '/home/anonymous/Documents/Dev/rs97-source/cdogs/gcw0build/CMakeFiles/CMakeTmp'
+
+
+Detecting C compiler ABI info compiled with the following output:
+Change Dir: /home/anonymous/Documents/Dev/rs97-source/cdogs/gcw0build/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_a2309/fast"
+/usr/bin/make -f CMakeFiles/cmTC_a2309.dir/build.make CMakeFiles/cmTC_a2309.dir/build
+make[1]: Entering directory '/home/anonymous/Documents/Dev/rs97-source/cdogs/gcw0build/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_a2309.dir/CMakeCCompilerABI.c.o
+/opt/rs97-toolchain/usr/bin/mipsel-buildroot-linux-musl-gcc --sysroot=/opt/rs97-toolchain/usr/mipsel-buildroot-linux-musl/sysroot   -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -Ofast -mno-abicalls -mplt   -DNDEBUG   -o CMakeFiles/cmTC_a2309.dir/CMakeCCompilerABI.c.o   -c /usr/share/cmake-3.12/Modules/CMakeCCompilerABI.c
+Linking C executable cmTC_a2309
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_a2309.dir/link.txt --verbose=1
+/opt/rs97-toolchain/usr/bin/mipsel-buildroot-linux-musl-gcc --sysroot=/opt/rs97-toolchain/usr/mipsel-buildroot-linux-musl/sysroot -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -Ofast -mno-abicalls -mplt   -DNDEBUG   -v CMakeFiles/cmTC_a2309.dir/CMakeCCompilerABI.c.o  -o cmTC_a2309 
+Using built-in specs.
+COLLECT_GCC=/home/anonymous/Documents/Dev/rs97-toolchain/bin/mipsel-buildroot-linux-musl-gcc.br_real
+COLLECT_LTO_WRAPPER=/home/anonymous/Documents/Dev/rs97-toolchain/bin/../libexec/gcc/mipsel-buildroot-linux-musl/7.3.0/lto-wrapper
+Target: mipsel-buildroot-linux-musl
+Configured with: ./configure --prefix=/home/anonymous/Documents/Dev/buildroot-rs97/output/host --sysconfdir=/home/anonymous/Documents/Dev/buildroot-rs97/output/host/etc --enable-static --target=mipsel-buildroot-linux-musl --with-sysroot=/home/anonymous/Documents/Dev/buildroot-rs97/output/host/mipsel-buildroot-linux-musl/sysroot --disable-__cxa_atexit --with-gnu-ld --disable-libssp --disable-multilib --with-gmp=/home/anonymous/Documents/Dev/buildroot-rs97/output/host --with-mpc=/home/anonymous/Documents/Dev/buildroot-rs97/output/host --with-mpfr=/home/anonymous/Documents/Dev/buildroot-rs97/output/host --with-pkgversion='Buildroot 2018.05-g8ba0e7a-dirty' --with-bugurl=http://bugs.buildroot.net/ --disable-libmpx --disable-libquadmath --disable-libsanitizer --enable-tls --disable-libmudflap --enable-threads --without-isl --without-cloog --disable-decimal-float --with-arch=mips32 --with-abi=32 --with-nan=legacy --with-fp-32=32 --enable-languages=c,c++ --with-build-time-tools=/home/anonymous/Documents/Dev/buildroot-rs97/output/host/mipsel-buildroot-linux-musl/bin --enable-shared --disable-libgomp
+Thread model: posix
+gcc version 7.3.0 (Buildroot 2018.05-g8ba0e7a-dirty) 
+COMPILER_PATH=/home/anonymous/Documents/Dev/rs97-toolchain/bin/../libexec/gcc/mipsel-buildroot-linux-musl/7.3.0/:/home/anonymous/Documents/Dev/rs97-toolchain/bin/../libexec/gcc/:/home/anonymous/Documents/Dev/rs97-toolchain/bin/../lib/gcc/mipsel-buildroot-linux-musl/7.3.0/../../../../mipsel-buildroot-linux-musl/bin/
+LIBRARY_PATH=/home/anonymous/Documents/Dev/rs97-toolchain/bin/../lib/gcc/mipsel-buildroot-linux-musl/7.3.0/:/home/anonymous/Documents/Dev/rs97-toolchain/bin/../lib/gcc/:/home/anonymous/Documents/Dev/rs97-toolchain/bin/../lib/gcc/mipsel-buildroot-linux-musl/7.3.0/../../../../mipsel-buildroot-linux-musl/lib/:/opt/rs97-toolchain/usr/mipsel-buildroot-linux-musl/sysroot/lib/:/opt/rs97-toolchain/usr/mipsel-buildroot-linux-musl/sysroot/usr/lib/
+COLLECT_GCC_OPTIONS='-D' '_LARGEFILE_SOURCE' '-D' '_LARGEFILE64_SOURCE' '-D' '_FILE_OFFSET_BITS=64' '-Ofast' '-mno-abicalls' '-mplt' '-D' 'NDEBUG' '-v' '-o' 'cmTC_a2309' '-march=mips32' '-mabi=32' '-mnan=legacy' '-mfp32' '-mllsc' '-mips32' '-mno-shared' '-EL'
+ /home/anonymous/Documents/Dev/rs97-toolchain/bin/../libexec/gcc/mipsel-buildroot-linux-musl/7.3.0/collect2 -plugin /home/anonymous/Documents/Dev/rs97-toolchain/bin/../libexec/gcc/mipsel-buildroot-linux-musl/7.3.0/liblto_plugin.so -plugin-opt=/home/anonymous/Documents/Dev/rs97-toolchain/bin/../libexec/gcc/mipsel-buildroot-linux-musl/7.3.0/lto-wrapper -plugin-opt=-fresolution=/tmp/ccOOJhnK.res -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lgcc_s --sysroot=/opt/rs97-toolchain/usr/mipsel-buildroot-linux-musl/sysroot --eh-frame-hdr -EL -mips32 -dynamic-linker /lib/ld-musl-mipsel.so.1 -melf32ltsmip -o cmTC_a2309 /opt/rs97-toolchain/usr/mipsel-buildroot-linux-musl/sysroot/lib/crt1.o /opt/rs97-toolchain/usr/mipsel-buildroot-linux-musl/sysroot/lib/crti.o /home/anonymous/Documents/Dev/rs97-toolchain/bin/../lib/gcc/mipsel-buildroot-linux-musl/7.3.0/crtbegin.o -L/home/anonymous/Documents/Dev/rs97-toolchain/bin/../lib/gcc/mipsel-buildroot-linux-musl/7.3.0 -L/home/anonymous/Documents/Dev/rs97-toolchain/bin/../lib/gcc -L/home/anonymous/Documents/Dev/rs97-toolchain/bin/../lib/gcc/mipsel-buildroot-linux-musl/7.3.0/../../../../mipsel-buildroot-linux-musl/lib -L/opt/rs97-toolchain/usr/mipsel-buildroot-linux-musl/sysroot/lib -L/opt/rs97-toolchain/usr/mipsel-buildroot-linux-musl/sysroot/usr/lib CMakeFiles/cmTC_a2309.dir/CMakeCCompilerABI.c.o -lgcc --as-needed -lgcc_s --no-as-needed -lc -lgcc --as-needed -lgcc_s --no-as-needed /home/anonymous/Documents/Dev/rs97-toolchain/bin/../lib/gcc/mipsel-buildroot-linux-musl/7.3.0/crtfastmath.o /home/anonymous/Documents/Dev/rs97-toolchain/bin/../lib/gcc/mipsel-buildroot-linux-musl/7.3.0/crtend.o /opt/rs97-toolchain/usr/mipsel-buildroot-linux-musl/sysroot/lib/crtn.o
+/home/anonymous/Documents/Dev/rs97-toolchain/bin/../lib/gcc/mipsel-buildroot-linux-musl/7.3.0/../../../../mipsel-buildroot-linux-musl/bin/ld: CMakeFiles/cmTC_a2309.dir/CMakeCCompilerABI.c.o: warning: linking abicalls files with non-abicalls files
+COLLECT_GCC_OPTIONS='-D' '_LARGEFILE_SOURCE' '-D' '_LARGEFILE64_SOURCE' '-D' '_FILE_OFFSET_BITS=64' '-Ofast' '-mno-abicalls' '-mplt' '-D' 'NDEBUG' '-v' '-o' 'cmTC_a2309' '-march=mips32' '-mabi=32' '-mnan=legacy' '-mfp32' '-mllsc' '-mips32' '-mno-shared' '-EL'
+make[1]: Leaving directory '/home/anonymous/Documents/Dev/rs97-source/cdogs/gcw0build/CMakeFiles/CMakeTmp'
+
+
+Parsed C implicit link information from above output:
+  link line regex: [^( *|.*[/\])(mipsel-buildroot-linux-musl-ld|CMAKE_LINK_STARTFILE-NOTFOUND|([^/\]+-)?ld|collect2)[^/\]*( |$)]
+  ignore line: [Change Dir: /home/anonymous/Documents/Dev/rs97-source/cdogs/gcw0build/CMakeFiles/CMakeTmp]
+  ignore line: []
+  ignore line: [Run Build Command:"/usr/bin/make" "cmTC_a2309/fast"]
+  ignore line: [/usr/bin/make -f CMakeFiles/cmTC_a2309.dir/build.make CMakeFiles/cmTC_a2309.dir/build]
+  ignore line: [make[1]: Entering directory '/home/anonymous/Documents/Dev/rs97-source/cdogs/gcw0build/CMakeFiles/CMakeTmp']
+  ignore line: [Building C object CMakeFiles/cmTC_a2309.dir/CMakeCCompilerABI.c.o]
+  ignore line: [/opt/rs97-toolchain/usr/bin/mipsel-buildroot-linux-musl-gcc --sysroot=/opt/rs97-toolchain/usr/mipsel-buildroot-linux-musl/sysroot   -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -Ofast -mno-abicalls -mplt   -DNDEBUG   -o CMakeFiles/cmTC_a2309.dir/CMakeCCompilerABI.c.o   -c /usr/share/cmake-3.12/Modules/CMakeCCompilerABI.c]
+  ignore line: [Linking C executable cmTC_a2309]
+  ignore line: [/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_a2309.dir/link.txt --verbose=1]
+  ignore line: [/opt/rs97-toolchain/usr/bin/mipsel-buildroot-linux-musl-gcc --sysroot=/opt/rs97-toolchain/usr/mipsel-buildroot-linux-musl/sysroot -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -Ofast -mno-abicalls -mplt   -DNDEBUG   -v CMakeFiles/cmTC_a2309.dir/CMakeCCompilerABI.c.o  -o cmTC_a2309 ]
+  ignore line: [Using built-in specs.]
+  ignore line: [COLLECT_GCC=/home/anonymous/Documents/Dev/rs97-toolchain/bin/mipsel-buildroot-linux-musl-gcc.br_real]
+  ignore line: [COLLECT_LTO_WRAPPER=/home/anonymous/Documents/Dev/rs97-toolchain/bin/../libexec/gcc/mipsel-buildroot-linux-musl/7.3.0/lto-wrapper]
+  ignore line: [Target: mipsel-buildroot-linux-musl]
+  ignore line: [Configured with: ./configure --prefix=/home/anonymous/Documents/Dev/buildroot-rs97/output/host --sysconfdir=/home/anonymous/Documents/Dev/buildroot-rs97/output/host/etc --enable-static --target=mipsel-buildroot-linux-musl --with-sysroot=/home/anonymous/Documents/Dev/buildroot-rs97/output/host/mipsel-buildroot-linux-musl/sysroot --disable-__cxa_atexit --with-gnu-ld --disable-libssp --disable-multilib --with-gmp=/home/anonymous/Documents/Dev/buildroot-rs97/output/host --with-mpc=/home/anonymous/Documents/Dev/buildroot-rs97/output/host --with-mpfr=/home/anonymous/Documents/Dev/buildroot-rs97/output/host --with-pkgversion='Buildroot 2018.05-g8ba0e7a-dirty' --with-bugurl=http://bugs.buildroot.net/ --disable-libmpx --disable-libquadmath --disable-libsanitizer --enable-tls --disable-libmudflap --enable-threads --without-isl --without-cloog --disable-decimal-float --with-arch=mips32 --with-abi=32 --with-nan=legacy --with-fp-32=32 --enable-languages=c,c++ --with-build-time-tools=/home/anonymous/Documents/Dev/buildroot-rs97/output/host/mipsel-buildroot-linux-musl/bin --enable-shared --disable-libgomp]
+  ignore line: [Thread model: posix]
+  ignore line: [gcc version 7.3.0 (Buildroot 2018.05-g8ba0e7a-dirty) ]
+  ignore line: [COMPILER_PATH=/home/anonymous/Documents/Dev/rs97-toolchain/bin/../libexec/gcc/mipsel-buildroot-linux-musl/7.3.0/:/home/anonymous/Documents/Dev/rs97-toolchain/bin/../libexec/gcc/:/home/anonymous/Documents/Dev/rs97-toolchain/bin/../lib/gcc/mipsel-buildroot-linux-musl/7.3.0/../../../../mipsel-buildroot-linux-musl/bin/]
+  ignore line: [LIBRARY_PATH=/home/anonymous/Documents/Dev/rs97-toolchain/bin/../lib/gcc/mipsel-buildroot-linux-musl/7.3.0/:/home/anonymous/Documents/Dev/rs97-toolchain/bin/../lib/gcc/:/home/anonymous/Documents/Dev/rs97-toolchain/bin/../lib/gcc/mipsel-buildroot-linux-musl/7.3.0/../../../../mipsel-buildroot-linux-musl/lib/:/opt/rs97-toolchain/usr/mipsel-buildroot-linux-musl/sysroot/lib/:/opt/rs97-toolchain/usr/mipsel-buildroot-linux-musl/sysroot/usr/lib/]
+  ignore line: [COLLECT_GCC_OPTIONS='-D' '_LARGEFILE_SOURCE' '-D' '_LARGEFILE64_SOURCE' '-D' '_FILE_OFFSET_BITS=64' '-Ofast' '-mno-abicalls' '-mplt' '-D' 'NDEBUG' '-v' '-o' 'cmTC_a2309' '-march=mips32' '-mabi=32' '-mnan=legacy' '-mfp32' '-mllsc' '-mips32' '-mno-shared' '-EL']
+  link line: [ /home/anonymous/Documents/Dev/rs97-toolchain/bin/../libexec/gcc/mipsel-buildroot-linux-musl/7.3.0/collect2 -plugin /home/anonymous/Documents/Dev/rs97-toolchain/bin/../libexec/gcc/mipsel-buildroot-linux-musl/7.3.0/liblto_plugin.so -plugin-opt=/home/anonymous/Documents/Dev/rs97-toolchain/bin/../libexec/gcc/mipsel-buildroot-linux-musl/7.3.0/lto-wrapper -plugin-opt=-fresolution=/tmp/ccOOJhnK.res -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lgcc_s --sysroot=/opt/rs97-toolchain/usr/mipsel-buildroot-linux-musl/sysroot --eh-frame-hdr -EL -mips32 -dynamic-linker /lib/ld-musl-mipsel.so.1 -melf32ltsmip -o cmTC_a2309 /opt/rs97-toolchain/usr/mipsel-buildroot-linux-musl/sysroot/lib/crt1.o /opt/rs97-toolchain/usr/mipsel-buildroot-linux-musl/sysroot/lib/crti.o /home/anonymous/Documents/Dev/rs97-toolchain/bin/../lib/gcc/mipsel-buildroot-linux-musl/7.3.0/crtbegin.o -L/home/anonymous/Documents/Dev/rs97-toolchain/bin/../lib/gcc/mipsel-buildroot-linux-musl/7.3.0 -L/home/anonymous/Documents/Dev/rs97-toolchain/bin/../lib/gcc -L/home/anonymous/Documents/Dev/rs97-toolchain/bin/../lib/gcc/mipsel-buildroot-linux-musl/7.3.0/../../../../mipsel-buildroot-linux-musl/lib -L/opt/rs97-toolchain/usr/mipsel-buildroot-linux-musl/sysroot/lib -L/opt/rs97-toolchain/usr/mipsel-buildroot-linux-musl/sysroot/usr/lib CMakeFiles/cmTC_a2309.dir/CMakeCCompilerABI.c.o -lgcc --as-needed -lgcc_s --no-as-needed -lc -lgcc --as-needed -lgcc_s --no-as-needed /home/anonymous/Documents/Dev/rs97-toolchain/bin/../lib/gcc/mipsel-buildroot-linux-musl/7.3.0/crtfastmath.o /home/anonymous/Documents/Dev/rs97-toolchain/bin/../lib/gcc/mipsel-buildroot-linux-musl/7.3.0/crtend.o /opt/rs97-toolchain/usr/mipsel-buildroot-linux-musl/sysroot/lib/crtn.o]
+    arg [/home/anonymous/Documents/Dev/rs97-toolchain/bin/../libexec/gcc/mipsel-buildroot-linux-musl/7.3.0/collect2] ==> ignore
+    arg [-plugin] ==> ignore
+    arg [/home/anonymous/Documents/Dev/rs97-toolchain/bin/../libexec/gcc/mipsel-buildroot-linux-musl/7.3.0/liblto_plugin.so] ==> ignore
+    arg [-plugin-opt=/home/anonymous/Documents/Dev/rs97-toolchain/bin/../libexec/gcc/mipsel-buildroot-linux-musl/7.3.0/lto-wrapper] ==> ignore
+    arg [-plugin-opt=-fresolution=/tmp/ccOOJhnK.res] ==> ignore
+    arg [-plugin-opt=-pass-through=-lgcc] ==> ignore
+    arg [-plugin-opt=-pass-through=-lgcc_s] ==> ignore
+    arg [-plugin-opt=-pass-through=-lc] ==> ignore
+    arg [-plugin-opt=-pass-through=-lgcc] ==> ignore
+    arg [-plugin-opt=-pass-through=-lgcc_s] ==> ignore
+    arg [--sysroot=/opt/rs97-toolchain/usr/mipsel-buildroot-linux-musl/sysroot] ==> ignore
+    arg [--eh-frame-hdr] ==> ignore
+    arg [-EL] ==> ignore
+    arg [-mips32] ==> ignore
+    arg [-dynamic-linker] ==> ignore
+    arg [/lib/ld-musl-mipsel.so.1] ==> ignore
+    arg [-melf32ltsmip] ==> ignore
+    arg [-o] ==> ignore
+    arg [cmTC_a2309] ==> ignore
+    arg [/opt/rs97-toolchain/usr/mipsel-buildroot-linux-musl/sysroot/lib/crt1.o] ==> ignore
+    arg [/opt/rs97-toolchain/usr/mipsel-buildroot-linux-musl/sysroot/lib/crti.o] ==> ignore
+    arg [/home/anonymous/Documents/Dev/rs97-toolchain/bin/../lib/gcc/mipsel-buildroot-linux-musl/7.3.0/crtbegin.o] ==> ignore
+    arg [-L/home/anonymous/Documents/Dev/rs97-toolchain/bin/../lib/gcc/mipsel-buildroot-linux-musl/7.3.0] ==> dir [/home/anonymous/Documents/Dev/rs97-toolchain/bin/../lib/gcc/mipsel-buildroot-linux-musl/7.3.0]
+    arg [-L/home/anonymous/Documents/Dev/rs97-toolchain/bin/../lib/gcc] ==> dir [/home/anonymous/Documents/Dev/rs97-toolchain/bin/../lib/gcc]
+    arg [-L/home/anonymous/Documents/Dev/rs97-toolchain/bin/../lib/gcc/mipsel-buildroot-linux-musl/7.3.0/../../../../mipsel-buildroot-linux-musl/lib] ==> dir [/home/anonymous/Documents/Dev/rs97-toolchain/bin/../lib/gcc/mipsel-buildroot-linux-musl/7.3.0/../../../../mipsel-buildroot-linux-musl/lib]
+    arg [-L/opt/rs97-toolchain/usr/mipsel-buildroot-linux-musl/sysroot/lib] ==> dir [/opt/rs97-toolchain/usr/mipsel-buildroot-linux-musl/sysroot/lib]
+    arg [-L/opt/rs97-toolchain/usr/mipsel-buildroot-linux-musl/sysroot/usr/lib] ==> dir [/opt/rs97-toolchain/usr/mipsel-buildroot-linux-musl/sysroot/usr/lib]
+    arg [CMakeFiles/cmTC_a2309.dir/CMakeCCompilerABI.c.o] ==> ignore
+    arg [-lgcc] ==> lib [gcc]
+    arg [--as-needed] ==> ignore
+    arg [-lgcc_s] ==> lib [gcc_s]
+    arg [--no-as-needed] ==> ignore
+    arg [-lc] ==> lib [c]
+    arg [-lgcc] ==> lib [gcc]
+    arg [--as-needed] ==> ignore
+    arg [-lgcc_s] ==> lib [gcc_s]
+    arg [--no-as-needed] ==> ignore
+    arg [/home/anonymous/Documents/Dev/rs97-toolchain/bin/../lib/gcc/mipsel-buildroot-linux-musl/7.3.0/crtfastmath.o] ==> ignore
+    arg [/home/anonymous/Documents/Dev/rs97-toolchain/bin/../lib/gcc/mipsel-buildroot-linux-musl/7.3.0/crtend.o] ==> ignore
+    arg [/opt/rs97-toolchain/usr/mipsel-buildroot-linux-musl/sysroot/lib/crtn.o] ==> ignore
+  collapse library dir [/home/anonymous/Documents/Dev/rs97-toolchain/bin/../lib/gcc/mipsel-buildroot-linux-musl/7.3.0] ==> [/home/anonymous/Documents/Dev/rs97-toolchain/lib/gcc/mipsel-buildroot-linux-musl/7.3.0]
+  collapse library dir [/home/anonymous/Documents/Dev/rs97-toolchain/bin/../lib/gcc] ==> [/home/anonymous/Documents/Dev/rs97-toolchain/lib/gcc]
+  collapse library dir [/home/anonymous/Documents/Dev/rs97-toolchain/bin/../lib/gcc/mipsel-buildroot-linux-musl/7.3.0/../../../../mipsel-buildroot-linux-musl/lib] ==> [/home/anonymous/Documents/Dev/rs97-toolchain/mipsel-buildroot-linux-musl/lib]
+  collapse library dir [/opt/rs97-toolchain/usr/mipsel-buildroot-linux-musl/sysroot/lib] ==> [/opt/rs97-toolchain/usr/mipsel-buildroot-linux-musl/sysroot/lib]
+  collapse library dir [/opt/rs97-toolchain/usr/mipsel-buildroot-linux-musl/sysroot/usr/lib] ==> [/opt/rs97-toolchain/usr/mipsel-buildroot-linux-musl/sysroot/usr/lib]
+  implicit libs: [gcc;gcc_s;c;gcc;gcc_s]
+  implicit dirs: [/home/anonymous/Documents/Dev/rs97-toolchain/lib/gcc/mipsel-buildroot-linux-musl/7.3.0;/home/anonymous/Documents/Dev/rs97-toolchain/lib/gcc;/home/anonymous/Documents/Dev/rs97-toolchain/mipsel-buildroot-linux-musl/lib;/opt/rs97-toolchain/usr/mipsel-buildroot-linux-musl/sysroot/lib;/opt/rs97-toolchain/usr/mipsel-buildroot-linux-musl/sysroot/usr/lib]
+  implicit fwks: []
+
+
+
+
+Detecting C [-std=c11] compiler features compiled with the following output:
+Change Dir: /home/anonymous/Documents/Dev/rs97-source/cdogs/gcw0build/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_0a06d/fast"
+/usr/bin/make -f CMakeFiles/cmTC_0a06d.dir/build.make CMakeFiles/cmTC_0a06d.dir/build
+make[1]: Entering directory '/home/anonymous/Documents/Dev/rs97-source/cdogs/gcw0build/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_0a06d.dir/feature_tests.c.o
+/opt/rs97-toolchain/usr/bin/mipsel-buildroot-linux-musl-gcc --sysroot=/opt/rs97-toolchain/usr/mipsel-buildroot-linux-musl/sysroot   -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -Ofast -mno-abicalls -mplt   -DNDEBUG   -std=c11 -o CMakeFiles/cmTC_0a06d.dir/feature_tests.c.o   -c /home/anonymous/Documents/Dev/rs97-source/cdogs/gcw0build/CMakeFiles/feature_tests.c
+Linking C executable cmTC_0a06d
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_0a06d.dir/link.txt --verbose=1
+/opt/rs97-toolchain/usr/bin/mipsel-buildroot-linux-musl-gcc --sysroot=/opt/rs97-toolchain/usr/mipsel-buildroot-linux-musl/sysroot -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -Ofast -mno-abicalls -mplt   -DNDEBUG    CMakeFiles/cmTC_0a06d.dir/feature_tests.c.o  -o cmTC_0a06d 
+/home/anonymous/Documents/Dev/rs97-toolchain/bin/../lib/gcc/mipsel-buildroot-linux-musl/7.3.0/../../../../mipsel-buildroot-linux-musl/bin/ld: CMakeFiles/cmTC_0a06d.dir/feature_tests.c.o: warning: linking abicalls files with non-abicalls files
+make[1]: Leaving directory '/home/anonymous/Documents/Dev/rs97-source/cdogs/gcw0build/CMakeFiles/CMakeTmp'
+
+
+    Feature record: C_FEATURE:1c_function_prototypes
+    Feature record: C_FEATURE:1c_restrict
+    Feature record: C_FEATURE:1c_static_assert
+    Feature record: C_FEATURE:1c_variadic_macros
+
+
+Detecting C [-std=c99] compiler features compiled with the following output:
+Change Dir: /home/anonymous/Documents/Dev/rs97-source/cdogs/gcw0build/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_10ad7/fast"
+/usr/bin/make -f CMakeFiles/cmTC_10ad7.dir/build.make CMakeFiles/cmTC_10ad7.dir/build
+make[1]: Entering directory '/home/anonymous/Documents/Dev/rs97-source/cdogs/gcw0build/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_10ad7.dir/feature_tests.c.o
+/opt/rs97-toolchain/usr/bin/mipsel-buildroot-linux-musl-gcc --sysroot=/opt/rs97-toolchain/usr/mipsel-buildroot-linux-musl/sysroot   -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -Ofast -mno-abicalls -mplt   -DNDEBUG   -std=c99 -o CMakeFiles/cmTC_10ad7.dir/feature_tests.c.o   -c /home/anonymous/Documents/Dev/rs97-source/cdogs/gcw0build/CMakeFiles/feature_tests.c
+Linking C executable cmTC_10ad7
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_10ad7.dir/link.txt --verbose=1
+/opt/rs97-toolchain/usr/bin/mipsel-buildroot-linux-musl-gcc --sysroot=/opt/rs97-toolchain/usr/mipsel-buildroot-linux-musl/sysroot -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -Ofast -mno-abicalls -mplt   -DNDEBUG    CMakeFiles/cmTC_10ad7.dir/feature_tests.c.o  -o cmTC_10ad7 
+/home/anonymous/Documents/Dev/rs97-toolchain/bin/../lib/gcc/mipsel-buildroot-linux-musl/7.3.0/../../../../mipsel-buildroot-linux-musl/bin/ld: CMakeFiles/cmTC_10ad7.dir/feature_tests.c.o: warning: linking abicalls files with non-abicalls files
+make[1]: Leaving directory '/home/anonymous/Documents/Dev/rs97-source/cdogs/gcw0build/CMakeFiles/CMakeTmp'
+
+
+    Feature record: C_FEATURE:1c_function_prototypes
+    Feature record: C_FEATURE:1c_restrict
+    Feature record: C_FEATURE:0c_static_assert
+    Feature record: C_FEATURE:1c_variadic_macros
+
+
+Detecting C [-std=c90] compiler features compiled with the following output:
+Change Dir: /home/anonymous/Documents/Dev/rs97-source/cdogs/gcw0build/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_2afaf/fast"
+/usr/bin/make -f CMakeFiles/cmTC_2afaf.dir/build.make CMakeFiles/cmTC_2afaf.dir/build
+make[1]: Entering directory '/home/anonymous/Documents/Dev/rs97-source/cdogs/gcw0build/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_2afaf.dir/feature_tests.c.o
+/opt/rs97-toolchain/usr/bin/mipsel-buildroot-linux-musl-gcc --sysroot=/opt/rs97-toolchain/usr/mipsel-buildroot-linux-musl/sysroot   -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -Ofast -mno-abicalls -mplt   -DNDEBUG   -std=c90 -o CMakeFiles/cmTC_2afaf.dir/feature_tests.c.o   -c /home/anonymous/Documents/Dev/rs97-source/cdogs/gcw0build/CMakeFiles/feature_tests.c
+Linking C executable cmTC_2afaf
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_2afaf.dir/link.txt --verbose=1
+/opt/rs97-toolchain/usr/bin/mipsel-buildroot-linux-musl-gcc --sysroot=/opt/rs97-toolchain/usr/mipsel-buildroot-linux-musl/sysroot -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -Ofast -mno-abicalls -mplt   -DNDEBUG    CMakeFiles/cmTC_2afaf.dir/feature_tests.c.o  -o cmTC_2afaf 
+/home/anonymous/Documents/Dev/rs97-toolchain/bin/../lib/gcc/mipsel-buildroot-linux-musl/7.3.0/../../../../mipsel-buildroot-linux-musl/bin/ld: CMakeFiles/cmTC_2afaf.dir/feature_tests.c.o: warning: linking abicalls files with non-abicalls files
+make[1]: Leaving directory '/home/anonymous/Documents/Dev/rs97-source/cdogs/gcw0build/CMakeFiles/CMakeTmp'
+
+
+    Feature record: C_FEATURE:1c_function_prototypes
+    Feature record: C_FEATURE:0c_restrict
+    Feature record: C_FEATURE:0c_static_assert
+    Feature record: C_FEATURE:0c_variadic_macros
+Determining if the include file pthread.h exists passed with the following output:
+Change Dir: /home/anonymous/Documents/Dev/rs97-source/cdogs/gcw0build/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_b7409/fast"
+/usr/bin/make -f CMakeFiles/cmTC_b7409.dir/build.make CMakeFiles/cmTC_b7409.dir/build
+make[1]: Entering directory '/home/anonymous/Documents/Dev/rs97-source/cdogs/gcw0build/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_b7409.dir/CheckIncludeFile.c.o
+/opt/rs97-toolchain/usr/bin/mipsel-buildroot-linux-musl-gcc --sysroot=/opt/rs97-toolchain/usr/mipsel-buildroot-linux-musl/sysroot   -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -Ofast -mno-abicalls -mplt   -DNDEBUG   -o CMakeFiles/cmTC_b7409.dir/CheckIncludeFile.c.o   -c /home/anonymous/Documents/Dev/rs97-source/cdogs/gcw0build/CMakeFiles/CMakeTmp/CheckIncludeFile.c
+Linking C executable cmTC_b7409
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_b7409.dir/link.txt --verbose=1
+/opt/rs97-toolchain/usr/bin/mipsel-buildroot-linux-musl-gcc --sysroot=/opt/rs97-toolchain/usr/mipsel-buildroot-linux-musl/sysroot -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -Ofast -mno-abicalls -mplt   -DNDEBUG    CMakeFiles/cmTC_b7409.dir/CheckIncludeFile.c.o  -o cmTC_b7409 
+/home/anonymous/Documents/Dev/rs97-toolchain/bin/../lib/gcc/mipsel-buildroot-linux-musl/7.3.0/../../../../mipsel-buildroot-linux-musl/bin/ld: CMakeFiles/cmTC_b7409.dir/CheckIncludeFile.c.o: warning: linking abicalls files with non-abicalls files
+make[1]: Leaving directory '/home/anonymous/Documents/Dev/rs97-source/cdogs/gcw0build/CMakeFiles/CMakeTmp'
+
+
+Determining if the pthread_create exist passed with the following output:
+Change Dir: /home/anonymous/Documents/Dev/rs97-source/cdogs/gcw0build/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_eba0e/fast"
+/usr/bin/make -f CMakeFiles/cmTC_eba0e.dir/build.make CMakeFiles/cmTC_eba0e.dir/build
+make[1]: Entering directory '/home/anonymous/Documents/Dev/rs97-source/cdogs/gcw0build/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_eba0e.dir/CheckSymbolExists.c.o
+/opt/rs97-toolchain/usr/bin/mipsel-buildroot-linux-musl-gcc --sysroot=/opt/rs97-toolchain/usr/mipsel-buildroot-linux-musl/sysroot   -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -Ofast -mno-abicalls -mplt   -DNDEBUG   -o CMakeFiles/cmTC_eba0e.dir/CheckSymbolExists.c.o   -c /home/anonymous/Documents/Dev/rs97-source/cdogs/gcw0build/CMakeFiles/CMakeTmp/CheckSymbolExists.c
+Linking C executable cmTC_eba0e
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_eba0e.dir/link.txt --verbose=1
+/opt/rs97-toolchain/usr/bin/mipsel-buildroot-linux-musl-gcc --sysroot=/opt/rs97-toolchain/usr/mipsel-buildroot-linux-musl/sysroot -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -Ofast -mno-abicalls -mplt   -DNDEBUG    CMakeFiles/cmTC_eba0e.dir/CheckSymbolExists.c.o  -o cmTC_eba0e 
+/home/anonymous/Documents/Dev/rs97-toolchain/bin/../lib/gcc/mipsel-buildroot-linux-musl/7.3.0/../../../../mipsel-buildroot-linux-musl/bin/ld: CMakeFiles/cmTC_eba0e.dir/CheckSymbolExists.c.o: warning: linking abicalls files with non-abicalls files
+make[1]: Leaving directory '/home/anonymous/Documents/Dev/rs97-source/cdogs/gcw0build/CMakeFiles/CMakeTmp'
+
+File /home/anonymous/Documents/Dev/rs97-source/cdogs/gcw0build/CMakeFiles/CMakeTmp/CheckSymbolExists.c:
+/* */
+#include <pthread.h>
+
+int main(int argc, char** argv)
+{
+  (void)argv;
+#ifndef pthread_create
+  return ((int*)(&pthread_create))[argc];
+#else
+  (void)argc;
+  return 0;
+#endif
+}
+
+Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" succeeded.
+Compiler: /opt/rs97-toolchain/usr/bin/mipsel-buildroot-linux-musl-g++ 
+Build flags: -D_LARGEFILE_SOURCE;-D_LARGEFILE64_SOURCE;-D_FILE_OFFSET_BITS=64;-Ofast;-mno-abicalls;-mplt
+Id flags:  
+
+The output was:
+0
+/home/anonymous/Documents/Dev/rs97-toolchain/bin/../lib/gcc/mipsel-buildroot-linux-musl/7.3.0/../../../../mipsel-buildroot-linux-musl/bin/ld: /tmp/ccWGrC3J.o: warning: linking abicalls files with non-abicalls files
+
+
+Compilation of the CXX compiler identification source "CMakeCXXCompilerId.cpp" produced "a.out"
+
+The CXX compiler identification is GNU, found in "/home/anonymous/Documents/Dev/rs97-source/cdogs/gcw0build/CMakeFiles/3.12.3/CompilerIdCXX/a.out"
+
+Determining if the CXX compiler works passed with the following output:
+Change Dir: /home/anonymous/Documents/Dev/rs97-source/cdogs/gcw0build/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_2217b/fast"
+/usr/bin/make -f CMakeFiles/cmTC_2217b.dir/build.make CMakeFiles/cmTC_2217b.dir/build
+make[1]: Entering directory '/home/anonymous/Documents/Dev/rs97-source/cdogs/gcw0build/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_2217b.dir/testCXXCompiler.cxx.o
+/opt/rs97-toolchain/usr/bin/mipsel-buildroot-linux-musl-g++ --sysroot=/opt/rs97-toolchain/usr/mipsel-buildroot-linux-musl/sysroot    -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -Ofast -mno-abicalls -mplt   -DNDEBUG   -o CMakeFiles/cmTC_2217b.dir/testCXXCompiler.cxx.o -c /home/anonymous/Documents/Dev/rs97-source/cdogs/gcw0build/CMakeFiles/CMakeTmp/testCXXCompiler.cxx
+Linking CXX executable cmTC_2217b
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_2217b.dir/link.txt --verbose=1
+/opt/rs97-toolchain/usr/bin/mipsel-buildroot-linux-musl-g++ --sysroot=/opt/rs97-toolchain/usr/mipsel-buildroot-linux-musl/sysroot  -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -Ofast -mno-abicalls -mplt   -DNDEBUG    CMakeFiles/cmTC_2217b.dir/testCXXCompiler.cxx.o  -o cmTC_2217b 
+/home/anonymous/Documents/Dev/rs97-toolchain/bin/../lib/gcc/mipsel-buildroot-linux-musl/7.3.0/../../../../mipsel-buildroot-linux-musl/bin/ld: CMakeFiles/cmTC_2217b.dir/testCXXCompiler.cxx.o: warning: linking abicalls files with non-abicalls files
+make[1]: Leaving directory '/home/anonymous/Documents/Dev/rs97-source/cdogs/gcw0build/CMakeFiles/CMakeTmp'
+
+
+Detecting CXX compiler ABI info compiled with the following output:
+Change Dir: /home/anonymous/Documents/Dev/rs97-source/cdogs/gcw0build/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_8b83e/fast"
+/usr/bin/make -f CMakeFiles/cmTC_8b83e.dir/build.make CMakeFiles/cmTC_8b83e.dir/build
+make[1]: Entering directory '/home/anonymous/Documents/Dev/rs97-source/cdogs/gcw0build/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_8b83e.dir/CMakeCXXCompilerABI.cpp.o
+/opt/rs97-toolchain/usr/bin/mipsel-buildroot-linux-musl-g++ --sysroot=/opt/rs97-toolchain/usr/mipsel-buildroot-linux-musl/sysroot    -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -Ofast -mno-abicalls -mplt   -DNDEBUG   -o CMakeFiles/cmTC_8b83e.dir/CMakeCXXCompilerABI.cpp.o -c /usr/share/cmake-3.12/Modules/CMakeCXXCompilerABI.cpp
+Linking CXX executable cmTC_8b83e
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_8b83e.dir/link.txt --verbose=1
+/opt/rs97-toolchain/usr/bin/mipsel-buildroot-linux-musl-g++ --sysroot=/opt/rs97-toolchain/usr/mipsel-buildroot-linux-musl/sysroot  -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -Ofast -mno-abicalls -mplt   -DNDEBUG   -v CMakeFiles/cmTC_8b83e.dir/CMakeCXXCompilerABI.cpp.o  -o cmTC_8b83e 
+Using built-in specs.
+COLLECT_GCC=/home/anonymous/Documents/Dev/rs97-toolchain/bin/mipsel-buildroot-linux-musl-g++.br_real
+COLLECT_LTO_WRAPPER=/home/anonymous/Documents/Dev/rs97-toolchain/bin/../libexec/gcc/mipsel-buildroot-linux-musl/7.3.0/lto-wrapper
+Target: mipsel-buildroot-linux-musl
+Configured with: ./configure --prefix=/home/anonymous/Documents/Dev/buildroot-rs97/output/host --sysconfdir=/home/anonymous/Documents/Dev/buildroot-rs97/output/host/etc --enable-static --target=mipsel-buildroot-linux-musl --with-sysroot=/home/anonymous/Documents/Dev/buildroot-rs97/output/host/mipsel-buildroot-linux-musl/sysroot --disable-__cxa_atexit --with-gnu-ld --disable-libssp --disable-multilib --with-gmp=/home/anonymous/Documents/Dev/buildroot-rs97/output/host --with-mpc=/home/anonymous/Documents/Dev/buildroot-rs97/output/host --with-mpfr=/home/anonymous/Documents/Dev/buildroot-rs97/output/host --with-pkgversion='Buildroot 2018.05-g8ba0e7a-dirty' --with-bugurl=http://bugs.buildroot.net/ --disable-libmpx --disable-libquadmath --disable-libsanitizer --enable-tls --disable-libmudflap --enable-threads --without-isl --without-cloog --disable-decimal-float --with-arch=mips32 --with-abi=32 --with-nan=legacy --with-fp-32=32 --enable-languages=c,c++ --with-build-time-tools=/home/anonymous/Documents/Dev/buildroot-rs97/output/host/mipsel-buildroot-linux-musl/bin --enable-shared --disable-libgomp
+Thread model: posix
+gcc version 7.3.0 (Buildroot 2018.05-g8ba0e7a-dirty) 
+COMPILER_PATH=/home/anonymous/Documents/Dev/rs97-toolchain/bin/../libexec/gcc/mipsel-buildroot-linux-musl/7.3.0/:/home/anonymous/Documents/Dev/rs97-toolchain/bin/../libexec/gcc/:/home/anonymous/Documents/Dev/rs97-toolchain/bin/../lib/gcc/mipsel-buildroot-linux-musl/7.3.0/../../../../mipsel-buildroot-linux-musl/bin/
+LIBRARY_PATH=/home/anonymous/Documents/Dev/rs97-toolchain/bin/../lib/gcc/mipsel-buildroot-linux-musl/7.3.0/:/home/anonymous/Documents/Dev/rs97-toolchain/bin/../lib/gcc/:/home/anonymous/Documents/Dev/rs97-toolchain/bin/../lib/gcc/mipsel-buildroot-linux-musl/7.3.0/../../../../mipsel-buildroot-linux-musl/lib/:/opt/rs97-toolchain/usr/mipsel-buildroot-linux-musl/sysroot/lib/:/opt/rs97-toolchain/usr/mipsel-buildroot-linux-musl/sysroot/usr/lib/
+COLLECT_GCC_OPTIONS='-D' '_LARGEFILE_SOURCE' '-D' '_LARGEFILE64_SOURCE' '-D' '_FILE_OFFSET_BITS=64' '-Ofast' '-mno-abicalls' '-mplt' '-D' 'NDEBUG' '-v' '-o' 'cmTC_8b83e' '-shared-libgcc' '-march=mips32' '-mabi=32' '-mnan=legacy' '-mfp32' '-mllsc' '-mips32' '-mno-shared' '-EL'
+ /home/anonymous/Documents/Dev/rs97-toolchain/bin/../libexec/gcc/mipsel-buildroot-linux-musl/7.3.0/collect2 -plugin /home/anonymous/Documents/Dev/rs97-toolchain/bin/../libexec/gcc/mipsel-buildroot-linux-musl/7.3.0/liblto_plugin.so -plugin-opt=/home/anonymous/Documents/Dev/rs97-toolchain/bin/../libexec/gcc/mipsel-buildroot-linux-musl/7.3.0/lto-wrapper -plugin-opt=-fresolution=/tmp/ccsen9Si.res -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc --sysroot=/opt/rs97-toolchain/usr/mipsel-buildroot-linux-musl/sysroot --eh-frame-hdr -EL -mips32 -dynamic-linker /lib/ld-musl-mipsel.so.1 -melf32ltsmip -o cmTC_8b83e /opt/rs97-toolchain/usr/mipsel-buildroot-linux-musl/sysroot/lib/crt1.o /opt/rs97-toolchain/usr/mipsel-buildroot-linux-musl/sysroot/lib/crti.o /home/anonymous/Documents/Dev/rs97-toolchain/bin/../lib/gcc/mipsel-buildroot-linux-musl/7.3.0/crtbegin.o -L/home/anonymous/Documents/Dev/rs97-toolchain/bin/../lib/gcc/mipsel-buildroot-linux-musl/7.3.0 -L/home/anonymous/Documents/Dev/rs97-toolchain/bin/../lib/gcc -L/home/anonymous/Documents/Dev/rs97-toolchain/bin/../lib/gcc/mipsel-buildroot-linux-musl/7.3.0/../../../../mipsel-buildroot-linux-musl/lib -L/opt/rs97-toolchain/usr/mipsel-buildroot-linux-musl/sysroot/lib -L/opt/rs97-toolchain/usr/mipsel-buildroot-linux-musl/sysroot/usr/lib CMakeFiles/cmTC_8b83e.dir/CMakeCXXCompilerABI.cpp.o -lstdc++ -lm -lgcc_s -lgcc -lc -lgcc_s -lgcc /home/anonymous/Documents/Dev/rs97-toolchain/bin/../lib/gcc/mipsel-buildroot-linux-musl/7.3.0/crtfastmath.o /home/anonymous/Documents/Dev/rs97-toolchain/bin/../lib/gcc/mipsel-buildroot-linux-musl/7.3.0/crtend.o /opt/rs97-toolchain/usr/mipsel-buildroot-linux-musl/sysroot/lib/crtn.o
+/home/anonymous/Documents/Dev/rs97-toolchain/bin/../lib/gcc/mipsel-buildroot-linux-musl/7.3.0/../../../../mipsel-buildroot-linux-musl/bin/ld: CMakeFiles/cmTC_8b83e.dir/CMakeCXXCompilerABI.cpp.o: warning: linking abicalls files with non-abicalls files
+COLLECT_GCC_OPTIONS='-D' '_LARGEFILE_SOURCE' '-D' '_LARGEFILE64_SOURCE' '-D' '_FILE_OFFSET_BITS=64' '-Ofast' '-mno-abicalls' '-mplt' '-D' 'NDEBUG' '-v' '-o' 'cmTC_8b83e' '-shared-libgcc' '-march=mips32' '-mabi=32' '-mnan=legacy' '-mfp32' '-mllsc' '-mips32' '-mno-shared' '-EL'
+make[1]: Leaving directory '/home/anonymous/Documents/Dev/rs97-source/cdogs/gcw0build/CMakeFiles/CMakeTmp'
+
+
+Parsed CXX implicit link information from above output:
+  link line regex: [^( *|.*[/\])(mipsel-buildroot-linux-musl-ld|CMAKE_LINK_STARTFILE-NOTFOUND|([^/\]+-)?ld|collect2)[^/\]*( |$)]
+  ignore line: [Change Dir: /home/anonymous/Documents/Dev/rs97-source/cdogs/gcw0build/CMakeFiles/CMakeTmp]
+  ignore line: []
+  ignore line: [Run Build Command:"/usr/bin/make" "cmTC_8b83e/fast"]
+  ignore line: [/usr/bin/make -f CMakeFiles/cmTC_8b83e.dir/build.make CMakeFiles/cmTC_8b83e.dir/build]
+  ignore line: [make[1]: Entering directory '/home/anonymous/Documents/Dev/rs97-source/cdogs/gcw0build/CMakeFiles/CMakeTmp']
+  ignore line: [Building CXX object CMakeFiles/cmTC_8b83e.dir/CMakeCXXCompilerABI.cpp.o]
+  ignore line: [/opt/rs97-toolchain/usr/bin/mipsel-buildroot-linux-musl-g++ --sysroot=/opt/rs97-toolchain/usr/mipsel-buildroot-linux-musl/sysroot    -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -Ofast -mno-abicalls -mplt   -DNDEBUG   -o CMakeFiles/cmTC_8b83e.dir/CMakeCXXCompilerABI.cpp.o -c /usr/share/cmake-3.12/Modules/CMakeCXXCompilerABI.cpp]
+  ignore line: [Linking CXX executable cmTC_8b83e]
+  ignore line: [/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_8b83e.dir/link.txt --verbose=1]
+  ignore line: [/opt/rs97-toolchain/usr/bin/mipsel-buildroot-linux-musl-g++ --sysroot=/opt/rs97-toolchain/usr/mipsel-buildroot-linux-musl/sysroot  -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -Ofast -mno-abicalls -mplt   -DNDEBUG   -v CMakeFiles/cmTC_8b83e.dir/CMakeCXXCompilerABI.cpp.o  -o cmTC_8b83e ]
+  ignore line: [Using built-in specs.]
+  ignore line: [COLLECT_GCC=/home/anonymous/Documents/Dev/rs97-toolchain/bin/mipsel-buildroot-linux-musl-g++.br_real]
+  ignore line: [COLLECT_LTO_WRAPPER=/home/anonymous/Documents/Dev/rs97-toolchain/bin/../libexec/gcc/mipsel-buildroot-linux-musl/7.3.0/lto-wrapper]
+  ignore line: [Target: mipsel-buildroot-linux-musl]
+  ignore line: [Configured with: ./configure --prefix=/home/anonymous/Documents/Dev/buildroot-rs97/output/host --sysconfdir=/home/anonymous/Documents/Dev/buildroot-rs97/output/host/etc --enable-static --target=mipsel-buildroot-linux-musl --with-sysroot=/home/anonymous/Documents/Dev/buildroot-rs97/output/host/mipsel-buildroot-linux-musl/sysroot --disable-__cxa_atexit --with-gnu-ld --disable-libssp --disable-multilib --with-gmp=/home/anonymous/Documents/Dev/buildroot-rs97/output/host --with-mpc=/home/anonymous/Documents/Dev/buildroot-rs97/output/host --with-mpfr=/home/anonymous/Documents/Dev/buildroot-rs97/output/host --with-pkgversion='Buildroot 2018.05-g8ba0e7a-dirty' --with-bugurl=http://bugs.buildroot.net/ --disable-libmpx --disable-libquadmath --disable-libsanitizer --enable-tls --disable-libmudflap --enable-threads --without-isl --without-cloog --disable-decimal-float --with-arch=mips32 --with-abi=32 --with-nan=legacy --with-fp-32=32 --enable-languages=c,c++ --with-build-time-tools=/home/anonymous/Documents/Dev/buildroot-rs97/output/host/mipsel-buildroot-linux-musl/bin --enable-shared --disable-libgomp]
+  ignore line: [Thread model: posix]
+  ignore line: [gcc version 7.3.0 (Buildroot 2018.05-g8ba0e7a-dirty) ]
+  ignore line: [COMPILER_PATH=/home/anonymous/Documents/Dev/rs97-toolchain/bin/../libexec/gcc/mipsel-buildroot-linux-musl/7.3.0/:/home/anonymous/Documents/Dev/rs97-toolchain/bin/../libexec/gcc/:/home/anonymous/Documents/Dev/rs97-toolchain/bin/../lib/gcc/mipsel-buildroot-linux-musl/7.3.0/../../../../mipsel-buildroot-linux-musl/bin/]
+  ignore line: [LIBRARY_PATH=/home/anonymous/Documents/Dev/rs97-toolchain/bin/../lib/gcc/mipsel-buildroot-linux-musl/7.3.0/:/home/anonymous/Documents/Dev/rs97-toolchain/bin/../lib/gcc/:/home/anonymous/Documents/Dev/rs97-toolchain/bin/../lib/gcc/mipsel-buildroot-linux-musl/7.3.0/../../../../mipsel-buildroot-linux-musl/lib/:/opt/rs97-toolchain/usr/mipsel-buildroot-linux-musl/sysroot/lib/:/opt/rs97-toolchain/usr/mipsel-buildroot-linux-musl/sysroot/usr/lib/]
+  ignore line: [COLLECT_GCC_OPTIONS='-D' '_LARGEFILE_SOURCE' '-D' '_LARGEFILE64_SOURCE' '-D' '_FILE_OFFSET_BITS=64' '-Ofast' '-mno-abicalls' '-mplt' '-D' 'NDEBUG' '-v' '-o' 'cmTC_8b83e' '-shared-libgcc' '-march=mips32' '-mabi=32' '-mnan=legacy' '-mfp32' '-mllsc' '-mips32' '-mno-shared' '-EL']
+  link line: [ /home/anonymous/Documents/Dev/rs97-toolchain/bin/../libexec/gcc/mipsel-buildroot-linux-musl/7.3.0/collect2 -plugin /home/anonymous/Documents/Dev/rs97-toolchain/bin/../libexec/gcc/mipsel-buildroot-linux-musl/7.3.0/liblto_plugin.so -plugin-opt=/home/anonymous/Documents/Dev/rs97-toolchain/bin/../libexec/gcc/mipsel-buildroot-linux-musl/7.3.0/lto-wrapper -plugin-opt=-fresolution=/tmp/ccsen9Si.res -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc --sysroot=/opt/rs97-toolchain/usr/mipsel-buildroot-linux-musl/sysroot --eh-frame-hdr -EL -mips32 -dynamic-linker /lib/ld-musl-mipsel.so.1 -melf32ltsmip -o cmTC_8b83e /opt/rs97-toolchain/usr/mipsel-buildroot-linux-musl/sysroot/lib/crt1.o /opt/rs97-toolchain/usr/mipsel-buildroot-linux-musl/sysroot/lib/crti.o /home/anonymous/Documents/Dev/rs97-toolchain/bin/../lib/gcc/mipsel-buildroot-linux-musl/7.3.0/crtbegin.o -L/home/anonymous/Documents/Dev/rs97-toolchain/bin/../lib/gcc/mipsel-buildroot-linux-musl/7.3.0 -L/home/anonymous/Documents/Dev/rs97-toolchain/bin/../lib/gcc -L/home/anonymous/Documents/Dev/rs97-toolchain/bin/../lib/gcc/mipsel-buildroot-linux-musl/7.3.0/../../../../mipsel-buildroot-linux-musl/lib -L/opt/rs97-toolchain/usr/mipsel-buildroot-linux-musl/sysroot/lib -L/opt/rs97-toolchain/usr/mipsel-buildroot-linux-musl/sysroot/usr/lib CMakeFiles/cmTC_8b83e.dir/CMakeCXXCompilerABI.cpp.o -lstdc++ -lm -lgcc_s -lgcc -lc -lgcc_s -lgcc /home/anonymous/Documents/Dev/rs97-toolchain/bin/../lib/gcc/mipsel-buildroot-linux-musl/7.3.0/crtfastmath.o /home/anonymous/Documents/Dev/rs97-toolchain/bin/../lib/gcc/mipsel-buildroot-linux-musl/7.3.0/crtend.o /opt/rs97-toolchain/usr/mipsel-buildroot-linux-musl/sysroot/lib/crtn.o]
+    arg [/home/anonymous/Documents/Dev/rs97-toolchain/bin/../libexec/gcc/mipsel-buildroot-linux-musl/7.3.0/collect2] ==> ignore
+    arg [-plugin] ==> ignore
+    arg [/home/anonymous/Documents/Dev/rs97-toolchain/bin/../libexec/gcc/mipsel-buildroot-linux-musl/7.3.0/liblto_plugin.so] ==> ignore
+    arg [-plugin-opt=/home/anonymous/Documents/Dev/rs97-toolchain/bin/../libexec/gcc/mipsel-buildroot-linux-musl/7.3.0/lto-wrapper] ==> ignore
+    arg [-plugin-opt=-fresolution=/tmp/ccsen9Si.res] ==> ignore
+    arg [-plugin-opt=-pass-through=-lgcc_s] ==> ignore
+    arg [-plugin-opt=-pass-through=-lgcc] ==> ignore
+    arg [-plugin-opt=-pass-through=-lc] ==> ignore
+    arg [-plugin-opt=-pass-through=-lgcc_s] ==> ignore
+    arg [-plugin-opt=-pass-through=-lgcc] ==> ignore
+    arg [--sysroot=/opt/rs97-toolchain/usr/mipsel-buildroot-linux-musl/sysroot] ==> ignore
+    arg [--eh-frame-hdr] ==> ignore
+    arg [-EL] ==> ignore
+    arg [-mips32] ==> ignore
+    arg [-dynamic-linker] ==> ignore
+    arg [/lib/ld-musl-mipsel.so.1] ==> ignore
+    arg [-melf32ltsmip] ==> ignore
+    arg [-o] ==> ignore
+    arg [cmTC_8b83e] ==> ignore
+    arg [/opt/rs97-toolchain/usr/mipsel-buildroot-linux-musl/sysroot/lib/crt1.o] ==> ignore
+    arg [/opt/rs97-toolchain/usr/mipsel-buildroot-linux-musl/sysroot/lib/crti.o] ==> ignore
+    arg [/home/anonymous/Documents/Dev/rs97-toolchain/bin/../lib/gcc/mipsel-buildroot-linux-musl/7.3.0/crtbegin.o] ==> ignore
+    arg [-L/home/anonymous/Documents/Dev/rs97-toolchain/bin/../lib/gcc/mipsel-buildroot-linux-musl/7.3.0] ==> dir [/home/anonymous/Documents/Dev/rs97-toolchain/bin/../lib/gcc/mipsel-buildroot-linux-musl/7.3.0]
+    arg [-L/home/anonymous/Documents/Dev/rs97-toolchain/bin/../lib/gcc] ==> dir [/home/anonymous/Documents/Dev/rs97-toolchain/bin/../lib/gcc]
+    arg [-L/home/anonymous/Documents/Dev/rs97-toolchain/bin/../lib/gcc/mipsel-buildroot-linux-musl/7.3.0/../../../../mipsel-buildroot-linux-musl/lib] ==> dir [/home/anonymous/Documents/Dev/rs97-toolchain/bin/../lib/gcc/mipsel-buildroot-linux-musl/7.3.0/../../../../mipsel-buildroot-linux-musl/lib]
+    arg [-L/opt/rs97-toolchain/usr/mipsel-buildroot-linux-musl/sysroot/lib] ==> dir [/opt/rs97-toolchain/usr/mipsel-buildroot-linux-musl/sysroot/lib]
+    arg [-L/opt/rs97-toolchain/usr/mipsel-buildroot-linux-musl/sysroot/usr/lib] ==> dir [/opt/rs97-toolchain/usr/mipsel-buildroot-linux-musl/sysroot/usr/lib]
+    arg [CMakeFiles/cmTC_8b83e.dir/CMakeCXXCompilerABI.cpp.o] ==> ignore
+    arg [-lstdc++] ==> lib [stdc++]
+    arg [-lm] ==> lib [m]
+    arg [-lgcc_s] ==> lib [gcc_s]
+    arg [-lgcc] ==> lib [gcc]
+    arg [-lc] ==> lib [c]
+    arg [-lgcc_s] ==> lib [gcc_s]
+    arg [-lgcc] ==> lib [gcc]
+    arg [/home/anonymous/Documents/Dev/rs97-toolchain/bin/../lib/gcc/mipsel-buildroot-linux-musl/7.3.0/crtfastmath.o] ==> ignore
+    arg [/home/anonymous/Documents/Dev/rs97-toolchain/bin/../lib/gcc/mipsel-buildroot-linux-musl/7.3.0/crtend.o] ==> ignore
+    arg [/opt/rs97-toolchain/usr/mipsel-buildroot-linux-musl/sysroot/lib/crtn.o] ==> ignore
+  collapse library dir [/home/anonymous/Documents/Dev/rs97-toolchain/bin/../lib/gcc/mipsel-buildroot-linux-musl/7.3.0] ==> [/home/anonymous/Documents/Dev/rs97-toolchain/lib/gcc/mipsel-buildroot-linux-musl/7.3.0]
+  collapse library dir [/home/anonymous/Documents/Dev/rs97-toolchain/bin/../lib/gcc] ==> [/home/anonymous/Documents/Dev/rs97-toolchain/lib/gcc]
+  collapse library dir [/home/anonymous/Documents/Dev/rs97-toolchain/bin/../lib/gcc/mipsel-buildroot-linux-musl/7.3.0/../../../../mipsel-buildroot-linux-musl/lib] ==> [/home/anonymous/Documents/Dev/rs97-toolchain/mipsel-buildroot-linux-musl/lib]
+  collapse library dir [/opt/rs97-toolchain/usr/mipsel-buildroot-linux-musl/sysroot/lib] ==> [/opt/rs97-toolchain/usr/mipsel-buildroot-linux-musl/sysroot/lib]
+  collapse library dir [/opt/rs97-toolchain/usr/mipsel-buildroot-linux-musl/sysroot/usr/lib] ==> [/opt/rs97-toolchain/usr/mipsel-buildroot-linux-musl/sysroot/usr/lib]
+  implicit libs: [stdc++;m;gcc_s;gcc;c;gcc_s;gcc]
+  implicit dirs: [/home/anonymous/Documents/Dev/rs97-toolchain/lib/gcc/mipsel-buildroot-linux-musl/7.3.0;/home/anonymous/Documents/Dev/rs97-toolchain/lib/gcc;/home/anonymous/Documents/Dev/rs97-toolchain/mipsel-buildroot-linux-musl/lib;/opt/rs97-toolchain/usr/mipsel-buildroot-linux-musl/sysroot/lib;/opt/rs97-toolchain/usr/mipsel-buildroot-linux-musl/sysroot/usr/lib]
+  implicit fwks: []
+
+
+
+
+Detecting CXX [-std=c++1z] compiler features compiled with the following output:
+Change Dir: /home/anonymous/Documents/Dev/rs97-source/cdogs/gcw0build/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_0c069/fast"
+/usr/bin/make -f CMakeFiles/cmTC_0c069.dir/build.make CMakeFiles/cmTC_0c069.dir/build
+make[1]: Entering directory '/home/anonymous/Documents/Dev/rs97-source/cdogs/gcw0build/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_0c069.dir/feature_tests.cxx.o
+/opt/rs97-toolchain/usr/bin/mipsel-buildroot-linux-musl-g++ --sysroot=/opt/rs97-toolchain/usr/mipsel-buildroot-linux-musl/sysroot    -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -Ofast -mno-abicalls -mplt   -DNDEBUG   -std=c++1z -o CMakeFiles/cmTC_0c069.dir/feature_tests.cxx.o -c /home/anonymous/Documents/Dev/rs97-source/cdogs/gcw0build/CMakeFiles/feature_tests.cxx
+Linking CXX executable cmTC_0c069
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_0c069.dir/link.txt --verbose=1
+/opt/rs97-toolchain/usr/bin/mipsel-buildroot-linux-musl-g++ --sysroot=/opt/rs97-toolchain/usr/mipsel-buildroot-linux-musl/sysroot  -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -Ofast -mno-abicalls -mplt   -DNDEBUG    CMakeFiles/cmTC_0c069.dir/feature_tests.cxx.o  -o cmTC_0c069 
+/home/anonymous/Documents/Dev/rs97-toolchain/bin/../lib/gcc/mipsel-buildroot-linux-musl/7.3.0/../../../../mipsel-buildroot-linux-musl/bin/ld: CMakeFiles/cmTC_0c069.dir/feature_tests.cxx.o: warning: linking abicalls files with non-abicalls files
+make[1]: Leaving directory '/home/anonymous/Documents/Dev/rs97-source/cdogs/gcw0build/CMakeFiles/CMakeTmp'
+
+
+    Feature record: CXX_FEATURE:1cxx_aggregate_default_initializers
+    Feature record: CXX_FEATURE:1cxx_alias_templates
+    Feature record: CXX_FEATURE:1cxx_alignas
+    Feature record: CXX_FEATURE:1cxx_alignof
+    Feature record: CXX_FEATURE:1cxx_attributes
+    Feature record: CXX_FEATURE:1cxx_attribute_deprecated
+    Feature record: CXX_FEATURE:1cxx_auto_type
+    Feature record: CXX_FEATURE:1cxx_binary_literals
+    Feature record: CXX_FEATURE:1cxx_constexpr
+    Feature record: CXX_FEATURE:1cxx_contextual_conversions
+    Feature record: CXX_FEATURE:1cxx_decltype
+    Feature record: CXX_FEATURE:1cxx_decltype_auto
+    Feature record: CXX_FEATURE:1cxx_decltype_incomplete_return_types
+    Feature record: CXX_FEATURE:1cxx_default_function_template_args
+    Feature record: CXX_FEATURE:1cxx_defaulted_functions
+    Feature record: CXX_FEATURE:1cxx_defaulted_move_initializers
+    Feature record: CXX_FEATURE:1cxx_delegating_constructors
+    Feature record: CXX_FEATURE:1cxx_deleted_functions
+    Feature record: CXX_FEATURE:1cxx_digit_separators
+    Feature record: CXX_FEATURE:1cxx_enum_forward_declarations
+    Feature record: CXX_FEATURE:1cxx_explicit_conversions
+    Feature record: CXX_FEATURE:1cxx_extended_friend_declarations
+    Feature record: CXX_FEATURE:1cxx_extern_templates
+    Feature record: CXX_FEATURE:1cxx_final
+    Feature record: CXX_FEATURE:1cxx_func_identifier
+    Feature record: CXX_FEATURE:1cxx_generalized_initializers
+    Feature record: CXX_FEATURE:1cxx_generic_lambdas
+    Feature record: CXX_FEATURE:1cxx_inheriting_constructors
+    Feature record: CXX_FEATURE:1cxx_inline_namespaces
+    Feature record: CXX_FEATURE:1cxx_lambdas
+    Feature record: CXX_FEATURE:1cxx_lambda_init_captures
+    Feature record: CXX_FEATURE:1cxx_local_type_template_args
+    Feature record: CXX_FEATURE:1cxx_long_long_type
+    Feature record: CXX_FEATURE:1cxx_noexcept
+    Feature record: CXX_FEATURE:1cxx_nonstatic_member_init
+    Feature record: CXX_FEATURE:1cxx_nullptr
+    Feature record: CXX_FEATURE:1cxx_override
+    Feature record: CXX_FEATURE:1cxx_range_for
+    Feature record: CXX_FEATURE:1cxx_raw_string_literals
+    Feature record: CXX_FEATURE:1cxx_reference_qualified_functions
+    Feature record: CXX_FEATURE:1cxx_relaxed_constexpr
+    Feature record: CXX_FEATURE:1cxx_return_type_deduction
+    Feature record: CXX_FEATURE:1cxx_right_angle_brackets
+    Feature record: CXX_FEATURE:1cxx_rvalue_references
+    Feature record: CXX_FEATURE:1cxx_sizeof_member
+    Feature record: CXX_FEATURE:1cxx_static_assert
+    Feature record: CXX_FEATURE:1cxx_strong_enums
+    Feature record: CXX_FEATURE:1cxx_template_template_parameters
+    Feature record: CXX_FEATURE:1cxx_thread_local
+    Feature record: CXX_FEATURE:1cxx_trailing_return_types
+    Feature record: CXX_FEATURE:1cxx_unicode_literals
+    Feature record: CXX_FEATURE:1cxx_uniform_initialization
+    Feature record: CXX_FEATURE:1cxx_unrestricted_unions
+    Feature record: CXX_FEATURE:1cxx_user_literals
+    Feature record: CXX_FEATURE:1cxx_variable_templates
+    Feature record: CXX_FEATURE:1cxx_variadic_macros
+    Feature record: CXX_FEATURE:1cxx_variadic_templates
+
+
+Detecting CXX [-std=c++14] compiler features compiled with the following output:
+Change Dir: /home/anonymous/Documents/Dev/rs97-source/cdogs/gcw0build/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_fd27d/fast"
+/usr/bin/make -f CMakeFiles/cmTC_fd27d.dir/build.make CMakeFiles/cmTC_fd27d.dir/build
+make[1]: Entering directory '/home/anonymous/Documents/Dev/rs97-source/cdogs/gcw0build/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_fd27d.dir/feature_tests.cxx.o
+/opt/rs97-toolchain/usr/bin/mipsel-buildroot-linux-musl-g++ --sysroot=/opt/rs97-toolchain/usr/mipsel-buildroot-linux-musl/sysroot    -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -Ofast -mno-abicalls -mplt   -DNDEBUG   -std=c++14 -o CMakeFiles/cmTC_fd27d.dir/feature_tests.cxx.o -c /home/anonymous/Documents/Dev/rs97-source/cdogs/gcw0build/CMakeFiles/feature_tests.cxx
+Linking CXX executable cmTC_fd27d
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_fd27d.dir/link.txt --verbose=1
+/opt/rs97-toolchain/usr/bin/mipsel-buildroot-linux-musl-g++ --sysroot=/opt/rs97-toolchain/usr/mipsel-buildroot-linux-musl/sysroot  -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -Ofast -mno-abicalls -mplt   -DNDEBUG    CMakeFiles/cmTC_fd27d.dir/feature_tests.cxx.o  -o cmTC_fd27d 
+/home/anonymous/Documents/Dev/rs97-toolchain/bin/../lib/gcc/mipsel-buildroot-linux-musl/7.3.0/../../../../mipsel-buildroot-linux-musl/bin/ld: CMakeFiles/cmTC_fd27d.dir/feature_tests.cxx.o: warning: linking abicalls files with non-abicalls files
+make[1]: Leaving directory '/home/anonymous/Documents/Dev/rs97-source/cdogs/gcw0build/CMakeFiles/CMakeTmp'
+
+
+    Feature record: CXX_FEATURE:1cxx_aggregate_default_initializers
+    Feature record: CXX_FEATURE:1cxx_alias_templates
+    Feature record: CXX_FEATURE:1cxx_alignas
+    Feature record: CXX_FEATURE:1cxx_alignof
+    Feature record: CXX_FEATURE:1cxx_attributes
+    Feature record: CXX_FEATURE:1cxx_attribute_deprecated
+    Feature record: CXX_FEATURE:1cxx_auto_type
+    Feature record: CXX_FEATURE:1cxx_binary_literals
+    Feature record: CXX_FEATURE:1cxx_constexpr
+    Feature record: CXX_FEATURE:1cxx_contextual_conversions
+    Feature record: CXX_FEATURE:1cxx_decltype
+    Feature record: CXX_FEATURE:1cxx_decltype_auto
+    Feature record: CXX_FEATURE:1cxx_decltype_incomplete_return_types
+    Feature record: CXX_FEATURE:1cxx_default_function_template_args
+    Feature record: CXX_FEATURE:1cxx_defaulted_functions
+    Feature record: CXX_FEATURE:1cxx_defaulted_move_initializers
+    Feature record: CXX_FEATURE:1cxx_delegating_constructors
+    Feature record: CXX_FEATURE:1cxx_deleted_functions
+    Feature record: CXX_FEATURE:1cxx_digit_separators
+    Feature record: CXX_FEATURE:1cxx_enum_forward_declarations
+    Feature record: CXX_FEATURE:1cxx_explicit_conversions
+    Feature record: CXX_FEATURE:1cxx_extended_friend_declarations
+    Feature record: CXX_FEATURE:1cxx_extern_templates
+    Feature record: CXX_FEATURE:1cxx_final
+    Feature record: CXX_FEATURE:1cxx_func_identifier
+    Feature record: CXX_FEATURE:1cxx_generalized_initializers
+    Feature record: CXX_FEATURE:1cxx_generic_lambdas
+    Feature record: CXX_FEATURE:1cxx_inheriting_constructors
+    Feature record: CXX_FEATURE:1cxx_inline_namespaces
+    Feature record: CXX_FEATURE:1cxx_lambdas
+    Feature record: CXX_FEATURE:1cxx_lambda_init_captures
+    Feature record: CXX_FEATURE:1cxx_local_type_template_args
+    Feature record: CXX_FEATURE:1cxx_long_long_type
+    Feature record: CXX_FEATURE:1cxx_noexcept
+    Feature record: CXX_FEATURE:1cxx_nonstatic_member_init
+    Feature record: CXX_FEATURE:1cxx_nullptr
+    Feature record: CXX_FEATURE:1cxx_override
+    Feature record: CXX_FEATURE:1cxx_range_for
+    Feature record: CXX_FEATURE:1cxx_raw_string_literals
+    Feature record: CXX_FEATURE:1cxx_reference_qualified_functions
+    Feature record: CXX_FEATURE:1cxx_relaxed_constexpr
+    Feature record: CXX_FEATURE:1cxx_return_type_deduction
+    Feature record: CXX_FEATURE:1cxx_right_angle_brackets
+    Feature record: CXX_FEATURE:1cxx_rvalue_references
+    Feature record: CXX_FEATURE:1cxx_sizeof_member
+    Feature record: CXX_FEATURE:1cxx_static_assert
+    Feature record: CXX_FEATURE:1cxx_strong_enums
+    Feature record: CXX_FEATURE:1cxx_template_template_parameters
+    Feature record: CXX_FEATURE:1cxx_thread_local
+    Feature record: CXX_FEATURE:1cxx_trailing_return_types
+    Feature record: CXX_FEATURE:1cxx_unicode_literals
+    Feature record: CXX_FEATURE:1cxx_uniform_initialization
+    Feature record: CXX_FEATURE:1cxx_unrestricted_unions
+    Feature record: CXX_FEATURE:1cxx_user_literals
+    Feature record: CXX_FEATURE:1cxx_variable_templates
+    Feature record: CXX_FEATURE:1cxx_variadic_macros
+    Feature record: CXX_FEATURE:1cxx_variadic_templates
+
+
+Detecting CXX [-std=c++11] compiler features compiled with the following output:
+Change Dir: /home/anonymous/Documents/Dev/rs97-source/cdogs/gcw0build/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_06475/fast"
+/usr/bin/make -f CMakeFiles/cmTC_06475.dir/build.make CMakeFiles/cmTC_06475.dir/build
+make[1]: Entering directory '/home/anonymous/Documents/Dev/rs97-source/cdogs/gcw0build/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_06475.dir/feature_tests.cxx.o
+/opt/rs97-toolchain/usr/bin/mipsel-buildroot-linux-musl-g++ --sysroot=/opt/rs97-toolchain/usr/mipsel-buildroot-linux-musl/sysroot    -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -Ofast -mno-abicalls -mplt   -DNDEBUG   -std=c++11 -o CMakeFiles/cmTC_06475.dir/feature_tests.cxx.o -c /home/anonymous/Documents/Dev/rs97-source/cdogs/gcw0build/CMakeFiles/feature_tests.cxx
+Linking CXX executable cmTC_06475
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_06475.dir/link.txt --verbose=1
+/opt/rs97-toolchain/usr/bin/mipsel-buildroot-linux-musl-g++ --sysroot=/opt/rs97-toolchain/usr/mipsel-buildroot-linux-musl/sysroot  -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -Ofast -mno-abicalls -mplt   -DNDEBUG    CMakeFiles/cmTC_06475.dir/feature_tests.cxx.o  -o cmTC_06475 
+/home/anonymous/Documents/Dev/rs97-toolchain/bin/../lib/gcc/mipsel-buildroot-linux-musl/7.3.0/../../../../mipsel-buildroot-linux-musl/bin/ld: CMakeFiles/cmTC_06475.dir/feature_tests.cxx.o: warning: linking abicalls files with non-abicalls files
+make[1]: Leaving directory '/home/anonymous/Documents/Dev/rs97-source/cdogs/gcw0build/CMakeFiles/CMakeTmp'
+
+
+    Feature record: CXX_FEATURE:0cxx_aggregate_default_initializers
+    Feature record: CXX_FEATURE:1cxx_alias_templates
+    Feature record: CXX_FEATURE:1cxx_alignas
+    Feature record: CXX_FEATURE:1cxx_alignof
+    Feature record: CXX_FEATURE:1cxx_attributes
+    Feature record: CXX_FEATURE:0cxx_attribute_deprecated
+    Feature record: CXX_FEATURE:1cxx_auto_type
+    Feature record: CXX_FEATURE:0cxx_binary_literals
+    Feature record: CXX_FEATURE:1cxx_constexpr
+    Feature record: CXX_FEATURE:0cxx_contextual_conversions
+    Feature record: CXX_FEATURE:1cxx_decltype
+    Feature record: CXX_FEATURE:0cxx_decltype_auto
+    Feature record: CXX_FEATURE:1cxx_decltype_incomplete_return_types
+    Feature record: CXX_FEATURE:1cxx_default_function_template_args
+    Feature record: CXX_FEATURE:1cxx_defaulted_functions
+    Feature record: CXX_FEATURE:1cxx_defaulted_move_initializers
+    Feature record: CXX_FEATURE:1cxx_delegating_constructors
+    Feature record: CXX_FEATURE:1cxx_deleted_functions
+    Feature record: CXX_FEATURE:0cxx_digit_separators
+    Feature record: CXX_FEATURE:1cxx_enum_forward_declarations
+    Feature record: CXX_FEATURE:1cxx_explicit_conversions
+    Feature record: CXX_FEATURE:1cxx_extended_friend_declarations
+    Feature record: CXX_FEATURE:1cxx_extern_templates
+    Feature record: CXX_FEATURE:1cxx_final
+    Feature record: CXX_FEATURE:1cxx_func_identifier
+    Feature record: CXX_FEATURE:1cxx_generalized_initializers
+    Feature record: CXX_FEATURE:0cxx_generic_lambdas
+    Feature record: CXX_FEATURE:1cxx_inheriting_constructors
+    Feature record: CXX_FEATURE:1cxx_inline_namespaces
+    Feature record: CXX_FEATURE:1cxx_lambdas
+    Feature record: CXX_FEATURE:0cxx_lambda_init_captures
+    Feature record: CXX_FEATURE:1cxx_local_type_template_args
+    Feature record: CXX_FEATURE:1cxx_long_long_type
+    Feature record: CXX_FEATURE:1cxx_noexcept
+    Feature record: CXX_FEATURE:1cxx_nonstatic_member_init
+    Feature record: CXX_FEATURE:1cxx_nullptr
+    Feature record: CXX_FEATURE:1cxx_override
+    Feature record: CXX_FEATURE:1cxx_range_for
+    Feature record: CXX_FEATURE:1cxx_raw_string_literals
+    Feature record: CXX_FEATURE:1cxx_reference_qualified_functions
+    Feature record: CXX_FEATURE:0cxx_relaxed_constexpr
+    Feature record: CXX_FEATURE:0cxx_return_type_deduction
+    Feature record: CXX_FEATURE:1cxx_right_angle_brackets
+    Feature record: CXX_FEATURE:1cxx_rvalue_references
+    Feature record: CXX_FEATURE:1cxx_sizeof_member
+    Feature record: CXX_FEATURE:1cxx_static_assert
+    Feature record: CXX_FEATURE:1cxx_strong_enums
+    Feature record: CXX_FEATURE:1cxx_template_template_parameters
+    Feature record: CXX_FEATURE:1cxx_thread_local
+    Feature record: CXX_FEATURE:1cxx_trailing_return_types
+    Feature record: CXX_FEATURE:1cxx_unicode_literals
+    Feature record: CXX_FEATURE:1cxx_uniform_initialization
+    Feature record: CXX_FEATURE:1cxx_unrestricted_unions
+    Feature record: CXX_FEATURE:1cxx_user_literals
+    Feature record: CXX_FEATURE:0cxx_variable_templates
+    Feature record: CXX_FEATURE:1cxx_variadic_macros
+    Feature record: CXX_FEATURE:1cxx_variadic_templates
+
+
+Detecting CXX [-std=c++98] compiler features compiled with the following output:
+Change Dir: /home/anonymous/Documents/Dev/rs97-source/cdogs/gcw0build/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_c75e6/fast"
+/usr/bin/make -f CMakeFiles/cmTC_c75e6.dir/build.make CMakeFiles/cmTC_c75e6.dir/build
+make[1]: Entering directory '/home/anonymous/Documents/Dev/rs97-source/cdogs/gcw0build/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_c75e6.dir/feature_tests.cxx.o
+/opt/rs97-toolchain/usr/bin/mipsel-buildroot-linux-musl-g++ --sysroot=/opt/rs97-toolchain/usr/mipsel-buildroot-linux-musl/sysroot    -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -Ofast -mno-abicalls -mplt   -DNDEBUG   -std=c++98 -o CMakeFiles/cmTC_c75e6.dir/feature_tests.cxx.o -c /home/anonymous/Documents/Dev/rs97-source/cdogs/gcw0build/CMakeFiles/feature_tests.cxx
+Linking CXX executable cmTC_c75e6
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_c75e6.dir/link.txt --verbose=1
+/opt/rs97-toolchain/usr/bin/mipsel-buildroot-linux-musl-g++ --sysroot=/opt/rs97-toolchain/usr/mipsel-buildroot-linux-musl/sysroot  -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -Ofast -mno-abicalls -mplt   -DNDEBUG    CMakeFiles/cmTC_c75e6.dir/feature_tests.cxx.o  -o cmTC_c75e6 
+/home/anonymous/Documents/Dev/rs97-toolchain/bin/../lib/gcc/mipsel-buildroot-linux-musl/7.3.0/../../../../mipsel-buildroot-linux-musl/bin/ld: CMakeFiles/cmTC_c75e6.dir/feature_tests.cxx.o: warning: linking abicalls files with non-abicalls files
+make[1]: Leaving directory '/home/anonymous/Documents/Dev/rs97-source/cdogs/gcw0build/CMakeFiles/CMakeTmp'
+
+
+    Feature record: CXX_FEATURE:0cxx_aggregate_default_initializers
+    Feature record: CXX_FEATURE:0cxx_alias_templates
+    Feature record: CXX_FEATURE:0cxx_alignas
+    Feature record: CXX_FEATURE:0cxx_alignof
+    Feature record: CXX_FEATURE:0cxx_attributes
+    Feature record: CXX_FEATURE:0cxx_attribute_deprecated
+    Feature record: CXX_FEATURE:0cxx_auto_type
+    Feature record: CXX_FEATURE:0cxx_binary_literals
+    Feature record: CXX_FEATURE:0cxx_constexpr
+    Feature record: CXX_FEATURE:0cxx_contextual_conversions
+    Feature record: CXX_FEATURE:0cxx_decltype
+    Feature record: CXX_FEATURE:0cxx_decltype_auto
+    Feature record: CXX_FEATURE:0cxx_decltype_incomplete_return_types
+    Feature record: CXX_FEATURE:0cxx_default_function_template_args
+    Feature record: CXX_FEATURE:0cxx_defaulted_functions
+    Feature record: CXX_FEATURE:0cxx_defaulted_move_initializers
+    Feature record: CXX_FEATURE:0cxx_delegating_constructors
+    Feature record: CXX_FEATURE:0cxx_deleted_functions
+    Feature record: CXX_FEATURE:0cxx_digit_separators
+    Feature record: CXX_FEATURE:0cxx_enum_forward_declarations
+    Feature record: CXX_FEATURE:0cxx_explicit_conversions
+    Feature record: CXX_FEATURE:0cxx_extended_friend_declarations
+    Feature record: CXX_FEATURE:0cxx_extern_templates
+    Feature record: CXX_FEATURE:0cxx_final
+    Feature record: CXX_FEATURE:0cxx_func_identifier
+    Feature record: CXX_FEATURE:0cxx_generalized_initializers
+    Feature record: CXX_FEATURE:0cxx_generic_lambdas
+    Feature record: CXX_FEATURE:0cxx_inheriting_constructors
+    Feature record: CXX_FEATURE:0cxx_inline_namespaces
+    Feature record: CXX_FEATURE:0cxx_lambdas
+    Feature record: CXX_FEATURE:0cxx_lambda_init_captures
+    Feature record: CXX_FEATURE:0cxx_local_type_template_args
+    Feature record: CXX_FEATURE:0cxx_long_long_type
+    Feature record: CXX_FEATURE:0cxx_noexcept
+    Feature record: CXX_FEATURE:0cxx_nonstatic_member_init
+    Feature record: CXX_FEATURE:0cxx_nullptr
+    Feature record: CXX_FEATURE:0cxx_override
+    Feature record: CXX_FEATURE:0cxx_range_for
+    Feature record: CXX_FEATURE:0cxx_raw_string_literals
+    Feature record: CXX_FEATURE:0cxx_reference_qualified_functions
+    Feature record: CXX_FEATURE:0cxx_relaxed_constexpr
+    Feature record: CXX_FEATURE:0cxx_return_type_deduction
+    Feature record: CXX_FEATURE:0cxx_right_angle_brackets
+    Feature record: CXX_FEATURE:0cxx_rvalue_references
+    Feature record: CXX_FEATURE:0cxx_sizeof_member
+    Feature record: CXX_FEATURE:0cxx_static_assert
+    Feature record: CXX_FEATURE:0cxx_strong_enums
+    Feature record: CXX_FEATURE:1cxx_template_template_parameters
+    Feature record: CXX_FEATURE:0cxx_thread_local
+    Feature record: CXX_FEATURE:0cxx_trailing_return_types
+    Feature record: CXX_FEATURE:0cxx_unicode_literals
+    Feature record: CXX_FEATURE:0cxx_uniform_initialization
+    Feature record: CXX_FEATURE:0cxx_unrestricted_unions
+    Feature record: CXX_FEATURE:0cxx_user_literals
+    Feature record: CXX_FEATURE:0cxx_variable_templates
+    Feature record: CXX_FEATURE:0cxx_variadic_macros
+    Feature record: CXX_FEATURE:0cxx_variadic_templates
+Determining if the function fcntl exists passed with the following output:
+Change Dir: /home/anonymous/Documents/Dev/rs97-source/cdogs/gcw0build/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_d663d/fast"
+/usr/bin/make -f CMakeFiles/cmTC_d663d.dir/build.make CMakeFiles/cmTC_d663d.dir/build
+make[1]: Entering directory '/home/anonymous/Documents/Dev/rs97-source/cdogs/gcw0build/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_d663d.dir/CheckFunctionExists.c.o
+/opt/rs97-toolchain/usr/bin/mipsel-buildroot-linux-musl-gcc --sysroot=/opt/rs97-toolchain/usr/mipsel-buildroot-linux-musl/sysroot   -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -Ofast -mno-abicalls -mplt -DCHECK_FUNCTION_EXISTS=fcntl  -DNDEBUG   -o CMakeFiles/cmTC_d663d.dir/CheckFunctionExists.c.o   -c /usr/share/cmake-3.12/Modules/CheckFunctionExists.c
+Linking C executable cmTC_d663d
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_d663d.dir/link.txt --verbose=1
+/opt/rs97-toolchain/usr/bin/mipsel-buildroot-linux-musl-gcc --sysroot=/opt/rs97-toolchain/usr/mipsel-buildroot-linux-musl/sysroot -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -Ofast -mno-abicalls -mplt -DCHECK_FUNCTION_EXISTS=fcntl  -DNDEBUG    CMakeFiles/cmTC_d663d.dir/CheckFunctionExists.c.o  -o cmTC_d663d 
+/home/anonymous/Documents/Dev/rs97-toolchain/bin/../lib/gcc/mipsel-buildroot-linux-musl/7.3.0/../../../../mipsel-buildroot-linux-musl/bin/ld: CMakeFiles/cmTC_d663d.dir/CheckFunctionExists.c.o: warning: linking abicalls files with non-abicalls files
+make[1]: Leaving directory '/home/anonymous/Documents/Dev/rs97-source/cdogs/gcw0build/CMakeFiles/CMakeTmp'
+
+
+Determining if the function poll exists passed with the following output:
+Change Dir: /home/anonymous/Documents/Dev/rs97-source/cdogs/gcw0build/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_d92b4/fast"
+/usr/bin/make -f CMakeFiles/cmTC_d92b4.dir/build.make CMakeFiles/cmTC_d92b4.dir/build
+make[1]: Entering directory '/home/anonymous/Documents/Dev/rs97-source/cdogs/gcw0build/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_d92b4.dir/CheckFunctionExists.c.o
+/opt/rs97-toolchain/usr/bin/mipsel-buildroot-linux-musl-gcc --sysroot=/opt/rs97-toolchain/usr/mipsel-buildroot-linux-musl/sysroot   -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -Ofast -mno-abicalls -mplt -DCHECK_FUNCTION_EXISTS=poll  -DNDEBUG   -o CMakeFiles/cmTC_d92b4.dir/CheckFunctionExists.c.o   -c /usr/share/cmake-3.12/Modules/CheckFunctionExists.c
+Linking C executable cmTC_d92b4
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_d92b4.dir/link.txt --verbose=1
+/opt/rs97-toolchain/usr/bin/mipsel-buildroot-linux-musl-gcc --sysroot=/opt/rs97-toolchain/usr/mipsel-buildroot-linux-musl/sysroot -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -Ofast -mno-abicalls -mplt -DCHECK_FUNCTION_EXISTS=poll  -DNDEBUG    CMakeFiles/cmTC_d92b4.dir/CheckFunctionExists.c.o  -o cmTC_d92b4 
+/home/anonymous/Documents/Dev/rs97-toolchain/bin/../lib/gcc/mipsel-buildroot-linux-musl/7.3.0/../../../../mipsel-buildroot-linux-musl/bin/ld: CMakeFiles/cmTC_d92b4.dir/CheckFunctionExists.c.o: warning: linking abicalls files with non-abicalls files
+make[1]: Leaving directory '/home/anonymous/Documents/Dev/rs97-source/cdogs/gcw0build/CMakeFiles/CMakeTmp'
+
+
+Determining if the function inet_pton exists passed with the following output:
+Change Dir: /home/anonymous/Documents/Dev/rs97-source/cdogs/gcw0build/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_07a7e/fast"
+/usr/bin/make -f CMakeFiles/cmTC_07a7e.dir/build.make CMakeFiles/cmTC_07a7e.dir/build
+make[1]: Entering directory '/home/anonymous/Documents/Dev/rs97-source/cdogs/gcw0build/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_07a7e.dir/CheckFunctionExists.c.o
+/opt/rs97-toolchain/usr/bin/mipsel-buildroot-linux-musl-gcc --sysroot=/opt/rs97-toolchain/usr/mipsel-buildroot-linux-musl/sysroot   -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -Ofast -mno-abicalls -mplt -DCHECK_FUNCTION_EXISTS=inet_pton  -DNDEBUG   -o CMakeFiles/cmTC_07a7e.dir/CheckFunctionExists.c.o   -c /usr/share/cmake-3.12/Modules/CheckFunctionExists.c
+Linking C executable cmTC_07a7e
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_07a7e.dir/link.txt --verbose=1
+/opt/rs97-toolchain/usr/bin/mipsel-buildroot-linux-musl-gcc --sysroot=/opt/rs97-toolchain/usr/mipsel-buildroot-linux-musl/sysroot -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -Ofast -mno-abicalls -mplt -DCHECK_FUNCTION_EXISTS=inet_pton  -DNDEBUG    CMakeFiles/cmTC_07a7e.dir/CheckFunctionExists.c.o  -o cmTC_07a7e 
+/home/anonymous/Documents/Dev/rs97-toolchain/bin/../lib/gcc/mipsel-buildroot-linux-musl/7.3.0/../../../../mipsel-buildroot-linux-musl/bin/ld: CMakeFiles/cmTC_07a7e.dir/CheckFunctionExists.c.o: warning: linking abicalls files with non-abicalls files
+make[1]: Leaving directory '/home/anonymous/Documents/Dev/rs97-source/cdogs/gcw0build/CMakeFiles/CMakeTmp'
+
+
+Determining if the function inet_ntop exists passed with the following output:
+Change Dir: /home/anonymous/Documents/Dev/rs97-source/cdogs/gcw0build/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_8883b/fast"
+/usr/bin/make -f CMakeFiles/cmTC_8883b.dir/build.make CMakeFiles/cmTC_8883b.dir/build
+make[1]: Entering directory '/home/anonymous/Documents/Dev/rs97-source/cdogs/gcw0build/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_8883b.dir/CheckFunctionExists.c.o
+/opt/rs97-toolchain/usr/bin/mipsel-buildroot-linux-musl-gcc --sysroot=/opt/rs97-toolchain/usr/mipsel-buildroot-linux-musl/sysroot   -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -Ofast -mno-abicalls -mplt -DCHECK_FUNCTION_EXISTS=inet_ntop  -DNDEBUG   -o CMakeFiles/cmTC_8883b.dir/CheckFunctionExists.c.o   -c /usr/share/cmake-3.12/Modules/CheckFunctionExists.c
+Linking C executable cmTC_8883b
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_8883b.dir/link.txt --verbose=1
+/opt/rs97-toolchain/usr/bin/mipsel-buildroot-linux-musl-gcc --sysroot=/opt/rs97-toolchain/usr/mipsel-buildroot-linux-musl/sysroot -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -Ofast -mno-abicalls -mplt -DCHECK_FUNCTION_EXISTS=inet_ntop  -DNDEBUG    CMakeFiles/cmTC_8883b.dir/CheckFunctionExists.c.o  -o cmTC_8883b 
+/home/anonymous/Documents/Dev/rs97-toolchain/bin/../lib/gcc/mipsel-buildroot-linux-musl/7.3.0/../../../../mipsel-buildroot-linux-musl/bin/ld: CMakeFiles/cmTC_8883b.dir/CheckFunctionExists.c.o: warning: linking abicalls files with non-abicalls files
+make[1]: Leaving directory '/home/anonymous/Documents/Dev/rs97-source/cdogs/gcw0build/CMakeFiles/CMakeTmp'
+
+
+Performing C SOURCE FILE Test HAS_MSGHDR_FLAGS succeeded with the following output:
+Change Dir: /home/anonymous/Documents/Dev/rs97-source/cdogs/gcw0build/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_5d2b8/fast"
+/usr/bin/make -f CMakeFiles/cmTC_5d2b8.dir/build.make CMakeFiles/cmTC_5d2b8.dir/build
+make[1]: Entering directory '/home/anonymous/Documents/Dev/rs97-source/cdogs/gcw0build/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_5d2b8.dir/src.c.o
+/opt/rs97-toolchain/usr/bin/mipsel-buildroot-linux-musl-gcc --sysroot=/opt/rs97-toolchain/usr/mipsel-buildroot-linux-musl/sysroot   -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -Ofast -mno-abicalls -mplt -DHAS_MSGHDR_FLAGS  -DNDEBUG   -o CMakeFiles/cmTC_5d2b8.dir/src.c.o   -c /home/anonymous/Documents/Dev/rs97-source/cdogs/gcw0build/CMakeFiles/CMakeTmp/src.c
+Linking C executable cmTC_5d2b8
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_5d2b8.dir/link.txt --verbose=1
+/opt/rs97-toolchain/usr/bin/mipsel-buildroot-linux-musl-gcc --sysroot=/opt/rs97-toolchain/usr/mipsel-buildroot-linux-musl/sysroot -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -Ofast -mno-abicalls -mplt -DHAS_MSGHDR_FLAGS  -DNDEBUG    CMakeFiles/cmTC_5d2b8.dir/src.c.o  -o cmTC_5d2b8 
+/home/anonymous/Documents/Dev/rs97-toolchain/bin/../lib/gcc/mipsel-buildroot-linux-musl/7.3.0/../../../../mipsel-buildroot-linux-musl/bin/ld: CMakeFiles/cmTC_5d2b8.dir/src.c.o: warning: linking abicalls files with non-abicalls files
+make[1]: Leaving directory '/home/anonymous/Documents/Dev/rs97-source/cdogs/gcw0build/CMakeFiles/CMakeTmp'
+
+Source file was:
+
+#include <sys/types.h>
+#include <sys/socket.h>
+
+int main()
+{
+   (void)sizeof(((struct msghdr *)0)->msg_flags);
+   return 0;
+}
+
+Determining size of socklen_t passed with the following output:
+Change Dir: /home/anonymous/Documents/Dev/rs97-source/cdogs/gcw0build/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_4b045/fast"
+/usr/bin/make -f CMakeFiles/cmTC_4b045.dir/build.make CMakeFiles/cmTC_4b045.dir/build
+make[1]: Entering directory '/home/anonymous/Documents/Dev/rs97-source/cdogs/gcw0build/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_4b045.dir/HAS_SOCKLEN_T.c.o
+/opt/rs97-toolchain/usr/bin/mipsel-buildroot-linux-musl-gcc --sysroot=/opt/rs97-toolchain/usr/mipsel-buildroot-linux-musl/sysroot   -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -Ofast -mno-abicalls -mplt   -DNDEBUG   -o CMakeFiles/cmTC_4b045.dir/HAS_SOCKLEN_T.c.o   -c /home/anonymous/Documents/Dev/rs97-source/cdogs/gcw0build/CMakeFiles/CheckTypeSize/HAS_SOCKLEN_T.c
+Linking C executable cmTC_4b045
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_4b045.dir/link.txt --verbose=1
+/opt/rs97-toolchain/usr/bin/mipsel-buildroot-linux-musl-gcc --sysroot=/opt/rs97-toolchain/usr/mipsel-buildroot-linux-musl/sysroot -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -Ofast -mno-abicalls -mplt   -DNDEBUG    CMakeFiles/cmTC_4b045.dir/HAS_SOCKLEN_T.c.o  -o cmTC_4b045 
+/home/anonymous/Documents/Dev/rs97-toolchain/bin/../lib/gcc/mipsel-buildroot-linux-musl/7.3.0/../../../../mipsel-buildroot-linux-musl/bin/ld: CMakeFiles/cmTC_4b045.dir/HAS_SOCKLEN_T.c.o: warning: linking abicalls files with non-abicalls files
+make[1]: Leaving directory '/home/anonymous/Documents/Dev/rs97-source/cdogs/gcw0build/CMakeFiles/CMakeTmp'
+
+

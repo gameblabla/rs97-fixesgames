@@ -1,0 +1,122 @@
+;; ======================================================================== ;;
+;;  GFX.MAC                                             Default Macro Set   ;;
+;;  Macros for generating graphics bitfields from strings.                  ;;
+;;  Joseph Zbiciak <intvnut AT gmail.com>                                   ;;
+;;  These macros are hereby released into the Public Domain.                ;;
+;;                                                                          ;;
+;;  Macros defined in this file:                                            ;;
+;;      gfx_start    Start a packed graphic                                 ;;
+;;      gfx_row s    Add an 8-pixel wide row to a packed graphic            ;;
+;;      gfx_flush    End a packed graphic                                   ;;
+;;                                                                          ;;
+;;  EXAMPLE USAGE:                                                          ;;
+;;                                                                          ;;
+;;      gfx_start                                                           ;;
+;;      gfx_row   ".######."                                                ;;
+;;      gfx_row   "#......#"                                                ;;
+;;      gfx_row   "#.#..#.#"                                                ;;
+;;      gfx_row   "#......#"                                                ;;
+;;      gfx_row   "#.#..#.#"                                                ;;
+;;      gfx_row   "#..##..#"                                                ;;
+;;      gfx_row   "#......#"                                                ;;
+;;      gfx_row   ".######."                                                ;;
+;;      gfx_flush                                                           ;;
+;;                                                                          ;;
+;;  The above will generate the following four words in memory:             ;;
+;;                                                                          ;;
+;;      Hex       Binary                                                    ;;
+;;      817E      1000 0001 0111 1110                                       ;;
+;;      81A5      1000 0001 1010 0101                                       ;;
+;;      99A5      1001 1001 1010 0101                                       ;;
+;;      7E81      0111 1110 1000 0001                                       ;;
+;;                                                                          ;;
+;;  As you can see, the even rows (0, 2, 4, 6) of the bitmap are in         ;;
+;;  the lower bytes of each of the 4 words.  The odd rows of the bitmap     ;;
+;;  are in the upper bytes.                                                 ;;
+;;                                                                          ;;
+;;  A loop like the following is suitable for copying such a bitmap to      ;;
+;;  GRAM:                                                                   ;;
+;;                                                                          ;;
+;;     REPEAT 4                                                             ;;
+;;     MVI@   R4, R0 ; get next two rows                                    ;;
+;;     MVO@   R0, R5 ; write even # row                                     ;;
+;;     SWAP   R0                                                            ;;
+;;     MVO@   R0, R5 ; write odd # row                                      ;;
+;;     ENDR                                                                 ;;
+;;                                                                          ;;
+;;  Note that the macros do not keep track of how tall the graphic is.      ;;
+;;  They only track whether an even number or odd number of lines has       ;;
+;;  been written.                                                           ;;
+;; ======================================================================== ;;
+
+    IF (DEFINED _GFX_MAC) = 0
+
+_GFX_MAC QEQU 1
+
+;; ======================================================================== ;;
+;;  gfx_start                                                               ;;
+;;  Initializes symbols for the string->bitmap graphic generator.           ;;
+;; ======================================================================== ;;
+MACRO   gfx_start
+        LISTING "code"
+_gfx_w  QSET 0
+_gfx_eo QSET 0
+        LISTING "prev"
+ENDM
+
+;; ======================================================================== ;;
+;;  gfx_row s                                                               ;;
+;;  Takes a string, and generates a row of bitmap from the first 8          ;;
+;;  characters in the string.  Space characters and dot characters are      ;;
+;;  mapped to '0' bits in the bitmap.  All others are mapped to 1.  If the  ;;
+;;  string is shorter than 8 characters, the missing characters are mapped  ;;
+;;  to 0.                                                                   ;;
+;;                                                                          ;;
+;;  The bitmap is output as a series of DECLE statements.  Even numbered    ;;
+;;  rows are stored in the lower byte of each 16-bit word.  Odd numbered    ;;
+;;  rows are stored in the upper byte of each 16-bit word.                  ;;
+;;                                                                          ;;
+;;  ARGUMENTS                                                               ;;
+;;      s   String to convert into a bitmap.                                ;;
+;; ======================================================================== ;;
+MACRO   gfx_row s
+        LISTING "code"
+        ; start of graphics definition
+_gfx_x  QSET 0
+_gfx_b  QSET $8000
+_gfx_w  QSET (_gfx_w SHR 8)
+        REPEAT 8
+_gfx_w  QSET (_gfx_w + _gfx_b*((ASC(%s%,_gfx_x)<>$20) AND (ASC(%s%,_gfx_x)<>$2E) AND (ASC(%s%,_gfx_x)<>0)))
+_gfx_x  QSET _gfx_x + 1
+_gfx_b  QSET _gfx_b SHR 1
+        ENDR
+_gfx_eo QSET _gfx_eo + 1
+        IF  _gfx_eo = 2
+        DECLE _gfx_w
+_gfx_eo QSET 0
+        ENDI
+        LISTING "prev"
+ENDM
+
+;; ======================================================================== ;;
+;;  gfx_flush                                                               ;;
+;;  Ensures that all bitmap data for a packed bitmap is output.  That is,   ;;
+;;  if any rows of bitmap are waiting to be pushed to the object file,      ;;
+;;  this macro will push those to the object file.  In general, each        ;;
+;;  bitmap definition should be followed by gfx_flush.                      ;;
+;; ======================================================================== ;;
+MACRO   gfx_flush 
+        LISTING "code"
+        IF _gfx_eo = 1
+        DECLE _gfx_w SHR 8
+        ENDI
+_gfx_w  QSET 0
+_gfx_eo QSET 0
+        LISTING "prev"
+ENDM
+
+    ENDI
+
+;; ======================================================================== ;;
+;;  End of File:  gfx.mac                                                   ;;
+;; ======================================================================== ;;

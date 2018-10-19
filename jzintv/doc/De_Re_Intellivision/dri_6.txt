@@ -1,0 +1,2096 @@
+
+                    здддддддддддддддддддддддддддддддддддд©
+                    Ё  Mattel Electronics Intellivision  Ё
+                    Ё       Intelligent Television       Ё
+                    юдддддддддддддддддддддддддддддддддддды
+
+
+
+             шш
+             ш          "Mattel Electronics Presents"
+         шшшшшш
+         ш шшш
+         ш шшшшш            зддддддддддддддддддд©
+           шш               ЁDe Re IntellivisionЁ
+                            юддддддддддддддддддды
+           шш
+          шшшшшш     (In Latin "All About Intellivision")
+          шшшшшш
+          ш    ш
+         шш    ш       Compilation By William M. Moeller
+         шш    ш
+        шш
+        ш
+
+дддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддд
+                     Last Modified November 28, 1997
+                    ддддддддддддддддддддддддддддддддд
+
+                               Chapter VI
+
+                     "IBM PC Intellivision ROM Dumper"
+
+
+                      Copyright 1997 Division Software
+
+
+
+Dumping GI ROMS - Cart, Exec and Grom. цдддддддддддддддддддддддддддддддддддддддд
+ддддддддддддддддддддддддддддддддддддддды
+
+  The GI-ROMs used in the Intellivision are very different from the
+standard ROMS used in most other computers.  This means that common ROM
+readers can not be used to dump the content of these ROMS.  One approach
+to getting at the content of the ROMS is to build some hardware to
+accomplish the task.
+
+  GI-ROMs interface to the 1610 bus directly, they do not require
+additional external circuitry for address decoding or determining the
+bus phase.  They take the 16 address lines and 3 bus control lines, (and
+a reset line) raw, exactly as presented by the CPU, and where
+appropriate return a 8, 10 or 16 bit value back out onto the multiplexed
+data/address bus.
+
+  Reading GI-ROM's requires hardware capable of simulating the address
+lines and bus control signals of a 1610 CPU, as well as capturing the
+data that is presented on the address/data bus by the ROM.
+
+  The hardware requirements for such a circuit are at a minimum 20
+output lines.  16 of these lines that will be used to form the
+bi-directional data/address bus must be able to be "tristated" -
+disconnected - so that they do not interfere with the data emitted by
+the ROM.
+
+  In addition, circuitry must be provided to latch the state of the
+data/address bus so that it can be displayed or otherwise manipulated.
+
+  The circuit shown later in this section performs these functions, and
+is designed to connect to a standard PC parallel port.  This in itself
+requires some explanation.
+
+
+Interfacing to the PC parallel port цддддддддддддддддддддддддддддддддддддддддд
+дддддддддддддддддддддддддддддддддддды
+
+  The PC parallel port provides 8 bits of parallel output, as well as 4
+additional output lines intended for printer control.  4 inputs are also
+provided for returning various printer states.
+
+  The 20 output lines required for the cart reader are obtained by
+expanding the PC's 8 bit parallel printer (data output) port to 24 bits
+through the use of 3 octal latches.  Two of these latches are used to
+generate the 16 bit address and the third is used to create the various
+bus control signals.
+
+  The 16 bits of data emitted by the ROM are read back into the PC by
+latching the data into two 8 bit parallel-to-serial shift registers and
+shifting the data one bit at a time into the PC through two of the 4
+input bits on the printer port.
+
+
+         2-153       зд╢Cart Portцдддддддддддддддддддддддд©
+      SN74ALS166     Ё _____  Q       aL         aH       Ё
+      Shift Register Ё MSYNC зд©   зддддд©    зддддд©     Ё
+         здддд©      юддддеддееедддаддвддаддддаддвддаддддды
+ зд Gnd д╢8   фмммммммммммьммьььмммммм╧          ╨
+ ц Clki д╢6   Ё           Ё  ЁЁЁ      ╨          ╨
+ юд Ser д╢1   Ё           Ё  ЁЁЁ      ╨          ╨
+ зд Vcc д╢16 7цддд© Clk   Ё  ЁЁЁ      ╨          ╨
+ юд Clr д╢9 15цд© Ёsh/-ld Ё  ЁЁЁ      ╨          ╨
+здддддддд╢13  Ё Ё Ё       Ё  ЁЁЁ      ╨          ╨
+Ё        юдддды Ё Ё       Ё  ЁЁЁ      ╨          ╨
+Ё        здддд© Ё Ё       Ё  ЁЁЁ      ╨          ╨
+Ёзд Gnd д╢8   фмьмьмммммммьммьььммммммнмммммммммм╧
+Ёц Clki д╢6   Ё Ё Ё       Ё  ЁЁЁ      ╨          ╨
+Ёюд Ser д╢1   Ё Ё Ё       Ё  ЁЁЁ      ╨          ╨
+Ёзд Vcc д╢16 7цдед╢ Clk   Ё  ЁЁЁ      ╨ 2-397    ╨
+Ёюд Clr д╢9 15цд╢ Ёsh/-ld Ё  ЁЁЁ      ╨ SN74AS573╨
+Ё        Ё13  Ё Ё Ё       Ё  ЁЁЁ      ╨ Octal    ╨
+Ё      Qhюбддды Ё Ё       Ё 17Ё19     ╨ Latch    ╨ Output 12-19
+Ё         Ё здддададддддддаддааа©зддддпдддд©зддддпдддд©
+юдддддд©  Ё Ё 14 15 -oc C 13 18 ЁЁ-oc C    ЁЁ-oc C 20 цд Vcc
+       Ё  Ё Ё        1 11 16    ЁЁ 1 11    ЁЁ 1 11 10 цд Gnd
+       Ё  Ё юддддддддбдбдрдбддддыюдбдбдддрдыюдбдбдддрды
+       Ё  Ё         GndЁ ╨ юдддддддадедддвдддды Ё   ╨ Input 2-9
+       Ё  Ё            Ё хмммммммммммьмммйммммммьммм╧
+       Ё  Ё            юдд©      зддды          Ё   ╨
+       Ё  Ё               Ё      Ё   здддддддддды   ╨
+       Ё  Ё             здаддддддадддадддд©         ╨
+       Ё  Ё 2-3         Ё 6      8  11 14 цд Vcc    ╨
+       Ё  Ё 74LS00      Ё 4 5 9 10 1213 7 цд Gnd    ╨
+       Ё  Ё Quad Nand   юдбдбдбдбддбдбдддды         ╨
+       Ё  Ё               цды цды  цды              ╨
+       Ё  Ё             здадддаддддадддд©           ╨
+       Ё  Ё 2-117       Ё 4   5    6 16 цд Vcc      ╨
+       Ё  Ё SN74ALS139  Ё 2   3   1   8 цд Gnd      ╨
+       Ё  Ё 2*4 decoder юдбдддбдддбддддды           ╨
+       Ё  Ё               Ё Auto  Ё                 ╨
+   Ack Ё  ЁBusy     StrobeЁ   Ё   ЁInit             ╨
+    зд10д11дддддд©     здд1дд14 д16д©        зддддддпддддд©
+    Ё b6 b7      Ё     Ё b0  b1  b2 Ё        Ё    Data    Ё
+    Ё P379       Ё     Ё    P37A    Ё        Ё  P378 all  Ё
+    юдддддддддддды     юдддддддддддды        юдддддддддддды
+
+Parts List 74LS573/574/580 + 20 pin socket * 3
+           74LS165         + 16 pin socket * 2
+           74LS139/138     + 16 pin socket * 1
+           74LS00            14 pin socket * 1
+
+            44 pin board edge connecter, (female) board mounted
+            Prototype board of sufficient size
+            Wire wrap wire
+            Power connector + Batteries.
+
+
+Construction layout цддддддддддддддддддддддддддддддддддддддддддддддддддддддд
+дддддддддддддддддддды
+
+             D8  D9  D10 D11 D12 D2  D1  D15
+-MSYNC дд© D7  D6  D5  D4  D3  D13 D14 D0        Vcc
+         Ё       1 1 1 1 1 2 2 2 2 2 3 3 3 3 3 4 4
+       1 3 5 7 9 1 3 5 7 9 1 3 5 7 9 1 3 5 7 9 1 3
+  GNDздд . . . . . . . . . . . . . . . . . . . . .   Bottom
+     Ё . . . . . д©. д©д©д©д©д©д©д©. . . . . . . д©  Top
+     Ё 2 4 6 8 1 1Ё1 1Ё1Ё2Ё2Ё2Ё2Ё2Ё3 3 3 3 3 4 4 4Ё
+     Ё         0 2Ё4 6Ё8Ё0Ё2Ё4Ё6Ё8Ё0 2 4 6 8 0 2 4Ё
+     Ё            Ё   Ё Ё Ё Ё Ё Ё Ё  Bc1 BDir     Ё          U1,2,3
+     Ё            Ё   Ё Ё ЁGNDЁ Ё Ё    Bc2        Ё          SN74AS573
+здд1дабддд2ддбддд3юдбдададабады5юдеддд6ддбддд7ддбдад8дд©     Octal latch
+Ё ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... Ё      зддддддд©
+Ё ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... Ё -oc д╢ 1   20цд Vcc
+Ё ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... Ё  d0 д╢ 2   19цд q0
+Ё ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... Ё  d1 д╢ 3   18цд q1
+Ё ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... Ё  d2 д╢ 4   17цд q2
+Ё ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... Ё  d3 д╢ 5   16цд q3
+Ё ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... Ё  d4 д╢ 6   15цд q4
+Ё ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... Ё  d5 д╢ 7   14цд q5
+Ё ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... Ё  d6 д╢ 8   13цд q6
+Ё ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... Ё  d7 д╢ 9   12цд q7
+Ё ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... Ё GND д╢10   11цд c
+Ё ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... Ё      юддддддды
+Ё ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... Ё
+Ё ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... Ё    SN74ALS166 U4,5
+Ё ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... Ё    Shift Register
+Ё ... ЁЁ ... ЁЁ ... ЁЁ .B. ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... Ё      зддддддд©
+Ё ... ЁЁ ... ЁЁ ... ЁЁ .A. ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... Ё Ser д╢ 1   16цд Vcc
+Ё ... ЁЁ ... ЁЁ ... ЁЁ .C. ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... Ё   a д╢ 2   15цд sh/ld
+Ё ... ЁЁ ... ЁЁ ... ЁЁ .K. ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... Ё   b д╢ 3   14цд h
+Ё ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... Ё   c д╢ 4   13цд q
+Ё ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... Ё   d д╢ 5   12цд g
+Ё ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... Ё  Cl д╢ 6   11цд r
+Ё ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... Ё Cli д╢ 7   10цд e
+Ё ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... Ё GND д╢ 8    9цд Clr
+Ё ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... Ё      юддддддды
+Ё ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... Ё
+Ё ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... Ё     SN74ALS139 U7
+Ё ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... Ё     2*4 decoder
+Ё ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... Ё      зддддддд©
+Ё ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... Ё   g д╢ 1   16цд Vcc
+Ё ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... Ё   a д╢ 2   15цд g'
+Ё ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... Ё   b д╢ 3   14цд a'
+Ё ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... Ё  y0 д╢ 4   13цд b'
+Ё ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... Ё  y1 д╢ 5   12цд y0'
+Ё ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... Ё  y2 д╢ 6   11цд y1'
+Ё ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... Ё  y3 д╢ 7   10цд y2'
+Ё ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... Ё Gnd д╢ 8    9цд y3'
+Ё ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... Ё      юддддддды
+Ё ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... Ё
+Ё ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... Ё      74LS00  U6
+Ё ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... Ё      Quad Nand
+Ё ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... Ё      зддддддд©
+Ё ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... Ё  a1 д╢ 1   14цд Vcc
+Ё ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... Ё  b1 д╢ 2   13цд a4
+Ё ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... Ё  y1 д╢ 3   12цд b4
+Ё ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... Ё  a2 д╢ 4   11цд y4
+Ё ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... Ё  b2 д╢ 5   10цд a3
+Ё ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... Ё  y2 д╢ 6    9цд b3
+Ё ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... Ё GND д╢ 7    8цд y3
+Ё ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... Ё      юддддддды
+Ё ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... Ё
+Ё ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... ЁЁ ... Ё
+Ё д1дддадд2дддадд3дддадд4дддадд5дддадд6дддадд7ддд╢ д8дды
+юд Gnd                  . . . . . .              юд Vcc
+                        Ё Ё Ё Ё Ё Ё
+                        O O O O O O
+
+
+         As seen from underside of project board
+         ддддддддддддддддддддддддддддддддддддддд     x = NO CONNECTION
+
+ здддддддддбдддддддддддддддддддбддддддддддддддддд©
+ Ё U1      Ё         зддддбддддxдддддддддддд©    Ё
+ Ё   зд©зббеббб©зд©  Ё U2 Ёзбббебб©зд©  U3  Ёзбббебб©зд©
+ Ё   Ёзаааааааааа©Ё  Ё   заааааааааа©Ё     заааааааааа©Ё
+дxдддаЁ123456789AцаддxдддЁ123456789Aцаддддд╢123456789Aцаддд Gnd
+ Ё    цд         Ё   Ё   цд         Ё      цд         Ё
+дxдддб╢KJIHGFEDCBцдддxддб╢KJIHGFEDCBцдддддб╢KJIHGFEDCBцдддд Vcc
+ Ё   Ёюббббббббббы   Ё  Ёюббббббббббы     Ёюббббббббббы       здддддддддддд©
+ Ё   юдыЁЁЁЁЁЁDEЁ    Ё  юдыЁЁЁЁЁЁЁЁЁ д©   юдыЁЁЁЁЁЁЁЁЁ д©     Ё Cart Port  Ё
+ Ё      ABCюxxддxдддды     ЁЁЁЁabcdЁ да X    ЁЁЁЁefghЁ да Y   цдддддддддддд╢
+ Ё          Ёюддxд© зддддддxxxxдддды         ЁЁЁЁ    Ё        ЁA=BC1       Ё
+ Ё          юдддxдx©Ё зддддxxxxддддддддддддддxxxxдддды        ЁB=BC2       Ё
+ Ё  зддддд© зддды Ёюxдxддддxxxxбдддддддддддддxxxx©            ЁC=BDIR      Ё
+ Ё  Ё  FGHц©Ёзд©  Ё Ё Ё зд©ЁЁЁЁЁзбд© U5   зд©ЁЁЁЁЁзбд© U4     ЁD=-MSYNC    Ё
+ Ё  Ё зааааааа©Ё  Ё Ё Ё Ёзаааааааа©Ё      Ёзаааааааа©Ё        ЁE=>H = NC   Ё
+дxддxдЁ1234567цаддxдxдxдыЁ12345678цадддддда╢12345678цаддд Gnd ЁX= A/D 0-7  Ё
+ Ё  Ё цд      Ё   Ё Ё Ё  цд       Ё        цд       Ё         Ё   J=A/D 0  Ё
+дxддxб╢EDCBA98цдддxдxдxдб╢GFEDCBA9цбддддддб╢GFEDCBA9цбддд Vcc ЁY= A/D 8-15 Ё
+ Ё  ЁЁюббббббб╢   Ё Ё Ё ЁюббббббббыЁ      ЁюббббббббыЁ        Ё   J=A/D 8  Ё
+ Ё  Ёюдыю╢Ёю╢юадддxды Ё юдыЁЁЁЁЁЁюды      юдыЁЁЁЁЁЁюды        ЁX/Y=InternalЁ
+ Ё  ЁU6  Ёюдxдддддxддды    ЁdЁcba            ЁhЁgfe           Ё    Bus     Ё
+ Ё  Ё    юд©Ё     юддддддддадxддддддддддддддды Ё              юдддддддддддды
+ Ё  юддддд©ЁЁ                Ё                 Ё
+ Ёздддддд©ЁЁЁ                Ё                 Ё
+ ЁЁздддд©ЁЁЁЁзnc             Ё                 Ё
+ ЁЁЁздд©ЁЁЁЁЁЁзд© U7         Ё                 Ё
+ ЁЁЁЁ заааааааа©Ё            Ё зддддддддддддддды
+дxxxxд╢12345678цаддддддддддддедеддддддддддддддддддддддддддд Gnd
+ ЁЁЁЁ цд       Ё             Ё Ё
+дxxxxб╢KJIHGFEDцдддддддддддддедеддддддддддддддддддддддддддд Vcc
+ ЁЁЁЁЁюббдддддбы             Ё Ё     зддддддддддддддддд©
+ ЁЁЁЁюдыюддбдды              Ё Ё     Ё Parallel Port   Ё
+ ЁЁЁЁ     nc                 Ё Ё     цддддддддддддддддд╢
+ ЁЁЁЁ                        Ё Ё     Ё L = data lines  Ё
+ ЁЁЁЁ                        Ё Ё     Ё M = Auto        Ё
+ LMNO                        P Q     Ё N = Strobe      Ё
+                                     Ё O = INIT        Ё
+                                     Ё P = ACK         Ё
+                                     Ё Q = Busy        Ё
+                                     юддддддддддддддддды
+
+  In order to dump 40 pin ROMS (EXEC and GROM), a 40 pin socket can be
+wired to the construction board, and wired directly to the cart port.
+The 40 pin socket should have its pins connected to the corresponding
+pins on the cart port.  Once a 40 pin ROM has been installed, it is
+dumped in exactly the same manner as a cart ROM, although the address
+range for the 40 pin ROM will generally be different.  GI-ROMS do their
+own address decoding.
+
+
+
+                   40 pin ROM (EXEC)
+                 зддддддддббдддддддд©
+         VCC  ддд╢ 1      юы     40 цддд BC1
+         |nc| ддд╢ 2             39 цддд BC2
+         |nc| ддд╢ 3             38 цддд BDIR
+         |nc| ддд╢ 4             37 цддд D0
+         D15  ддд╢ 5             36 цддд |nc|
+         |nc| ддд╢ 6             35 цддд D1
+         D14  ддд╢ 7             34 цддд |nc|
+         |nc| ддд╢ 8             33 цддд D2
+         D13  ддд╢ 9             32 цддд |nc|
+         |nc| ддд╢ 10            31 цддд D3
+         D12  ддд╢ 11            30 цддд |nc|
+         |nc| ддд╢ 12  RO-3-9502 29 цддд D4
+         D11  ддд╢ 13  -011 ROM  28 цддд |nc|
+         |nc| ддд╢ 14            27 цддд D5
+         D10  ддд╢ 15            26 цддд |nc|
+         |nc| ддд╢ 16            25 цддд D6
+         D9   ддд╢ 17            24 цддд |nc|
+         |nc| ддд╢ 18            23 цддд D7
+         D8   ддд╢ 19            22 цддд |nc|
+       -MSYNC ддд╢ 20            21 цддд GND
+                 юдддддддддддддддддды
+
+Mattel Intellivision Cartridge Port Ё
+дддддддддддддддддддддддддддддддддддды
+
+Motherboard  CART ROM  TOP       BOTTOM        CART ROM  Motherboard
+                             #       #
+??           NC         ?? - 2       1-GND      GND       GND
+STIC Pin 19  NC         ?? - 4       3--MSYNC   Pin 14    CPU pin 2
+Matl Pin 7   NC         ?? - 6       5-D7       Pin 16    CPU pin 16
+STIC Pin 9   GND        ?? - 8       7-D8       Pin 13    CPU pin 13
+STIC Pin 15* GND        ?? -10       9-D6       Pin 17    CPU pin 17
+Supply ??    GND        ?? -12      11-D9       Pin 12    CPU pin 12
+CPU INTRM    NC        INT -14      13-D5       Pin 19    CPU pin 18
+                       GND -16 д©M  15-D10      Pin 10    CPU pin 11
+                       GND -18 д╢T  17-D4       Pin 20    CPU pin 19
+                       GND -20 д╢H  19-D11      Pin 9     CPU pin 10
+                       GND -22 д╢R  21-D3       Pin 21    CPU pin 20
+                       GND -24 д╢B  23-D12      Pin 8     CPU pin 9
+                       GND -26 д╢R  25-D13      Pin 7     CPU pin 8
+                       GND -28 дыD  27-D2       Pin 23    CPU pin 11
+CPU BUSAK    NC         ?? -30      29-D14      Pin 6     CPU pin 7
+здSTIC BC1   дддд  зддд *1 -32      31-D1       Pin 24    CPU pin 15
+Ё STIC BC2   дддд CЁздд *2 -34      33-D0       Pin 25    CPU pin 14
+Ё STIC BDIR  дддд AЁЁзд *3 -36 SLOT 35-D15      Pin 4     CPU pin 6
+Ё Mattel Pin 10   RЁЁюд *3 -38 ддддд37-*3       Pin 26    STIC Pin 8
+Ё Mattel Pin 12   TЁюдд *2 -40 дддд-39-*2       Pin 27    STIC Pin 6
+цдMattel Pin 14    юддд *1 -42 ддддд41-*1       Pin 28    STIC Pin 7
+Ё GND        GND        GND-44      43-VCC      PIN       VCC
+Ё
+юдTiming Read/Write etc.
+
+* STIC pin 15 tied to connector through resistor?  Pullup?
+
+*1 ............ STIC pin 7  BC1
+*2 ............ STIC pin 6  BC2
+*3 ............ STIC pin 8  BDIR
+
+
+In order to dump the GROM, the 40 pin socket must be rewired.
+For the program supplied below, D0-D13, -BUSAK, -Msync, Vcc and GND
+should be connected to their corresponding pins on the cartridge
+connector. SR1 should be connected to BDIR, DTB, and BAR, BC1 and BC2
+respectively.
+
+               2048 bytes 8 bytes per tile, 8 bits wide
+                   tile number comes from backram
+                        зддддддддббдддддддд©
+                 VCC ддд╢ 1      юы     40 цддд |nc|
+                 SR1 ддд╢ 2             39 цддд |nc|
+              -BUSAK ддд╢ 3             38 цддд |nc|
+                |nc| ддд╢ 4    GROM     37 цддд DTB
+                |nc| ддд╢ 5             36 цддд BAR
+                |nc| ддд╢ 6             35 цддд |nc|
+                 D13 ддд╢ 7             34 цддд D0
+                 D12 ддд╢ 8             33 цддд |nc|
+                 D11 ддд╢ 9             32 цддд D1
+                |nc| ддд╢ 10            31 цддд |nc|
+                 D10 ддд╢ 11            30 цддд D2
+                |nc| ддд╢ 12            29 цддд |nc|
+                  D9 ддд╢ 13            28 цддд D3
+                |nc| ддд╢ 14            27 цддд |nc|
+                  D8 ддд╢ 15            26 цддд |nc|
+              -MSYNC ддд╢ 16            25 цддд D4
+                |nc| ддд╢ 17            24 цддд |nc|
+                  D7 ддд╢ 18            23 цддд D5
+                |nc| ддд╢ 19            22 цддд |nc|
+                  D6 ддд╢ 20            21 цддд GND
+                        юдддддддддддддддддды
+
+
+Programming цдддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддд
+дддддддддддды
+
+Parallel Port registers Ё
+дддддддддддддддддддддддды
+
+Base address of port will depend on which parallel port the card is
+plugged into.  Ports shown below are for parallel port address 0378H.
+
+
+Port 037AH  - Subregister select
+здбдбдбдбдбдбдбд©
+Ё7Ё6Ё5Ё4Ё3Ё2Ё1Ё0Ё
+юбабабабабабабабы
+ юдадедады Ё юбы
+     Ё     Ё  юдддд xx Subregister
+     Ё     Ё        11 Bus control register
+     Ё     Ё        01 High address
+     Ё     Ё        10 Low  address
+     Ё     Ё        00 Unused
+     Ё     юддддддд Select gate
+     Ё              0 = enable
+     Ё              1 = disable
+     юддддддддддддд Unused (keep 0)
+
+  Port selection is accomplished through a 2-4 decoder that whose
+decoding requires settling time.  As a result, selection should be gated
+(turned off (1) ) before a subregister is selected.
+
+  Proper port selection is as follows...
+
+  OUT 037AH,(subregister #) or 4    < select port, or 4 for settling time
+  write data to port (if any)       < output data to 8 bit input bus
+  OUT 037AH,(subregister #)         < select port data copied from input bus
+
+
+
+Port 0378H - Bus control port
+здбдбдбдбдбдбдбд©
+Ё7Ё6Ё5Ё4Ё3Ё2Ё1Ё0Ё Subregister 01 = Address latch
+юбабабабабабабабы
+ юдадададададададдд
+
+здбдбдбдбдбдбдбд©
+Ё7Ё6Ё5Ё4Ё3Ё2Ё1Ё0Ё Subregister 10 = Address latch
+юбабабабабабабабы
+ юдадададададададдд
+
+здбдбдбдбдбдбдбд©
+Ё7Ё6Ё5Ё4Ё3Ё2Ё1Ё0Ё Subregister 11 = Bus Control register
+юбабабабабабабабы
+ Ё Ё Ё Ё Ё Ё Ё юдд BC1
+ Ё Ё Ё Ё Ё Ё юдддд BC2
+ Ё Ё Ё Ё Ё юдддддд BDIR
+ Ё Ё Ё Ё юдддддддд Internal bus enable
+ Ё Ё Ё Ё           0 = bus enabled
+ Ё Ё Ё Ё           1 = bus disabled
+ Ё Ё Ё юдддддддддд Shift Clock
+ Ё Ё юдддддддддддд Shift/Load
+ Ё Ё               0 = Parallel load from bus
+ Ё Ё               1 = Serial output on clock = 0
+ Ё юдддддддддддддд -MSYNC
+ Ё                 0 = Reset condition active 10ms MINIMUM
+ Ё                 1 = Normal operation
+ юдддддддддддддддд Reserved (0)
+
+
+  To load data from the parallel bus into the shift registers,
+
+  ;           76543210
+  OUT 037AH, 000000111B  < select Bus Control port, + 4 for settling time
+  OUT 037AH, 000000011B  < select Bus Control port
+  OUT 0378H, 000011000B  < clock high + bus disabled + parallel load
+  OUT 0378H, 000001000B  < clock low  + bus disabled (data latched)
+  OUT 0378H, 000111000B  < clock high + bus disabled + shift mode
+
+
+
+Port 0379H - Data input port
+здбдбдбдбдбдбдбд©
+Ё7Ё6Ё5Ё4Ё3Ё2Ё1Ё0Ё
+юбабабабабабабабы
+ Ё Ё юдадабадады
+ Ё Ё      юддддд  Unused (ignore)
+ Ё юдддддддддддд  Low data out
+ юдддддддддддддд  High data out  (inverted)
+
+When in serial output mode, bits 7 and 6 become valid on a high to low
+transition of the shift clock.  8 bits are available in the shift
+registers, representing the high and low data present on the parallel
+bus.
+
+
+DRIVER SOFTWARE цддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддд
+дддддддддддддддды
+
+  The programs that drive the above hardware are provided below.
+
+  The address range of the data that will be read are contained in the
+constants SADRS (Start address) and EADRS (End address). With the range
+read being SADRS to (EADRS -1).
+
+  The address of the parallel port used is contained in the variable
+PPORT.
+
+  Once a cart has been read and verified it is dumped to STDIO in hex
+format.  Conversion to binary is a simple matter of redirecting the
+output to a file, and converting the file to binary with the TOBIN.BAS
+program (also provided below).  The dump procedure is a two step process
+so that the data from the cart can be visually inspected for splits
+before conversion to a binary image.
+
+
+  Note: GI-ROMS can map into more than one address range, with different
+        data in each address.
+
+
+Selftest цдддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддд
+ддддддддды
+
+' THE CART SUCKER PROVIDED ABOVE IS TO SOME EXTENT CAPABLE OF TESTING ITSELF.
+' THE SELF TEST IS PERFORMED BY OUTPUTTING AN ADDRESS OVER THE PARALLEL BUS
+' AND READING IT BACK THROUGH THE SHIFT REGISTERS.  IF EVERYTHING IS WORKING
+' CORRECTLY, THE DATA OUT SHOULD BE THE SAME AS THE DATA IN.
+
+DEFINT A-Z
+
+PORT = &H378        ' printer base port address
+
+CLS                                      ' clear screen
+PRINT "VERIFYING"                        ' print title
+FOR OH = 0 TO 255                        ' test all 256 * 256 values
+   FOR OL = 0 TO 255
+      GOSUB TESTPORT                     ' test one value
+   NEXT
+NEXT
+END
+
+TESTPORT:
+OUT PORT + 2, 4 + 3   ' disable decoder
+OUT PORT, 32 + 16 + 8 ' clock 1 + serial mode + bus disable +NACT
+OUT PORT + 2, 3       ' select control port
+
+OUT PORT + 2, 4 + 2   ' disable decoder
+OUT PORT, OL          ' output low address
+OUT PORT + 2, 2       ' select low address port
+
+OUT PORT + 2, 4 + 1   ' disable decoder
+OUT PORT, OH          ' output high address
+OUT PORT + 2, 1       ' select high address port
+
+OUT PORT + 2, 4 + 3   ' disable decoder
+OUT PORT, 0           ' clock load + parallel load + bus enable
+OUT PORT + 2, 3       ' select control port
+
+
+IL = 0: IH = 0                           ' input high/low = 0
+FOR a = 0 TO 7                           ' loop for 8 bits
+   OUT PORT, 16 + 32 + 8                 ' toggle clock low
+   OUT PORT, 0 + 32 + 8                  ' toggle clock high
+   B = INP(PORT + 1) XOR 128             ' read port and invert high bit
+   IL = IL + IL                          ' IL * 2
+   IH = IH + IH                          ' IH * 2
+   IF (B AND 128) > 0 THEN IL = IL + 1   ' Move bit to IL
+   IF (B AND 64) > 0 THEN IH = IH + 1    ' Move bit to IH
+NEXT
+
+
+IF (IH <> OH) OR (IL <> OL) THEN          ' error if input <> output
+   BEEP
+   PRINT
+   PRINT "PATTERN NOT VERIFIED"
+   PRINT "OUTPUT"; HEX$(OH); HEX$(OL)
+   PRINT "INPUT"; HEX$(IH); HEX$(IL)
+ELSE
+   LOCATE 2, 1: PRINT HEX$(IH); HEX$(IL)  ' matched so print value
+END IF
+
+RETURN
+
+
+
+Cart Sucker цддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддд
+дддддддддддды
+
+;----------------------------------------------------------------
+; Program Name DUMP_C.ASM
+;
+; NOTE THAT SOFTWARE TIMING LOOPS ARE USED
+; THE VALUES USED WERE A COMPLETE GUESS.  DIFFERENT SPEED PC'S
+; MAY NEED TO USE DIFFERENT VALUES.
+;
+; THE RATE AT WHICH THE CART IS DUMPED IS NOT AN ISSUE.
+;
+; THIS PROGRAM USES STDIO, - PIPE THE OUTPUT TO A FILE.
+;
+; TO ASSEMBLE USE... MASM    DUMP_C;
+;                    LINK    DUMP_C;
+;                    EXE2COM DUMP_C
+;
+;здддбдддбддддбддддддбддддддддддддддддддддддддддддддддддддддддддддддддд©
+;ЁBC1ЁBC2ЁBDIRЁ      Ё                                                 Ё
+;цдддедддеддддеддддддеддддддддддддддддддддддддддддддддддддддддддддддддд╢
+;Ё 0 Ё 0 Ё 0  ЁNACT  Ё CPU inactive, and disconnected from bus         Ё
+;цдддедддеддддеддддддеддддддддддддддддддддддддддддддддддддддддддддддддд╢
+;Ё 0 Ё 0 Ё 1  ЁBAR   Ё A memory address is being presented on the BUS  Ё
+;цдддедддеддддеддддддеддддддддддддддддддддддддддддддддддддддддддддддддд╢
+;Ё 0 Ё 1 Ё 0  ЁIAB   Ё CPU is acknowledging an interrupt request       Ё
+;Ё   Ё   Ё    Ё      Ё External logic must place the starting address  Ё
+;Ё   Ё   Ё    Ё      Ё for the interrupt service routine on the bus.   Ё
+;цдддедддеддддеддддддеддддддддддддддддддддддддддддддддддддддддддддддддд╢
+;Ё 0 Ё 1 Ё 1  ЁDWS   Ё Data write strobe to memory.                    Ё
+;цдддедддеддддеддддддеддддддддддддддддддддддддддддддддддддддддддддддддд╢
+;Ё 1 Ё 0 Ё 0  ЁADAR  Ё This signal identifies a time interval during   Ё
+;Ё   Ё   Ё    Ё      Ё which the Data/Address bus is floated, while    Ё
+;Ё   Ё   Ё    Ё      Ё data input on the Data Bus is being interpreted Ё
+;Ё   Ё   Ё    Ё      Ё as the effecitve memory address during a direct Ё
+;Ё   Ё   Ё    Ё      Ё memory addressing operation.                    Ё
+;цдддедддеддддеддддддеддддддддддддддддддддддддддддддддддддддддддддддддд╢
+;Ё 1 Ё 0 Ё 1  ЁDW    Ё Data is being written to memory.                Ё
+;Ё   Ё   Ё    Ё      Ё Preceeds DWS by one cycle.                      Ё
+;цдддедддеддддеддддддеддддддддддддддддддддддддддддддддддддддддддддддддд╢
+;Ё 1 Ё 1 Ё 0  ЁDTB   Ё Read strobe (external device is to place data   Ё
+;Ё   Ё   Ё    Ё      Ё on the bus.                                     Ё
+;Ё 1 Ё 1 Ё 1  ЁINTAK Ё Interrupt acknnowledge.  Followed by IAD.       Ё
+;юдддадддаддддаддддддаддддддддддддддддддддддддддддддддддддддддддддддддды
+;
+;  Ё  BAR MC1  Ё NACT MC2  Ё  DTB MC3  Ё   CP-1600
+;  Ёt1Ёt2Ёt3Ёt4Ё  Ё  Ё  Ё  Ёt1Ёt2Ёt3Ёt4Ё   Instruction Fetch timing
+;  Ё  Ё  Ё  Ё  Ёt1Ёt2Ёt3Ёt4Ё  Ё  Ё  Ё  Ё   дддддддддддддддддддддддд
+;  Ё  Ё  Ё  Ё  Ё  Ё  Ё  Ё  Ё  Ё  Ё  Ё  Ё
+;  зд©   зд©   зд©   зд©   зд©   зд©   зд©   здд  O1
+;дды юддды юддды юддды юддды юддды юддды юддды
+;д©|  зд©|  зд©|  зд©   зд©|  зд©   зд©|  зд©
+; юддды юддды юддды юддды юддды юддды юддды юддд  O2
+;  |  |  |     |           зддддддддддд©
+;дддддддддддддддддддддддддды           юдддддддд  BC1
+;  |  |  |     |           зддддддддддд©
+;дддддддддддддддддддддддддды           юдддддддд  BC2
+;  зддддддддддд©
+;дды  |  |     юдддддддддддддддддддддддддддддддд  BDIR
+;     |  зддддддддд©            зддд©
+;дддддxxxЁ         цдддддддддддд╢   цддддддддддд  Address
+;        юддддддддды            юддды
+;        Address out           Data in
+;
+
+SADRS   EQU 04700H      ; DUMP START ADDRESS    (CARTS GENERALLY START AT
+EADRS   EQU 06900H      ; DUMP END ADDRESS       05000H AND END AT 06000H)
+
+RSTDLY  EQU 5000        ; RESET DELAY
+BUSTIM  EQU 50          ; BUS INTERVAL
+IOTIM   EQU 5           ; I/O DELAY
+
+PPORT   EQU 0378H       ; PARALLEL PORT BASE ADDRESS
+DATREG  EQU PPORT       ; PARALLEL PORT DATA REGISTER
+INREG   EQU PPORT+1     ; PARALLEL PORT STATUS REGISTER
+SELREG  EQU PPORT+2     ; PARALLEL PORT CONTROL REGISTER
+
+NACT EQU 00000000B      ; BITS USED TO SELECT EACH BUS PHASE
+BAR  EQU 00000100B
+DTB  EQU 00000011B
+
+
+;--------------------------------------------------
+; OUTPUT DATA MACRO
+;        NOT EFFICIENT BUT SUITABLE FOR DEBUGGING
+;
+;
+OUTDAT  MACRO    LATCH,XDATA
+        MOV      AH,LATCH
+        MOV      AL,XDATA          ; GET DATA TO OUTPUT
+        CALL     RAWOUT
+        ENDM
+
+
+INCLUDE C:\MASM\MYDEFS.INC         ; <include file provided below
+
+        COMTOP CSEG
+
+        CALL   INIT                ; INITIALIZE BUS
+        CALL   CLRBUF              ; GO CLEAR OUTPUT BUFFER
+        MOV    BX,SADRS            ; BX = START ADDRESS
+MORLOK: PUSH   BX                  ; PRESERVE FOR LATER
+
+        CMPTW  COUNTER,0           ; AVOID PRINT IF COUNTER <> 0
+        JNE    NOTADR
+        MOV    AX,BX               ; AX = ADDRESS
+        OMOV   DI,HEXBUF1          ; POINT TO OUTPUT BUFFER
+        CALL   TOHEX               ; GO CONVERT TO HEX
+
+NOTADR: CALL   GETBYT              ; READ WORD FROM CART
+
+        CALL   DISPLY              ; GO CONVERT TO HEX
+
+        POP    BX                  ; RESTORE ADDRESS
+        INC    BX                  ; BUMP TO NEXT ADDRESS
+        CMP    BX,EADRS            ; LOOP IF MORE TO DUMP
+        JNE    MORLOK
+
+        CALL   DONACT              ; GO PERFORM NACT BUS CYCLE (IDLE)
+        CMPTW  COUNTER,0           ; AVOID IF BUFFER IS EMPTY
+        JE     EMPTY
+        CALL   SHOBUF              ; GO DISPLAY BUFFER
+
+EMPTY:  MOV    AX,04C00H           ; RETURN TO DOS WITHOUT ERROR
+        INT    DOS
+
+COUNTER DW 0
+
+;----------------------------
+; READ BYTE FROM CART PORT
+;
+; CALL WITH BX = ADDRESS
+; RETURN WITH BX = VALUE RETURNED
+;
+GETBYT: CALL   DONACT            ; GO PERFORM NACT BUS CYCLE (IDLE)
+        CALL   DOBAR             ; GO PERFORM BAR+NACT BUS CYCLE (ADDRESS OUT)
+        CALL   DONACT            ; GO PERFORM NACT BUS CYCLE (IDLE)
+        CALL   DODTB             ; GO PERFORM DTE BUS CYCLE AND LATCH INPUT
+GETIN:  XOR    BX,BX             ; ZERO HOLDING REGISTER
+        MOV    CX,8              ; 8 BITS IN A BYTE
+INMOR:  PUSH   CX                ; PRESERVE COUNT
+        ROL    BX,1              ; SHIFT RESULT
+
+        MOV    DX,INREG          ; DX = SERIAL INPUT PORT
+        IN     AL,DX             ; READ SERIAL INPUT PORT
+        AND    AL,011000000B     ; KEEP MS2Bits
+        XOR    AL,010000000B     ; INVERT BIT (CORRECT FOR PARALLEL PORT)
+        XOR    AH,AH             ; READY FOR SHIFT
+        SHL    AX,1              ; AH(BIT 0) = BIT 7, AL(BIT 7) = BIT 6
+        ROL    AL,1              ; AL(BIT 0) = BIT 6
+        OR     BX,AX             ; BITS TO RESULT
+
+        OUTDAT 3,<01101000B + NACT>  ; SHIFT + CLOCK 0 + BUS DISABLE + NACT
+        OUTDAT 3,<01111000B + NACT>  ; SHIFT + CLOCK 1 + BUS DISABLE + NACT
+
+        POP    CX                ; RESTORE COUNT
+        LOOP   INMOR             ; LOOP IF MORE TO DO
+        RET
+
+;----------------------------------------
+; SELECT LATCH AND OUTPUT DATA TO LATCH
+;
+; CALL WITH AL = DATA TO OUTPUT
+;           AH = LATCH #
+;
+RAWOUT: MOV      DX,DATREG     ; DX = DATA REGISTER
+        OUT      DX,AL         ; OUTPUT DATA
+        CALL     IODLY       ;< WAIT FOR DATA TO SETTLE
+        MOV      DX,SELREG     ; GET LATCH SELCTION REGISTER
+        MOV      AL,AH         ; AL = LATCH
+        OR       AL,4          ; PRESENT LATCH # (BLOCK OUTPUT)
+        OUT      DX,AL         ; SELECT LATCH (DISABLE SELECTION)
+        CALL     IODLY       ;< WAIT FOR LATCH TO SETTLE
+        MOV      AL,AH         ; AL = LATCH
+        OUT      DX,AL         ; PRESETNT LATCH # (OUTPUT ENABLED)
+        CALL     IODLY       ;< WAIT FOR LATCH TO ACCEPT DATA
+        OR       AL,4          ; PRESENT LATCH # (BLOCK OUTPUT)
+        OUT      DX,AL
+        RET
+
+
+;-------------------------------------------------------------
+; PERFORM DTE BUS CYCLE AND LATCH DATA INTO SHIFT REGISTERS
+;
+DODTB:  OUTDAT 3,<01111000B + DTB>   ; SHIFT + CLOCK 1 + BUS DISABLE + DTB
+        CALL   HLFDLY                ; WAIT FOR DATA TO BECOME VALID
+        OUTDAT 3,<01001000B + DTB>   ; LOAD + CLOCK 0 + BUS DISABLE + DTB
+        OUTDAT 3,<01011000B + DTB>   ; LOAD + CLOCK 1 + BUS DISABLE + DTB
+HLFDLY: MOV    CX,BUSTIM/2           ; PERFORM BUS CYCLE DELAY
+        LOOP   $
+        RET
+
+;-------------------------------------------
+; PERFORM BAR BUS CYCLE (OUTPUT ADDRESS)
+;
+DOBAR:  OUTDAT 3,<01111000B + BAR>   ; SHIFT + CLOCK 1 + BUS DISABLE + BAR
+        OUTDAT 1,BL                  ; DATA LOW OUT
+        OUTDAT 2,BH                  ; DATA HIGH OUT
+        CALL   HLFDLY
+        OUTDAT 3,<01110000B + BAR>   ; SHIFT + CLOCK 1 + BUS ENABLE + BAR
+        CALL   HLFDLY                ; GO PERFORM HALF BUS CYCLE DELAY
+        OUTDAT 3,<01110000B + NACT>  ; SHIFT + CLOCK 1 + BUS ENABLE + NACT
+        CALL   HLFDLY                ; GO PERFORM HALF BUS CYCLE DELAY
+        OUTDAT 3,<01111000B + NACT>  ; SHIFT + CLOCK 1 + BUS DISABLE + NACT
+        RET
+
+
+;-----------------------------------------
+; PERFORM NACT BUS CYCLE (IDLE)
+;
+INIT:   MOV    AL,4                 ; DISABLE PORT SELECTION
+        MOV    DX,SELREG
+        OUT    DX,AL
+        OUTDAT 3,<00111000B + NACT> ; SHIFT + CLOCK 1 + BUS DISABLE + NACT
+        MOV    CX,RSTDLY
+        LOOP   $
+        RET
+
+DONACT: OUTDAT 3,<01111000B + NACT> ; SHIFT + CLOCK 1 + BUS DISABLE + NACT
+BUSDLY: MOV    CX,BUSTIM            ; PERFORM BUS CYCLE DELAY
+        LOOP   $
+        RET
+
+
+;-------------------
+; PERFORM I/O DELAY
+;
+IODLY:  MOV      CX,IOTIM      ; PERFORM I/O DELAY
+        LOOP     $
+        RET
+
+
+
+;------------------------
+; CONVERT AX TO HEX
+;
+; CALL WITH  AX = NUMBER TO CONVERT
+;            DI = PTR TO OUTPUT BUFFER
+;
+DISPLY: MOV    DI,COUNTER         ; GET SLOT #
+        MSHL   DI,2               ; * 4 BYTES PER SLOT
+        ADD    DI,COUNTER         ; * 5 BYTES PER SLOT
+        OADD   DI,HEXBUF2         ; DI = PTR TO SLOT
+        MOV    AX,BX              ; AX = VALUE TO CONVERT
+        CALL   TOHEX              ; GO CONVERT AX TO HEX
+        INC    COUNTER            ; BUMP COUNTER
+        CMP    COUNTER,8          ; AVOID IF NO COUNTER OVERFLOW
+        JNE    NOTZRO
+SHOBUF: OMOV   DX,HEXBUF1         ; POINT TO BUFFER FOR PRINT
+        MOV    AH,9               ; WILL PRINT BUFFER VIA DOS
+        INT    DOS
+CLRBUF: MOV    COUNTER,0          ; RESET COUNTER
+        OMOV   DI,HEXBUF2         ; POINT TO CONVERSION BUFFER
+        OMOV   CX,CRLF            ; GET PTR TO BOTTOM OF BUFFER
+        SUB    CX,DI              ; COMPUTE LENGTH OF BUFFER
+        MOV    AL,' '             ; CLEAR WITH SPACES
+        CLD                       ; DIRECTION POSITIVE
+        REP    STOSB              ; CLEAR BUFFER AND END
+NOTZRO: RET
+
+
+TOHEX:  CLD                       ; DIRECTION POSITIVE
+        PUSH    AX                ; PRESERVE AL
+        MOV     AL,AH
+        CALL    OVER              ; GO CONVERT BYTE
+        POP     AX                ; RESTORE AL
+        MOV     AH,AL             ; AH = AL
+OVER:   MSHR    AH,4              ; AL = LSNibble
+        AND     AL,00FH           ; AH = MSNibble
+        CMP     AL,10             ; CONVERT LSNibble
+        SBB     AL,069H
+        DAS
+        XCHG    AH,AL             ; AL = MSnIBBLE
+        CMP     AL,10             ; CONVERT MSNibble
+        SBB     AL,069H
+        DAS
+        STOSW                     ; OUTPUT VAL AND RETURN
+        RET
+
+
+;-------------------------
+; HEX CONVERSION BUFFER
+;
+HEXBUF1 DB  'xxxx : '
+HEXBUF2 DB  'xxxx '
+        DB  'xxxx '
+        DB  'xxxx '
+        DB  'xxxx '
+        DB  'xxxx '
+        DB  'xxxx '
+        DB  'xxxx '
+        DB  'xxxx '
+CRLF    DB  CR,LF,'$'
+
+
+        COMBOT CSEG
+
+
+GROM Sucker цддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддд
+дддддддддддды
+
+;----------------------------------------------------------------
+; Program Name DUMP_G.ASM
+;
+; NOTE THAT SOFTWARE TIMING LOOPS ARE USED
+; THE VALUES USED WERE A COMPLETE GUESS.  DIFFERENT SPEED PC'S
+; MAY NEED TO USE DIFFERENT VALUES.
+;
+; THIS PROGRAM WORKS CORRECTLY ON A CYRIX 5X86 120, AND
+; SHOULD RUN CORRECTLY ON ANY SLOWER MACHINE.
+;
+; THE RATE AT WHICH THE CART IS DUMPED IS NOT AN ISSUE.
+;
+; THIS PROGRAM IS SIMILAR TO DUMP_C, ALTHOUGH THE GROM BUS PHASES HAVE
+; BEEN CHANGED.
+;
+; THIS PROGRAM USES STDIO, - PIPE THE OUTPUT TO A FILE.
+;
+; TO ASSEMBLE USE... MASM    DUMP_G;
+;                    LINK    DUMP_G;
+;                    EXE2COM DUMP_G
+;
+;здддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддд©
+;Ё Bus timing                                                       Ё
+;цдддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддд╢
+;Ё           зддддд©             зддддд©                            Ё
+;Ё BAR дддддды     юддддддддддддды     юддддддддддддддддддд         Ё
+;Ё                 зддддд©                   зддддд©                Ё
+;Ё DTB дддддддддддды     юддддддддддддддддддды     юдддддд          Ё
+;Ё                                           зддддд©                Ё
+;Ё DWS дддддддддддддддддддддддддддддддддддддды     юдддддд          Ё
+;Ё             зддддд©             зддддд©     зддддд©   дд©        Ё
+;Ё DATA IN ддддаadrsдадддддддддддддаadrsдадддддаdataдадддд Ё D0-D15 Ё
+;Ё                     зддддд©                             Ё        Ё
+;Ё DATA OUT дддддддддддаdataдадддддддддддддддддддддддддддд Ё        Ё
+;Ё                                                       дды        Ё
+;Ё -Enable дддддддддддд©     зддддддддддддддддддд©     здд          Ё
+;Ё                     юддддды                   юддддды            Ё
+;Ё -Write  дддддддддддддддддддддддддддддддддддддд©     здд          Ё
+;Ё                                               юддддды дд©        Ё
+;Ё Externalдд©    здддддддддддддд©   здддддддддддддддддддд Ё A0-A10 Ё
+;Ё Address ддаддддаддддддддддддддадддадддддддддддддддддддд Ё        Ё
+;Ё Output                                                дды        Ё
+;Ё                                                                  Ё
+;юдддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддды
+
+SADRS   EQU 03000H      ; DUMP START ADDRESS
+EADRS   EQU 04000H      ; DUMP END ADDRESS
+
+RSTDLY  EQU 5000        ; RESET DELAY
+BUSTIM  EQU 50          ; BUS INTERVAL
+IOTIM   EQU 5           ; I/O DELAY
+
+PPORT   EQU 0378H       ; PARALLEL PORT BASE ADDRESS
+DATREG  EQU PPORT       ; PARALLEL PORT DATA REGISTER
+INREG   EQU PPORT+1     ; PARALLEL PORT STATUS REGISTER
+SELREG  EQU PPORT+2     ; PARALLEL PORT CONTROL REGISTER
+
+BCLR    EQU 00000000B   ; BITS USED TO SELECT EACH BUS PHASE
+BAR     EQU 00000001B
+DTB     EQU 00000010B
+
+
+;--------------------------------------------------
+; OUTPUT DATA MACRO
+;        NOT EFFICIENT BUT SUITABLE FOR DEBUGGING
+;
+;
+OUTDAT  MACRO    LATCH,XDATA
+        MOV      AH,LATCH
+        MOV      AL,XDATA         ; GET DATA TO OUTPUT
+        CALL     RAWOUT
+        ENDM
+
+
+INCLUDE C:\MASM\MYDEFS.INC         ; <include file provided below
+
+        COMTOP CSEG
+
+        OMOV   SP,STACK            ; SET NEW STACK
+        OMOV   AX,CARTBUF          ; POINT TO CART BUFFER
+        MSHR   AX,4                ; CONVERT TO SEGMENT ADDRESS
+        MOV    BX,DS               ; AX = DS + CARTBUF/16
+        ADD    AX,BX
+        MOVTW  CBPTR+2,AX          ; ES = DS + CARTBUF/16
+        CALL   INIT                ; INITIALIZE BUS
+        OMOV   DX,MSG0
+        CALL   STROUT
+        CALL   CARTGET             ; GO GET CART
+
+        OMOV   DX,MSG1
+        CALL   STROUT
+        CALL   CARTCHK             ; GO CHECK CART
+        JC     VERERR              ; GO SAY PASSES NOT SAME
+
+        OMOV   DX,MSG2
+        CALL   STROUT
+        CALL   CHKSTK              ; GO CHECK FOR STUCK BITS
+        JC     VERERR1             ; GO SAY STUCK BITS
+
+        OMOV   DX,MSG3
+        CALL   STROUT
+        CALL   CARTOUT             ; GO OUTPUT CART
+        MOV    AX,04C00H           ; RETURN TO DOS WITHOUT ERROR
+        INT    DOS
+
+VERERR1: OMOV   DX,MSG5
+         JMPS   ERROVR
+
+VERERR:  OMOV   DX,MSG4
+ERROVR:  CALL   STROUT
+         MOV    AX,04C01H           ; RETURN TO DOS WITH ERROR = 1
+         INT    DOS
+
+         DW MSG0X-$-2
+MSG0     DB 'Reading cart',CR,LF
+MSG0X    EQU $
+
+         DW MSG1X-$-2
+MSG1     DB 'Verifying cart',CR,LF
+MSG1X    EQU $
+
+         DW MSG2X-$-2
+MSG2     DB 'Checking for stuck bits',CR,LF
+MSG2X    EQU $
+
+         DW MSG3X-$-2
+MSG3     DB 'Dumping cart',CR,LF
+MSG3X    EQU $
+
+         DW MSG4X-$-2
+MSG4     DB 'Verification Error PASSES NOT SAME',CR,LF
+MSG4X    EQU $
+
+         DW MSG5X-$-2
+MSG5     DB 'Verification Error STUCK BITS',CR,LF
+MSG5X    EQU $
+
+CBPTR    DD 00                      ; FAR PTR TO TOP OF CART BUFFER
+COUNTER  DW 0
+
+
+;--------------------------
+; PRINT STRING TO SCREEN
+;
+STROUT: MOV     BX,DX              ; BX = PTR TO STRING
+        MOV     CX,[BX-2]          ; GET LENGTH OF STRING
+        MOV     AH,040H            ; WILL WRITE TO DEVICE
+        MOV     BX,2               ; DEVICE = STDIO.
+        INT     DOS
+        RET
+
+
+;----------------------------
+; GET CART
+;
+CARTGET: LES    DI,CBPTR            ; START AT TOP OF BUFFER
+         MOV    BX,SADRS            ; BX = START ADDRESS
+MORLOK:  MPUSH  <BX,DI>             ; PRESERVE REGS
+         CALL   GETBYT              ; READ WORD FROM CART
+         POP    DI                  ; RESTORE TABLE PTR
+         MOV    ES:[DI],BX          ; MOVE VALUE TO TABLE
+         POP    BX                  ; RESTORE ADDRESS
+         ADD    DI,2                ; MOVE TO NEXT POSITION IN TABLE
+         JNC    AVD3
+         MOV    AX,ES               ; ES = ES + 64K
+         ADD    AX,01000H
+         MOV    ES,AX
+AVD3:    INC    BX                  ; BUMP TO NEXT ADDRESS
+         CMP    BX,EADRS            ; LOOP IF MORE TO DUMP
+         JNE    MORLOK
+         JMP    DOBUSCLR            ; GO PERFORM BUSCLR BUS CYCLE (IDLE)
+
+;----------------------------
+; CHECK CART
+;
+CARTCHK: LES    DI,CBPTR            ; START AT TOP OF BUFFER
+         MOV    BX,SADRS            ; BX = START ADDRESS
+MORLOK1: MPUSH  <BX,DI>             ; PRESERVE REGS
+         CALL   GETBYT              ; READ WORD FROM CART
+         POP    DI                  ; RESTORE TABLE PTR
+         CMP    ES:[DI],BX          ; MOVE VALUE TO TABLE
+         POP    BX                  ; RESTORE ADDRES
+         JNE    BADVAL              ; GO IF VALUE DOES NOT MATCH
+         ADD    DI,2                ; MOVE TO NEXT POSITION IN TABLE
+         JNC    AVD1
+         MOV    AX,ES               ; ES = ES + 64K
+         ADD    AX,01000H
+         MOV    ES,AX
+AVD1:    INC    BX                  ; BUMP TO NEXT ADDRESS
+         CMP    BX,EADRS            ; LOOP IF MORE TO DUMP
+         JNE    MORLOK1
+         CALL   DOBUSCLR
+         CLC
+         RET
+
+BADVAL:  CALL   DOBUSCLR
+         STC
+         RET
+
+;------------------------------
+; CHECK FOR STUCK BITS
+;
+CHKSTK:  MOV    CX,EADRS            ; GET END OF CART
+         SUB    CX,SADRS            ; COMPUTE LENGTH OF CART
+         LES    SI,CBPTR            ; START AT TOP OF BUFFER
+         MOV    BX,-1               ; ALL BITS ON
+         XOR    DX,DX               ; ALL BITS OFF
+STKMOR:  MOV    AX,ES:[SI]          ; GET DATA FROM BUFFER
+         AND    BX,AX               ; COLLECT OFF BITS
+         OR     DX,AX               ; COLLECT ON BITS
+         ADD    SI,2                ; MOVE TO NEXT POSITION IN TABLE
+         JNC    AVD4
+         MOV    AX,ES               ; ES = ES + 64K
+         ADD    AX,01000H
+         MOV    ES,AX
+AVD4:    LOOP   STKMOR              ; LOOP IF MORE TO CHECK
+         NOT    DX                  ; INVERT ON BITS
+         OR     BX,DX               ; COLLECT STUCK BITS
+         AND    BX,03FFH            ; IGNORE NON-INSTRUCTION BITS
+         JNE    FNDSTK              ; GO IF FOUND STUCK BITS
+         CLC                        ; SIGNIFY NO STUCK BITS AND END
+         RET
+
+FNDSTK:  STC                        ; SIGNFIY STUCK BITS AND END
+         RET
+
+;------------------------------
+; OUTPUT CART TO STDIO
+;
+CARTOUT: CALL   CLRBUF              ; GO CLEAR OUTPUT BUFFER
+         LES    SI,CBPTR            ; START AT TOP OF BUFFER
+         MOV    BX,SADRS            ; BX = START ADDRESS
+MORLOK2: CMPTW  COUNTER,0           ; AVOID PRINT IF COUNTER <> 0
+         JNE    NOTADR
+         CALL   ADROUT              ; GO PRINT ADDRESS
+NOTADR:  MOV    AX,ES:[SI]          ; GET VAL FROM TABLE
+         CALL   DISPLY              ; GO CONVERT TO HEX
+         ADD    SI,2                ; MOVE TO NEXT POSITION IN TABLE
+         JNC    AVD2
+         MOV    AX,ES               ; ES = ES + 64K
+         ADD    AX,01000H
+         MOV    ES,AX
+AVD2:    INC    BX                  ; BUMP TO NEXT ADDRESS
+         CMP    BX,EADRS            ; LOOP IF MORE TO DUMP
+         JNE    MORLOK2
+         CALL   DOBUSCLR            ; GO PERFORM BUSCLR CYCLE (IDLE)
+         CMPTW  COUNTER,0           ; AVOID IF BUFFER IS EMPTY
+         JE     EMPTY
+         CALL   SHOBUF              ; GO DISPLAY BUFFER
+EMPTY:   RET
+
+
+
+
+
+
+
+
+
+
+
+;----------------------------
+; READ BYTE FROM CART PORT
+;
+; CALL WITH BX = ADDRESS
+; RETURN WITH BX = VALUE RETURNED
+;
+GETBYT: CALL   DOBUSCLR  ;<      ; GO PERFORM BUSCLR BUS CYCLE (IDLE)
+        CALL   GETDATA   ;<      ; GO PERFORM BAR+BUSCLR BUS CYCLE (ADDRESS OUT)
+GETIN:  XOR    BX,BX             ; ZERO HOLDING REGISTER
+        MOV    CX,8              ; 8 BITS IN A BYTE
+INMOR:  PUSH   CX                ; PRESERVE COUNT
+        ROL    BX,1              ; SHIFT RESULT
+
+        MOV    DX,INREG          ; DX = SERIAL INPUT PORT
+        IN     AL,DX             ; READ SERIAL INPUT PORT
+        AND    AL,011000000B     ; KEEP MS2Bits
+        XOR    AL,010000000B     ; INVERT BIT (CORRECT FOR PARALLEL PORT)
+        XOR    AH,AH             ; READY FOR SHIFT
+        SHL    AX,1              ; AH(BIT 0) = BIT 7, AL(BIT 7) = BIT 6
+        ROL    AL,1              ; AL(BIT 0) = BIT 6
+        OR     BX,AX             ; BITS TO RESULT
+
+        OUTDAT 3,<01101100B + BCLR>  ; SHIFT + CLOCK 0 + BUS DISABLE + BCLR
+        OUTDAT 3,<01111100B + BCLR>  ; SHIFT + CLOCK 1 + BUS DISABLE + BCLR
+
+        POP    CX                ; RESTORE COUNT
+        LOOP   INMOR             ; LOOP IF MORE TO DO
+        RET
+
+;----------------------------------------
+; SELECT LATCH AND OUTPUT DATA TO LATCH
+;
+; CALL WITH AL = DATA TO OUTPUT
+;           AH = LATCH #
+;
+RAWOUT: MOV      DX,DATREG     ; DX = DATA REGISTER
+        OUT      DX,AL         ; OUTPUT DATA
+        CALL     IODLY       ;< WAIT FOR DATA TO SETTLE
+        MOV      DX,SELREG     ; GET LATCH SELCTION REGISTER
+        MOV      AL,AH         ; AL = LATCH
+        OR       AL,4          ; PRESENT LATCH # (BLOCK OUTPUT)
+        OUT      DX,AL         ; SELECT LATCH (DISABLE SELECTION)
+        CALL     IODLY       ;< WAIT FOR LATCH TO SETTLE
+        MOV      AL,AH         ; AL = LATCH
+        OUT      DX,AL         ; PRESETNT LATCH # (OUTPUT ENABLED)
+        CALL     IODLY       ;< WAIT FOR LATCH TO ACCEPT DATA
+        OR       AL,4          ; PRESENT LATCH # (BLOCK OUTPUT)
+        OUT      DX,AL
+        RET
+
+
+;-------------------------------------------
+; PERFORM BAR BUS CYCLE (OUTPUT ADDRESS)
+;
+GETDATA: OUTDAT 3,<01111100B + BAR>   ; SHIFT + CLOCK 1 + BUS DISABLE + BAR
+         OUTDAT 1,BL                  ; DATA LOW OUT
+         OUTDAT 2,BH                  ; DATA HIGH OUT
+         OUTDAT 3,<01110100B + BAR>   ; SHIFT + CLOCK 1 + BUS ENABLE  + BAR
+         CALL   HLFDLY
+         OUTDAT 3,<01111100B + DTB>   ; SHIFT + CLOCK 1 + BUS DISABLE + DTB
+         CALL   HLFDLY                ; WAIT FOR DATA TO BECOME VALID
+         OUTDAT 3,<01001100B + DTB>   ; LOAD  + CLOCK 0 + BUS DISABLE + DTB
+         OUTDAT 3,<01011100B + BCLR>  ; LOAD  + CLOCK 1 + BUS DISABLE
+         OUTDAT 3,<01111100B + BCLR>  ; SHIFT + CLOCK 1 + BUS DISABLE
+HLFDLY:  MOV    CX,BUSTIM/2           ; PERFORM BUS CYCLE DELAY
+         LOOP   $
+         RET
+
+
+DOBUSCLR: OUTDAT 3,<01111100B + BCLR> ; SHIFT + CLOCK 1 + BUS DISABLE + BCLR
+BUSDLY:   MOV    CX,BUSTIM            ; PERFORM BUS CYCLE DELAY
+          LOOP   $
+          RET
+
+;-----------------------------------------
+; PERFORM BUSCLR BUS CYCLE (IDLE)
+;
+INIT:   MOV    AL,4                   ; DISABLE PORT SELECTION
+        MOV    DX,SELREG
+        OUT    DX,AL
+        OUTDAT 3,<00111100B + BCLR>   ; MSYNC=0, SHIFT + CLOCK 1 +
+                                      ; BUS DISABLE + SR1=1 + BCLR
+        CALL   BUSDLY
+        OUTDAT 3,<01111000B + BCLR>   ; MSYNC=1, SHIFT + CLOCK 1 +
+                                      ; BUS DISABLE + SR1=0 + BCLR
+        CALL   BUSDLY
+        OUTDAT 3,<01111100B + BCLR>   ; MSYNC=1, SHIFT + CLOCK 1 +
+                                      ; BUS DISABLE + SR1=1 + BCLR
+        JMP    BUSDLY
+
+
+
+;-------------------
+; PERFORM I/O DELAY
+;
+IODLY:  MOV      CX,IOTIM      ; PERFORM I/O DELAY
+        LOOP     $
+        RET
+
+
+
+;------------------------
+; CONVERT AX TO HEX
+;
+; CALL WITH  AX = NUMBER TO CONVERT
+;            DI = PTR TO OUTPUT BUFFER
+;
+DISPLY: PUSH   ES                 ; PRESERVE SEG
+        MOV    CX,DS              ; ES = DS
+        MOV    ES,CX
+        MOV    DI,COUNTER         ; GET SLOT #
+        MSHL   DI,2               ; * 4 BYTES PER SLOT
+        ADD    DI,COUNTER         ; * 5 BYTES PER SLOT
+        OADD   DI,HEXBUF2         ; DI = PTR TO SLOT
+        CALL   TOHEX              ; GO CONVERT AX TO HEX
+        INC    COUNTER            ; BUMP COUNTER
+        CMP    COUNTER,8          ; AVOID IF NO COUNTER OVERFLOW
+        JNE    NOTZRO
+SHOBUF: OMOV   DX,HEXBUF1         ; POINT TO BUFFER FOR PRINT
+        MOV    AH,9               ; WILL PRINT BUFFER VIA DOS
+        INT    DOS
+        JMPS   OVERX
+
+CLRBUF: PUSH   ES                 ; PRESERVE SEG
+        MOV    CX,DS              ; ES = DS
+        MOV    ES,CX
+OVERX:  MOV    COUNTER,0          ; RESET COUNTER
+        OMOV   DI,HEXBUF2         ; POINT TO CONVERSION BUFFER
+        OMOV   CX,CRLF            ; GET PTR TO BOTTOM OF BUFFER
+        SUB    CX,DI              ; COMPUTE LENGTH OF BUFFER
+        MOV    AL,' '             ; CLEAR WITH SPACES
+        CLD                       ; DIRECTION POSITIVE
+        REP    STOSB              ; CLEAR BUFFER AND END
+NOTZRO: POP    ES                 ; RESTORE SEG
+        RET
+
+ADROUT: PUSH   ES                 ; PRESERVE SEG
+        MOV    AX,DS              ; ES = DS
+        MOV    ES,AX
+        MOV    AX,BX              ; AX = ADDRESS
+        OMOV   DI,HEXBUF1         ; POINT TO OUTPUT BUFFER
+        CALL   TOHEX              ; GO CONVERT TO HEX
+        POP    ES
+        RET
+
+TOHEX:  CLD                       ; DIRECTION POSITIVE
+        PUSH    AX                ; PRESERVE AL
+        MOV     AL,AH
+        CALL    OVER              ; GO CONVERT BYTE
+        POP     AX                ; RESTORE AL
+        MOV     AH,AL             ; AH = AL
+OVER:   MSHR    AH,4              ; AL = LSNibble
+        AND     AL,00FH           ; AH = MSNibble
+        CMP     AL,10             ; CONVERT LSNibble
+        SBB     AL,069H
+        DAS
+        XCHG    AH,AL             ; AL = MSnIBBLE
+        CMP     AL,10             ; CONVERT MSNibble
+        SBB     AL,069H
+        DAS
+        STOSW                     ; OUTPUT VAL AND RETURN
+        RET
+
+        DW   128 DUP(0)
+STACK   DW   00
+
+;-------------------------
+; HEX CONVERSION BUFFER
+;
+HEXBUF1 DB  'xxxx : '
+HEXBUF2 DB  'xxxx '
+        DB  'xxxx '
+        DB  'xxxx '
+        DB  'xxxx '
+        DB  'xxxx '
+        DB  'xxxx '
+        DB  'xxxx '
+        DB  'xxxx '
+CRLF    DB  CR,LF,'$'
+
+        TOPARA CSEG
+CARTBUF EQU $
+
+        COMBOT CSEG
+
+
+
+Macros used by above programs цдддддддддддддддддддддддддддддддддддддддддддддддд
+дддддддддддддддддддддддддддддды
+
+;
+; **  CAUTION  **  macros do not allow numeric operations within the brackets
+;
+; eg.      MOV  AX,OFFSET FOO+10     can not be replaced with
+;          OMOV AX,FOO+10
+;
+; FB = FROM BYTE    replaces    ??,BYTE PTR
+; TB = FROM BYTE    replaces    BYTE PTR,??
+;
+; FW = FROM WORD    replaces    ??,WORD PTR
+; TW = FROM WORD    replaces    WORD PTR,??
+;
+; PUTTING AN 'O' IN FRONT OF A WORD INDICATES AN OFFSET IN THE SECOND OPERAND
+;
+; ie  OMOV   =    MOV ??,OFFSET ??
+;
+; MPUSH, MPOP   ARE MULTIPLE PUSH AND POPS (PUT PARAMS IN ANGLE BRACKETS>
+;
+; ie  MPUSH <AX,BX,CX>    <-----  DON'T FORGET TO USE REVERSE ORDERS
+;     MPOP  <CX,BX,AX>
+;
+; For instructions involving one operand (inc, dec, or, and, mul etc.)
+; these operands followed by B = Byte or W = word indicates the desired size
+;
+; ie  INCB  FOO
+;
+; This list is not complete, but covers 99.9% of all of the cases !
+;
+
+BREAK_  MACRO
+        INT    3
+        ENDM
+
+;*** HEADER  MACROS ***
+
+COMTOP  MACRO  A
+&A      SEGMENT PARA PUBLIC 'CODE'
+        ASSUME CS:A,DS:A,SS:A,ES:A
+
+        ORG     02CH             ; ADDRESS OF ENVIROMENT SEGMENT
+ENVSEG  LABEL   WORD
+
+        ORG     0100H                  ; SKIP TO END OF THE PSP
+START   PROC    NEAR
+        ENDM
+
+COMBOT  MACRO  A
+START   ENDP
+&A      ENDS
+        END     START
+        ENDM
+
+; COMMON ASCI CHARACTERS
+BELL    EQU 007H
+BCKSPC  EQU 008H
+TAB     EQU 009H
+LF      EQU 00AH
+CR      EQU 00DH
+ESCAPE  EQU 01BH
+EOF     EQU 01AH
+DELETE  EQU 07FH
+
+; COMMON INTERRUPT NAMES
+VBIOS     EQU 010H
+DISKBIOS  EQU 013H
+UARTBIOS  EQU 014H
+KEYBIOS   EQU 016H
+PRNBIOS   EQU 017H
+TIMEBIOS  EQU 01AH
+DOS       EQU 021H
+TSRINT    EQU 027H
+MULTIPLEX EQU 02FH
+MOUSE     EQU 033H
+
+SEG_CS  MACRO
+        DB 02EH
+        ENDM
+
+SEG_DS  MACRO
+        DB 03EH
+        ENDM
+
+SEG_ES  MACRO
+        DB 026H
+        ENDM
+
+; 386+ ONLY
+SEG_FS  MACRO
+        DB 064H
+        ENDM
+
+; 386+ ONLY
+SEG_GS  MACRO
+        DB 065H
+        ENDM
+
+SEG_SS  MACRO
+        DB 036H
+        ENDM
+
+JMPS    MACRO X
+        JMP SHORT X
+        ENDM
+
+JMPF    MACRO X,Y
+        DB  0EAH
+        DW   Y,X
+        ENDM
+
+JMPW    MACRO X
+        JMP  WORD PTR X
+        ENDM
+
+JMPDW   MACRO X
+        JMP  DWORD PTR X
+        ENDM
+
+JMPW    MACRO X
+        JMP  WORD PTR X
+        ENDM
+
+CALLW   MACRO X
+        CALL WORD PTR X
+        ENDM
+
+CALLDW  MACRO X
+        CALL DWORD PTR X
+        ENDM
+
+RET_F   MACRO
+        DB 0CBH
+        ENDM
+
+RET_N   MACRO
+        DB 0C3H
+        ENDM
+
+RET_FP  MACRO X
+        DB 0CAH
+        DW X
+        ENDM
+
+RET_NP  MACRO X
+        DB 0C2H
+        DW X
+        ENDM
+
+MPUSH   MACRO Y
+        IRP  X,< Y >
+        PUSH X
+        ENDM
+        ENDM
+
+MPOP    MACRO Y
+        IRP  X,< Y >
+        POP  X
+        ENDM
+        ENDM
+
+CHIPDELAY MACRO X
+             REPT X
+                JMPS $+2
+             ENDM
+          ENDM
+
+LESFD   MACRO X,Y
+        LES  X, DWORD PTR Y
+        ENDM
+LDSFD   MACRO X,Y
+        LDS  X, DWORD PTR Y
+        ENDM
+
+OMOV    MACRO X,Y
+        MOV  X,OFFSET Y
+        ENDM
+MOVTB   MACRO X,Y
+        MOV  BYTE PTR X,Y
+        ENDM
+MOVFB   MACRO X,Y
+        MOV  X, BYTE PTR Y
+        ENDM
+MOVTW   MACRO X,Y
+        MOV  WORD PTR X,Y
+        ENDM
+MOVFW   MACRO X,Y
+        MOV  X, WORD PTR Y
+        ENDM
+
+OSUB    MACRO X,Y
+        SUB  X,OFFSET Y
+        ENDM
+SUBTB   MACRO X,Y
+        SUB  BYTE PTR X,Y
+        ENDM
+SUBFB   MACRO X,Y
+        SUB  X, BYTE PTR Y
+        ENDM
+SUBTW   MACRO X,Y
+        SUB  WORD PTR X,Y
+        ENDM
+SUBFW   MACRO X,Y
+        SUB  X, WORD PTR Y
+        ENDM
+
+OADD    MACRO X,Y
+        ADD  X,OFFSET Y
+        ENDM
+ADDTB   MACRO X,Y
+        ADD  BYTE PTR X,Y
+        ENDM
+ADDFB   MACRO X,Y
+        ADD  X, BYTE PTR Y
+        ENDM
+ADDTW   MACRO X,Y
+        ADD  WORD PTR X,Y
+        ENDM
+ADDFW   MACRO X,Y
+        ADD  X, WORD PTR Y
+        ENDM
+
+OADC    MACRO X,Y
+        ADC  X,OFFSET Y
+        ENDM
+ADCTB   MACRO X,Y
+        ADC  BYTE PTR X,Y
+        ENDM
+ADCFB   MACRO X,Y
+        ADC  X, BYTE PTR Y
+        ENDM
+ADCTW   MACRO X,Y
+        ADC  WORD PTR X,Y
+        ENDM
+ADCFW   MACRO X,Y
+        ADC  X, WORD PTR Y
+        ENDM
+
+OSBB    MACRO X,Y
+        SBB  X,OFFSET Y
+        ENDM
+SBBTB   MACRO X,Y
+        SBB  BYTE PTR X,Y
+        ENDM
+SBBFB   MACRO X,Y
+        SBB  X, BYTE PTR Y
+        ENDM
+SBBTW   MACRO X,Y
+        SBB  WORD PTR X,Y
+        ENDM
+SBBFW   MACRO X,Y
+        SBB  X, WORD PTR Y
+        ENDM
+
+OCMP    MACRO X,Y
+        CMP  X,OFFSET Y
+        ENDM
+CMPTB   MACRO X,Y
+        CMP  BYTE PTR X,Y
+        ENDM
+CMPFB   MACRO X,Y
+        CMP  X, BYTE PTR Y
+        ENDM
+CMPTW   MACRO X,Y
+        CMP  WORD PTR X,Y
+        ENDM
+CMPFW   MACRO X,Y
+        CMP  X, WORD PTR Y
+        ENDM
+
+TESTTB  MACRO X,Y
+        TEST BYTE PTR X,Y
+        ENDM
+TESTFB  MACRO X,Y
+        TEST X, BYTE PTR Y
+        ENDM
+TESTTW  MACRO X,Y
+        TEST WORD PTR X,Y
+        ENDM
+TESTFW  MACRO X,Y
+        TEST X, WORD PTR Y
+        ENDM
+
+ANDTB   MACRO X,Y
+        AND  BYTE PTR X,Y
+        ENDM
+ANDFB   MACRO X,Y
+        AND  X, BYTE PTR Y
+        ENDM
+ANDTW   MACRO X,Y
+        AND  WORD PTR X,Y
+        ENDM
+ANDFW   MACRO X,Y
+        AND  X, WORD PTR Y
+        ENDM
+
+ORTB    MACRO X,Y
+        OR  BYTE PTR X,Y
+        ENDM
+ORFB    MACRO X,Y
+        OR  X, BYTE PTR Y
+        ENDM
+ORTW    MACRO X,Y
+        OR  WORD PTR X,Y
+        ENDM
+ORFW    MACRO X,Y
+        OR  X, WORD PTR Y
+        ENDM
+
+XORTB   MACRO X,Y
+        XOR  BYTE PTR X,Y
+        ENDM
+XORFB   MACRO X,Y
+        XOR  X, BYTE PTR Y
+        ENDM
+XORTW   MACRO X,Y
+        XOR  WORD PTR X,Y
+        ENDM
+XORFW   MACRO X,Y
+        XOR  X, WORD PTR Y
+        ENDM
+
+SARB    MACRO X,Y
+        SAR  BYTE PTR X,Y
+        ENDM
+SARW    MACRO X,Y
+        SAR  WORD PTR X,Y
+        ENDM
+
+RCRB    MACRO X,Y
+        RCR  BYTE PTR X,Y
+        ENDM
+RCRW    MACRO X,Y
+        RCR  WORD PTR X,Y
+        ENDM
+
+RCLB    MACRO X,Y
+        RCL  BYTE PTR X,Y
+        ENDM
+RCLW    MACRO X,Y
+        RCL  WORD PTR X,Y
+        ENDM
+
+RORB    MACRO X,Y
+        ROR  BYTE PTR X,Y
+        ENDM
+RORW    MACRO X,Y
+        ROR  WORD PTR X,Y
+        ENDM
+
+ROLB    MACRO X,Y
+        ROL  BYTE PTR X,Y
+        ENDM
+ROLW    MACRO X,Y
+        ROL  WORD PTR X,Y
+        ENDM
+
+SHRB    MACRO X,Y
+        SHR  BYTE PTR X,Y
+        ENDM
+SHRW    MACRO X,Y
+        SHR  WORD PTR X,Y
+        ENDM
+
+SHLB    MACRO X,Y
+        SHL  BYTE PTR X,Y
+        ENDM
+SHLW    MACRO X,Y
+        SHL  WORD PTR X,Y
+        ENDM
+
+MULB    MACRO X
+        MUL  BYTE PTR X
+        ENDM
+MULW    MACRO X
+        MUL  WORD PTR X
+        ENDM
+
+IMULB   MACRO X
+        IMUL  BYTE PTR X
+        ENDM
+IMULW   MACRO X
+        IMUL  WORD PTR X
+        ENDM
+
+DIVB    MACRO X
+        DIV  BYTE PTR X
+        ENDM
+DIVW    MACRO X
+        DIV  WORD PTR X
+        ENDM
+
+INCB    MACRO X
+        INC  BYTE PTR X
+        ENDM
+INCW    MACRO X
+        INC  WORD PTR X
+        ENDM
+
+DECB    MACRO X
+        DEC  BYTE PTR X
+        ENDM
+DECW    MACRO X
+        DEC  WORD PTR X
+        ENDM
+
+NOTB    MACRO X
+        NOT  BYTE PTR X
+        ENDM
+NOTW    MACRO X
+        NOT  WORD PTR X
+        ENDM
+
+NEGB    MACRO X
+        NEG  BYTE PTR X
+        ENDM
+NEGW    MACRO X
+        NEG  WORD PTR X
+        ENDM
+
+MSAR    MACRO A,N
+        REPT N
+        SAR  A,1
+        ENDM
+        ENDM
+
+MSHL    MACRO A,N
+        REPT N
+        SHL  A,1
+        ENDM
+        ENDM
+
+MSHR    MACRO A,N
+        REPT N
+        SHR  A,1
+        ENDM
+        ENDM
+
+MRCL    MACRO A,N
+        REPT N
+        RCL  A,1
+        ENDM
+        ENDM
+
+MRCR    MACRO A,N
+        REPT N
+        RCR  A,1
+        ENDM
+        ENDM
+
+MROL    MACRO A,N
+        REPT N
+        ROL  A,1
+        ENDM
+        ENDM
+
+MROR    MACRO A,N
+        REPT N
+        ROR  A,1
+        ENDM
+        ENDM
+
+POPMOV  MACRO A,Y
+        PUSH Y
+        POP  A
+        ENDM
+
+POPSWAP MACRO X,Y
+        PUSH  X
+        PUSH  Y
+        POP   X
+        POP   Y
+        ENDM
+
+DWSAVE  MACRO A,L,H
+        MOV   WORD PTR A,L
+        MOV   WORD PTR A+2,H
+        ENDM
+
+DWLOAD  MACRO A,L,H
+        MOV  L, WORD PTR A
+        MOV  H, WORD PTR A+2
+        ENDM
+
+CLEAR   MACRO A
+        XOR   A,A
+        ENDM
+
+DOSPRINT MACRO A
+         IFNB <A>
+           MOV  DX,OFFSET A
+         ENDIF
+         MOV AH,09
+         INT DOS
+         ENDM
+
+DOSEXIT  MACRO A
+         IFNB <A>
+           MOV  AX,04C00H + A
+         ELSE
+           MOV  AX,04C00H
+         ENDIF
+         INT DOS
+         ENDM
+
+FMOVS   MACRO
+        LOCAL WASEVN
+        SHR   CX,1
+        REP   MOVSW
+        JNC   WASEVN
+        MOVSB
+WASEVN =  $
+        ENDM
+
+TOPARA  MACRO X
+        REPT    16
+        IF      ($ - X) MOD 16 EQ 0
+        EXITM
+        ENDIF
+        DB      00
+        ENDM
+        ENDM
+
+DBW     MACRO X,Y
+        DB    X
+        DW    Y
+        ENDM
+
+DWB     MACRO X,Y
+        DW    X
+        DB    Y
+        ENDM
+
+
+TOBIN.BAS Conversion utility цддддддддддддддддддддддддддддддддддддддддддддддддд
+ддддддддддддддддддддддддддддды
+
+' The following program converts the data file created by the above ML
+' program into a raw binary image.
+
+DEFINT A-Z
+
+' list of file names to convert
+' Structure = Source Name, Destination Name
+
+DATA  "name1.hex" ,"name1.BIN"    ' example source and destination names
+DATA  "name2.hex" ,"name2.BIN"
+DATA  "end","end"                 ' signify end of table.
+
+DO
+   READ in$, out$                 ' read names
+   IF in$ = "end" THEN EXIT DO    ' if have "end" then end program
+   GOSUB convert                  ' else go convert file
+LOOP
+END
+
+convert:
+OPEN "i", #1, in$                 ' open input file
+OPEN "b", #2, out$                ' open output fle
+
+FLAG = 0                          ' clear flag
+DO
+   INPUT #1, A$                   ' get string to convert
+   A$ = LTRIM$(RTRIM$(A$))        ' no spaces from start and end
+   IF A$ <> "" THEN               ' ignore if empty
+                                  ' FFFF generally means start/end of ROM.
+      IF RIGHT$(A$, 39) <> "FFFF FFFF FFFF FFFF FFFF FFFF FFFF FFFF" THEN
+         IF FLAG = 0 THEN         ' if start not found yet say found
+            PRINT "CART APPEARS TO START AT "; LEFT$(A$, 7)
+            FLAG = 1              ' remember start found
+         END IF
+         l = 8                    ' move to first numeric field
+         FOR A = 1 TO 8           ' for all entries
+            b$ = "&H" + MID$(A$, l + 2, 2) + MID$(A$, l, 2)
+            c = VAL(b$)
+         '   PRINT b$, HEX$(c)
+            PUT #2, , c           ' write word to file
+            l = l + 5             ' move to next numeric field
+         NEXT                     ' do for all 8 words
+      ELSE
+         IF FLAG = 1 THEN EXIT DO ' end if found ffff and had start
+      END IF
+   END IF
+LOOP WHILE NOT (EOF(1))           ' loop for all lines in file
+
+IF A$ = "" THEN
+   PRINT "CAUTION - END OF CART NOT DETECTED"
+ELSE
+   PRINT "CART APPEARS TO END AT "; LEFT$(A$, 5); "-1"
+   PRINT ""
+END IF
+
+CLOSE                             ' close files and return
+RETURN
+
+
+STRIP FOR MULTI BLOCK CARTS цдддддддддддддддддддддддддддддддддддддддддддддддддд
+дддддддддддддддддддддддддддды
+
+' The following program converts multi-block cart images as created by the
+' above BASIC program into a raw binary image suitable for loading
+' into the Intellivision emulator.
+'
+' The config ".CFG" file generated by this program contains the address
+' mapping information needed by the intellivision emulator, although
+' in a form not immediately usable by the emulator.
+'
+
+DEFLNG A-Z
+
+CLS
+
+start = &H5000     '<<  default cart start address.
+                   '    must be changed to reflect the cart starting address.
+                   '    Most split carts start at this address = &H5000
+addr = 0
+word% = 0
+
+
+OPEN "b", #1, "a.bin"               ' Source file      (binary)
+OPEN "b", #2, "a.bin"               ' Destination file (binary)
+OPEN "o", #3, "a.cfg"               ' New config file name
+
+flag% = 1                            ' flag block end has been found
+
+DO
+  GET #1, , word%                         ' Get word from binary image
+  IF word% = -1 THEN                      ' if ffff then possible unused block
+     IF flag% = 0 THEN                    ' if previous was unused then
+        PRINT #3, "end", HEX$(addr - 1)   ' print end of block to config file
+     END IF
+     flag% = 1                            ' flag end of block found
+  ELSE
+     PUT #2, , word%                      ' output word to file
+     IF flag% = 1 THEN                    ' if last byte was end of block
+        PRINT #3, "start", HEX$(addr), HEX$(start)    ' say start of block
+     END IF
+     flag% = 0                            ' signify in block
+     addr = addr + 1                      ' move to next address
+  END IF
+  start = start + 1                       ' bump code origin address
+LOOP WHILE NOT (EOF(1))                   ' loop for all data
+PRINT #3, "end", HEX$(addr - 1)           ' print adderess of end of file
+CLOSE                                     ' close all files and end
+END
+
+
+Background Info  Ё
+PC parallel port цддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддд
+ддддддддддддддддды
+
+From ASM-101 PC programmers reference Ё
+дддддддддддддддддддддддддддддддддддддды
+
+  25 pin Parallel port (female):          36 pin Parallel Centronics (male):
+Pin 13                       1       Pin 1                                 18
+   _____________________________     ___________________________________________
+   \ . . . . . . . . . . . . . /     \                       /
+    \ . . . . . . . . . . . . /       \                     /
+     \_______________________/         \_____________________________________/
+ Pin 25                     14      Pin 19                                 36
+                                          pins 19-30 and 33 are twisted pair
+                                          grounds.
+
+здддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддд©
+Ё Parallel Port pin assignments                                                Ё
+Ё                   Centronics Connector is standard but PC's usually          Ё
+Ё                   use a female DB25.  Amiga's use a male DB25                Ё
+Ё               **  device may ignore MSB                                      Ё
+цддддддбдддддбдддддддддддддддддддддддддбддддддбдддддбдддддддддддддддддддддддддд╢
+ЁPin # Ё     Ё                         ЁPin # Ё     Ё                          Ё
+ЁDB 25 Ё Dir Ё Signal Name             ЁCent  Ё Dir Ё Signal Name              Ё
+цддддддедддддедддддддддддддддддддддддддеддддддедддддеддддддддддддддддддддддддддЁ
+Ё  1   Ё  O  Ё -Strobe       (STB)     Ё  1   Ё  I  Ё -Strobe        (STB)     Ё
+Ё  2   Ё I/O Ё Data Bit 0              Ё  2   Ё  I  Ё Data Bit 0               Ё
+Ё  3   Ё I/O Ё Data Bit 1              Ё  3   Ё  I  Ё Data Bit 1               Ё
+Ё  4   Ё I/O Ё Data Bit 2              Ё  4   Ё  I  Ё Data Bit 2               Ё
+Ё  5   Ё I/O Ё Data Bit 3              Ё  5   Ё  I  Ё Data Bit 3               Ё
+Ё  6   Ё I/O Ё Data Bit 4              Ё  6   Ё  I  Ё Data Bit 4               Ё
+Ё  7   Ё I/O Ё Data Bit 5              Ё  7   Ё  I  Ё Data Bit 5               Ё
+Ё  8   Ё I/O Ё Data Bit 6              Ё  8   Ё  I  Ё Data Bit 6               Ё
+Ё  9   Ё I/O Ё Data Bit 7              Ё  9   Ё  I  Ё Data Bit 7 **            Ё
+Ё  10  Ё  I  Ё -Acknowledge  (ACK)     Ё  10  Ё  O  Ё -Acknowledge   (ACK)     Ё
+Ё  11  Ё  I  Ё BUSY                    Ё  11  Ё  O  Ё BUSY                     Ё
+Ё  12  Ё  I  Ё Paper End     (PE)      Ё  12  Ё  O  Ё Paper End      (PE)      Ё
+Ё  13  Ё  I  Ё Selected      (SLCT)    Ё  13  Ё  O  Ё Selected       (SLCT)    Ё
+Ё  14  Ё  O  Ё Automate Feed (AUTO FD) Ё  14  Ё  I  Ё -Auto Feed     (AUTO FD) Ё
+Ё  15  Ё  I  Ё -Error        (FAULT)   Ё  15* Ё N/A Ё N/C   Not defined        Ё
+Ё  16  Ё  O  Ё -Initialize   (IP)      Ё  16  Ё N/A Ё Signal Ground  (SG)      Ё
+Ё  17  Ё  O  Ё -Select In    (SLCT IN) Ё  17  Ё N/A Ё Chassis Ground (CG)      Ё
+Ё18-25 Ё N/A Ё Grounds                 Ё  18  Ё N/A Ё +5 Volts or NC           Ё
+Ё      Ё     Ё                         Ё19-30 Ё N/A Ё Grounds                  Ё
+Ё      Ё     Ё                         Ё  31  Ё  I  Ё -Initialize    (IP)      Ё
+Ё      Ё     Ё                         Ё  32  Ё  O  Ё -ERROR         (FAULT)   Ё
+Ё      Ё     Ё                         Ё  33  Ё N/A Ё Signal Ground  (SG)      Ё
+Ё      Ё     Ё                         Ё  34* Ё N/A Ё N/C   Not Defined        Ё
+Ё      Ё     Ё                         Ё  35  Ё N/A Ё +5 Volts through 4.7 OhmsЁ
+Ё      Ё     Ё                         Ё  36  Ё  I  Ё Select         (Slct)    Ё
+юддддддадддддадддддддддддддддддддддддддаддддддадддддадддддддддддддддддддддддддды
+
+Parallel Port register set overview цддддддддддддддддддддддддддддддддддддддддд
+дддддддддддддддддддддддддддддддддддды
+
+здддддддддбдддддбддддддддддддддддддбддддддбдддддддддддддддддддддддддддддддд©
+Ё Address Ё     Ё                  Ё      Ё                                Ё
+Ё Offset  Ё R/W Ё Port             Ё Bits Ё Function                       Ё
+цдддддддддедддддеддддддддддддддддддеддддддедддддддддддддддддддддддддддддддд╢
+Ё   0     Ё  W  Ё Data Out         Ё 0-7  Ё All LS TTL outputs             Ё
+Ё   2     Ё  W  Ё Control Out      Ё 0-3  Ё All TTL Open Collector outputs Ё
+Ё   2     Ё  W  Ё Control Out      Ё 4    Ё IRQ enable                     Ё
+Ё   2     Ё  W  Ё Control Out      Ё 5    Ё Tristate data (PS/2 for input) Ё
+цдддддддддедддддеддддддддддддддддддеддддддедддддддддддддддддддддддддддддддд╢
+Ё   0     Ё  R  Ё Data Feedback    Ё 0-7  Ё Matches Data Out (or input)    Ё
+Ё   1     Ё  R  Ё Status In        Ё 3-7  Ё 5 LS TTL inputs                Ё
+Ё   2     Ё  R  Ё Control Feedback Ё 0-3  Ё Matches Control Out            Ё
+Ё   2     Ё  R  Ё Control Feedback Ё 4    Ё IRQ enable status              Ё
+юдддддддддадддддаддддддддддддддддддаддддддадддддддддддддддддддддддддддддддды
+
+
+Parallel Port register set detail цддддддддддддддддддддддддддддддддддддддддддд
+дддддддддддддддддддддддддддддддддды
+
+0278H, 0378H, 03BCH  R/W  Parallel port data output latch
+здбдбдбдбдбдбдбд©
+Ё7Ё6Ё5Ё4Ё3Ё2Ё1Ё0Ё
+юбабабабабабабабы
+ Ё Ё Ё Ё Ё Ё Ё юддд  Pin 2    The data written to this latch
+ Ё Ё Ё Ё Ё Ё юддддд  Pin 3    will appear as output on the
+ Ё Ё Ё Ё Ё юддддддд  Pin 4    parallel port data lines.
+ Ё Ё Ё Ё юддддддддд  Pin 5
+ Ё Ё Ё юддддддддддд  Pin 6
+ Ё Ё юддддддддддддд  Pin 7
+ Ё юддддддддддддддд  Pin 8
+ юддддддддддддддддд  Pin 9
+
+  Electrically this port consists of an inverting Octal latch (74LS374),
+(74ACT374) tied directly to pins 2-9 of the DB25.  Any data written to
+this port is latched and provides a constant output to the printer.
+These output lines are also tied to a 74LS244 input latch (non
+inverted), so that they can be made available to the CPU.
+
+  The input latch was intended to allow software to perform a diagnostic
+check on the integrity of the data path to the printer, but can be
+exploited for bi-directional communication.  If at any time, the content
+of the input latch does not match the data written to the output latch,
+an error exists in the data path.
+
+  Some printer ports can tristate their output buffer (74LS374 or
+equivalent). When this is done, the input latch can be used as a
+legitimate input port.  Reading from the parallel port returns data
+present on the parallel port address lines.
+
+  In the original series of PC parallel ports Data output latch is
+comprised of a 74LS374 octal latch.  This chip could could source a
+maximum of 2.6 mA and sink a maximum of 24 mA.  Noise is reduced by
+connecting each data output line to ground through a 0.0022uF capacitor.
+
+
+0279H, 0379H, 03BDH   Printer status register
+здбдбдбдбдбдбдбд©
+Ё7Ё6Ё5Ё4Ё3Ё2Ё1Ё0Ё
+юбабабабабабабабы
+ Ё Ё Ё Ё Ё Ё юбы
+ Ё Ё Ё Ё Ё Ё  юдддд 0 = Reserved
+ Ё Ё Ё Ё Ё юддддддд 0 = IRQ has occurred
+ Ё Ё Ё Ё Ё          1 = IRQ has not occurred
+ Ё Ё Ё Ё юддддддддд 1 = -ERROR     - pin 15 <I 0=printer signals an error
+ Ё Ё Ё юддддддддддд 1 = +Selected  - pin 13 <I 1=printer is selected
+ Ё Ё юддддддддддддд 1 = +PE        - pin 12 <I 1=out of paper
+ Ё юддддддддддддддд 0 = -ACK       - pin 10 <I 0=ready for next character
+ юддддддддддддддддд 0 = -BUSY      - pin 11 <I 0=busy or off line or error
+
+  For cards that support the parallel port interrupt, when interrupts
+are enabled, an interrupt will be generated when -ACK makes a transition
+from high to low.
+
+  This input port is implemented by means of an inverting tristate
+buffer. Some signals are inverted before reaching the tristate buffer so
+that their polarity is correct.  Bit 7 is the only bit that needs to be
+inverted by software.
+
+
+
+027AH, 037AH, 03BEH Printer control register
+здбдбдбдбдбдбдбд©
+Ё7Ё6Ё5Ё4Ё3Ё2Ё1Ё0Ё   + = ACTIVE LOW
+юбабабабабабабабы
+ Ё Ё Ё Ё Ё Ё Ё юдддддддд 1 = +Strobe     Output data to printer   - pin 1  >O
+ Ё Ё Ё Ё Ё Ё юдддддддддд 1 = +Auto       Auto line feed           - pin 14 >O
+ Ё Ё Ё Ё Ё юдддддддддддд 0 = -Init       Printer Reset            - pin 16 >O
+ Ё Ё Ё Ё юдддддддддддддд 1 = +Select In  Selects the printer      - pin 17 >O
+ Ё Ё Ё юдддддддддддддддд 0 = +IRQ IRQ disable
+ Ё Ё Ё                   1 =      IRQ enable for ACK
+ Ё Ё Ё                            LPT1 should map to IRQ 7 (INT 0FH)
+ Ё Ё Ё                            LPT2 should map to IRQ 5 (INT 0DH)
+ Ё Ё юдддддддддддддддддд 0 = Direction is port write  дбд OS/2 ??
+ Ё Ё                     1 = Direction is port read   ды
+ Ё Ё                         Note: The state of bit may be "locked"
+ Ё Ё                               on some I/O chipsets. (NS Super I/O ?)
+ юдадддддддддддддддддддд Not used
+

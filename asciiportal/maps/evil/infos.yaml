@@ -1,0 +1,10 @@
+  # This is a YAML-formatted file designed to store informations about the given map pack.
+protocol: 1  # The protocol version used. Leave this to the default value.
+name: Zugz' Evil map-pack  # The name of the map pack. Should not exceed 30 characters.
+description: |
+  Designed for release 1.2b of ASCIIpOrtal, and *not* wholly compatible with earlier versions.
+  Intended to be a little challenging.
+author: Zugz  # The author of the map pack.
+version: 2.0  # Version. You might want to provide a changelog file.
+difficulty: 9  # Difficulty range from 0 (easiest) to 10 (hardest)
+priority: 5  # This is used for official map packs only. The default should be fine.

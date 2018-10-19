@@ -1,0 +1,69 @@
+==============================================================================
+  TOBIT, TOBIT_F, TOBIT_R   -- Bit-dump Generation Utilities
+==============================================================================
+
+This utility takes a binary file as an input and generates a textual
+hex-dump as an output.  This can be useful if you're digging through
+a binary dump from something (say, a ROM dump or other mass of 
+binary data).
+
+
+Usage:
+
+    tohex [input [output]]
+
+Where 'input' is the input filename, and 'output' is the output filename.
+If the input filename is not specified, or is given as '-', then the
+input is taken from stdin.  If the output filename is not specified,
+or is given as '-', then the output will go to stdout.
+
+
+The output format of tobit looks like so:
+
+  1010 1000   0000 0001   1111 1110   0101 0000     # A8 01 FE 50 ...P 00000000
+  0110 1111   0000 0000   0000 1101   0000 0000     # 6F 00 0D 00 o... 00000004
+  0101 0000   0000 0000   0000 1101   0000 0000     # 50 00 0D 00 P... 00000008
+  0101 0000   0000 0000   0011 0000   0000 0000     # 50 00 30 00 P.0. 0000000C
+  0101 0000   0000 0000   0000 1101   0000 0000     # 50 00 0D 00 P... 00000010
+
+The output format of tobit_f looks like so:
+
+  10101000                                          # A8          .    00000000
+  00000001                                          # 01          .    00000001
+  11111110                                          # FE          .    00000002
+  01010000                                          # 50          P    00000003
+  01101111                                          # 6F          o    00000004
+
+The output format of tobit_r looks like so:
+
+  0001 0101   1000 0000   0111 1111   0000 1010     # A8 01 FE 50 ...P 00000000
+  1111 0110   0000 0000   1011 0000   0000 0000     # 6F 00 0D 00 o... 00000004
+  0000 1010   0000 0000   1011 0000   0000 0000     # 50 00 0D 00 P... 00000008
+  0000 1010   0000 0000   0000 1100   0000 0000     # 50 00 30 00 P.0. 0000000C
+  0000 1010   0000 0000   1011 0000   0000 0000     # 50 00 0D 00 P... 00000010
+
+
+In all three, the left hand portion (to the left of the '#' divider) 
+shows the bytes of the file in binary.  For 'tobit' and 'tobit_r',
+each row contains 64 bits, grouped into bytes and nybbles for readability.
+For 'tobit', each row contains only 8 bits.
+
+To the right of the # divider is the HEX representation of the data and
+the ASCII interpretation of the data.  Non-printing characters are shown
+as dots.  This can be useful for looking for human-readable strings in
+the bit-dump.
+
+At the far right is the "location counter", which merely shows the byte
+offset into the file that the row corresponds to.
+
+Tobit_r differs from tobit and tobit_f in that it reverses the order of
+bits within each byte.  This can be useful in some situations, such
+as wehn dealing with Intellivoice data.  Intellivoice data reads from
+right-to-left within each byte unless you reverse the bitorder as tobit_r
+does.
+
+This output format is nice because it is fairly readable, and can be
+manipulated in any text viewer or editor.  Additionally, the bit dump
+can be edited and fed into "frombit" or "frombit_r" to generate a 
+modified binary file.
+

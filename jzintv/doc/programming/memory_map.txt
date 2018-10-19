@@ -1,0 +1,213 @@
+==============================================================================
+  INTELLIVISION MEMORY MAP
+==============================================================================
+
+This file describes information about the Intellivision's memory map.
+This information comes from many sources, to which I am deeply indebted.
+
+------------------------------------------------------------------------------
+  GLOBAL MEMORY MAP
+------------------------------------------------------------------------------
+
+The "ACCESS" column gives information on when and how given addresses may
+be accessed.  Most locations are accessible anytime.  Some are only available
+under certain circumstances.  
+
+Key:
+
+    ACCESS TYPE     RESTRICTION
+    --------------- ----------------------------------------------------------
+    <nothing>       Accessible anytime.
+    VBLANK 1        Accessible during first ~2000 cycles of VBLANK period
+    VBLANK 1a       Same as VBLANK 1, except CPU cannot see value read
+    VBLANK 2        Accessible during first ~3780 cycles of VBLANK period
+    VBLANK 2a       Same as VBLANK 2, except CPU cannot see value read
+    Write-Only      Location is writeable, but reads return nothing
+    ECS bank #      ECS bank-switched ROM that is visible on specified #
+    
+Note that some of the following address ranges overlap.  Certainly makes 
+life interesting, doesn't it?
+
+
+ADDRESSES           ACCESS      DESCRIPTION
+------------------- ----------- ----------------------------------------------
+$0000 - $007F       VBLANK 1    STIC Registers:
+    $0000 - $0007   VBLANK 1    MOB X-position registers
+    $0008 - $000F   VBLANK 1    MOB Y-position registers
+    $0010 - $0017   VBLANK 1    MOB Attribute registers
+    $0018 - $001F   VBLANK 1    MOB Collision registers
+    $0020           VBLANK 1    Display enable
+    $0021           VBLANK 1    Mode select
+    $0022 - $0027   VBLANK 1    reserved
+    $0028 - $002B   VBLANK 1    Color Stack 0 through 3
+    $002C           VBLANK 1    Display border color
+    $002D - $002F   VBLANK 1    reserved
+    $0030           VBLANK 1    Horizontal Delay register
+    $0031           VBLANK 1    Vertical Delay register
+    $0032           VBLANK 1    Border extension (bit 0=left; bit 1=top)
+    $0033 - $007F   VBLANK 1    Reserved
+
+$0040 - $005F       Write-Only  Intellicart Bank Switch registers
+
+$0080 - $0081                   Intellivoice
+    $0080                       Address LoaD (Speech command)
+    $0081                       Speech FIFO
+
+$00E0 - $00E3                   UART (ECS only)
+
+$00F0 - $00FF                   PSG #2 (ECS only)
+    $00F0                       Channel A Period  (Low 8 bits of 12)
+    $00F1                       Channel B Period  (Low 8 bits of 12)
+    $00F2                       Channel C Period  (Low 8 bits of 12)
+    $00F3                       Envelope Period   (Low 8 bits of 16)
+    $00F4                       Channel A Period  (High 4 bits of 12)
+    $00F5                       Channel B Period  (High 4 bits of 12)
+    $00F6                       Channel C Period  (High 4 bits of 12)
+    $00F7                       Envelope Period   (High 8 bits of 16)
+    $00F8                       Enable Noise/Tone (bits 3-5 Noise : 0-2 Tone)
+    $00F9                       Noise Period      (5 bits)
+    $00FA                       Envelope type     (4 bits)
+    $00FB                       Channel A Volume  (6 bits)
+    $00FC                       Channel B Volume  (6 bits)
+    $00FD                       Channel C Volume  (6 bits)
+    $00FE                       Controller input / Keyboard input
+    $00FF                       Controller input / Keyboard input
+
+$0100 - $01EF                   8-Bit Scratch RAM
+    $0100 - $0101               VBLANK Interrupt Vector
+    $0102 - $01EF               Usage depends on program
+
+$01F0 - $01FF                   PSG #1 (Master Component)
+    $01F0                       Channel A Period  (Low 8 bits of 12)
+    $01F1                       Channel B Period  (Low 8 bits of 12)
+    $01F2                       Channel C Period  (Low 8 bits of 12)
+    $01F3                       Envelope Period   (Low 8 bits of 16)
+    $01F4                       Channel A Period  (High 4 bits of 12)
+    $01F5                       Channel B Period  (High 4 bits of 12)
+    $01F6                       Channel C Period  (High 4 bits of 12)
+    $01F7                       Envelope Period   (High 8 bits of 16)
+    $01F8                       Enable Noise/Tone (bits 3-5 Noise : 0-2 Tone)
+    $01F9                       Noise Period      (5 bits)
+    $01FA                       Envelope type     (4 bits)
+    $01FB                       Channel A Volume  (6 bits)
+    $01FC                       Channel B Volume  (6 bits)
+    $01FD                       Channel C Volume  (6 bits)
+    $01FE                       Controller input  (right controller)
+    $01FF                       Controller input  (left controller)
+
+$01FE - $01FF                   Intellivoice Expansion Bus (Wireless
+                                hand-controller support.)
+
+$0200 - $035F                   16-bit System RAM
+    $0200 - $02EF               BACKTAB
+    $02F0 - $035F               Usage depends on program
+
+$0400 - $04FF                   Intellivision II EXEC Extension
+
+$0700 - $0BFF                   Intellivoice Expansion Bus
+
+$1000 - $1FFF                   Intellivision EXEC (all variants)
+    $1000                       Hardware Reset vector
+    $1004                       Hardware Interrupt vector
+
+$2000 - $2FFF       ECS bank 1  ECS EXEC ROM, first 4K.  
+
+$3000 - $37FF       VBLANK 2    GROM (Graphics ROM)
+
+$3800 - $3AFF       VBLANK 2    GRAM (Graphics RAM)
+
+$3B00 - $3FFF       VBLANK 2    Shadow copies of GRAM (incomplete addr. decode)
+
+$4000 - $403F       VBLANK 1a   STIC read/write sensitive aliases
+$4000 - $47FF                   8-bit Scratch RAM (ECS only)
+
+$4800 - $4FFF                   PlayCable monitor
+
+$5000 - $6FFF                   First 8K of default cartridge memory map
+
+$7000 - $7FFF                   Keyboard Component Monitor ROM
+$7000 - $7FFF       ECS bank 0  ECS EXEC ROM, second 4K.
+$7800 - $7FFF       VBLANK 2a   GRAM write-sensitive aliases
+
+$8000 - $803F       VBLANK 1a   STIC read/write sensitive aliases
+$8000 - $BFFF                   Keyboard Component 16K x 10-bit shared RAM
+$8000 - $BFFF                   Addresses available to cartridges
+$B800 - $BFFF       VBLANK 2a   GRAM write-sensitive aliases
+
+$C000 - $C03F       VBLANK 1a   STIC read/write sensitive aliases
+$C000 - $CFFF       ECS bank 1  Reserved for ECS Extended BASIC ?
+
+$D000 - $DFFF                   Available to cartridges
+
+$E000 - $EFFF       ECS bank 1  ECS EXEC ROM, third 4K.
+$E000 - $EFFF                   Available to cartridges
+
+$F000 - $FFFF                   Available to cartridges
+$F800 - $FFFF       VBLANK 2a   GRAM write-sensitive aliases
+
+------------------------------------------------------------------------------
+  STIC AND GRAM ALIASES
+------------------------------------------------------------------------------
+
+There are three STIC register aliases in the memory map.  These occur
+at $4000 - $403F, $8000 - $803F and $C000 - $C03F.  These addresses
+are sensitive to both reads and writes during the "VBLANK 1" period.  
+This means you can update STIC registers by writing to the aliases, 
+and you can change modes by reading from the aliases of the STIC Mode
+register.
+
+Interestingly, while the System RAM does forward the memory accesses for
+these aliases to the STIC, it does *not* return any data read from the STIC.
+Thus, you can affect the state of the STIC by reading and writing these
+aliases, but the CPU won't see any data read from the alias addresses.
+
+The GRAM aliases are similar.  GRAM aliases exist at $7800 - $7FFF,
+$B800 - $BFFF, and $F800 - $FFFF.  CPU writes to these addresses during
+"VBLANK 2" will update the contents of GRAM.  Reads from these aliases,
+however, will not return data from GRAM.  This makes it safe to map ROM
+over the GRAM aliases.  It is not safe, however, to map RAM to these
+addresses.
+
+------------------------------------------------------------------------------
+  ADDRESSES AVAILABLE TO CARTRIDGES
+------------------------------------------------------------------------------
+
+The Intellivision leaves many addresses available to cartridges.  However,
+several address ranges come with caveats, such as interactions with other
+devices in the system, or incompatibilities with various peripherals.  
+
+Below is a summary.
+
+ADDRESSES      NOTES
+-------------- --------------------------------------------------------------
+$0400 - $04FF  RAM/ROM ok on all but Intellivision 2.
+$0500 - $06FF  RAM/ROM ok.
+$0700 - $0CFF  RAM/ROM ok if no Intellivoice.
+$0D00 - $0FFF  RAM/ROM ok.
+$2000 - $2FFF  RAM/ROM ok if no ECS.
+$4000 - $47FF  RAM/ROM ok if no ECS.
+$4800          ROM ok.  RAM ok only if boot ROM at $7000.
+$4801 - $4FFF  RAM/ROM ok.
+$5000 - $5014  ROM ok.  RAM ok only if boot ROM at $7000 or $4800.
+$5015 - $6FFF  RAM/ROM ok.  
+$7000          ROM ok if no ECS.  RAM at $7000 confuses EXEC boot sequence.
+$7001 - $77FF  RAM/ROM ok if no ECS.
+$7800 - $7FFF  ROM ok if no ECS.  Do not map RAM here due to GRAM alias.
+$8000 - $8FFF  RAM/ROM ok.  Avoid STIC alias at $8000 - $803F.
+$9000 - $B7FF  RAM/ROM ok.
+$B800 - $BFFF  ROM ok.  Do not map RAM here due to GRAM alias.
+$C000 - $CFFF  RAM/ROM ok.  Avoid STIC alias at $C000 - $C03F.
+$D000 - $DFFF  RAM/ROM ok.
+$E000 - $EFFF  RAM/ROM ok if no ECS.
+$F000 - $F7FF  RAM/ROM ok.
+$F800 - $FFFF  ROM ok.  Do not map RAM here due to GRAM alias.
+
+The EXEC boot sequence works as follows:
+
+ -- Do minimal initialization. (SP = $2F1, set up ISR, put $5014 in $2F0.)
+ -- Check for viable ROM at $7000.  If found, jump to $7000.
+ -- Check for viable ROM at $4800.  If found, jump to $4800.
+ -- Otherwise, initialize EXEC structures from EXEC header at $5000-$5014.
+    Do full system init and proceed to display title-screen and do standard 
+    program startup.
+

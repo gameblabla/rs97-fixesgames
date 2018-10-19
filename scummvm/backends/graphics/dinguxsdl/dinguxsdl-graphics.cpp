@@ -22,15 +22,15 @@
 
 #include "common/scummsys.h"
 
-
-
 #if defined(DINGUX)
+
 #include "backends/graphics/dinguxsdl/dinguxsdl-graphics.h"
 #include "backends/events/dinguxsdl/dinguxsdl-events.h"
 #include "graphics/scaler/aspect.h"
 #include "common/mutex.h"
 #include "common/textconsole.h"
-extern SDL_Surface *ScreenSurface;
+
+extern SDL_Surface* real_screen;
 
 static const OSystem::GraphicsMode s_supportedGraphicsModes[] = {
 	{"1x", "Standard", GFX_NORMAL},
@@ -53,7 +53,7 @@ int DINGUXSdlGraphicsManager::getDefaultGraphicsMode() const {
 	return GFX_NORMAL;
 }
 
-bool DINGUXSdlGraphicsManager::setGraphicsMode(int mode) {
+bool DINGUXSdlGraphicsManager::setGraphicsMode(int mode)  {
 	Common::StackLock lock(_graphicsMutex);
 
 	assert(_transactionMode == kTransactionActive);
@@ -119,7 +119,7 @@ void DINGUXSdlGraphicsManager::setGraphicsModeIntern() {
 	blitCursor();
 }
 
-void DINGUXSdlGraphicsManager::initSize(uint w, uint h) {
+void DINGUXSdlGraphicsManager::initSize(uint w, uint h, const Graphics::PixelFormat *format) {
 	assert(_transactionMode == kTransactionActive);
 
 	// Avoid redundant res changes
@@ -315,13 +315,13 @@ void DINGUXSdlGraphicsManager::internUpdateScreen() {
 		dstPitch = _hwScreen->pitch;
 
 		for (r = _dirtyRectList; r != lastRect; ++r) {
-			register int dst_y = r->y + _currentShakePos;
-			register int dst_h = 0;
-			register int dst_w = r->w;
-			register int orig_dst_y = 0;
-			register int dst_x = r->x;
-			register int src_y;
-			register int src_x;
+			int dst_y = r->y + _currentShakePos;
+			int dst_h = 0;
+			int dst_w = r->w;
+			int orig_dst_y = 0;
+			int dst_x = r->x;
+			int src_y;
+			int src_x;
 
 			if (dst_y < height) {
 				dst_h = r->h;
@@ -393,22 +393,9 @@ void DINGUXSdlGraphicsManager::internUpdateScreen() {
 		drawOSD();
 #endif
 		// Finally, blit all our changes to the screen
-		//SDL_UpdateRects(_hwScreen, _numDirtyRects, _dirtyRectList);
-			if(SDL_MUSTLOCK(ScreenSurface)) SDL_LockSurface(ScreenSurface);
-			int x, y;
-			int w = _hwScreen->w / 2;
-			int h = _hwScreen->h;
-			uint32_t *s = (uint32_t*)_hwScreen->pixels;
-			uint32_t *d = (uint32_t*)ScreenSurface->pixels + ((240 - h) * w);
-			for(y=0; y<h; y++){
-				for(x=0; x<w; x++){
-					*d++ = *s++;
-				}
-				d+= 160;
-			}
-			if(SDL_MUSTLOCK(ScreenSurface)) SDL_UnlockSurface(ScreenSurface);
-			SDL_Flip(ScreenSurface);
-		
+		/*SDL_UpdateRects(_hwScreen, _numDirtyRects, _dirtyRectList);*/
+		SDL_SoftStretch(_hwScreen, NULL, real_screen, NULL);
+		SDL_Flip(real_screen);
 	}
 
 	_numDirtyRects = 0;

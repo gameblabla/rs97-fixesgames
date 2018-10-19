@@ -1,0 +1,41 @@
+# for MacOSX
+# need SDL.framework , SDL_mixer.framework , SDL-devel-extra
+
+CC = gcc
+CXX = g++
+RM  = rm -f
+FRAMEWORKS = /Library/Frameworks
+DEFAULT_CFLAGS = -Wall -O2 -ffast-math -I$(FRAMEWORKS)/SDL.framework/Headers/ -I$(FRAMEWORKS)/SDL_mixer.framework/Headers/
+CFLAGS  = $(DEFAULT_CFLAGS)
+CXXFLAGS = $(DEFAULT_CFLAGS)
+LDFLAGS = -Wl,-framework,SDL -Wl,-framework,SDL_mixer -Wl,-framework,Cocoa
+
+SDLMAIN_SRC=NIBless/SDLMain.m
+SDLMAIN_OBJ=NIBless/SDLMain.o
+
+OBJS  = ram.o util_snd.o function.o dconv.o scene.o title.o init.o act.o option.o ending.o logo.o
+
+SOURCES = $(patsubst %.o, %.c, $(OBJS))
+
+ifeq ($(wildcard .depend),.depend)
+do-it-all: gnp
+include .depend
+else
+do-it-all: depend recursive
+recursive:
+	make -f Makefile.macosx
+endif
+
+.PHONY: depend
+depend: $(OBJS)
+	$(CC) -MM $(CFLAGS) $(SOURCES) > .depend
+
+.PHONY: clean
+clean:
+	$(RM) $(OBJS) $(SDLMAIN_OBJ) *~ .depend gnp
+
+$(SDLMAIN_OBJ): $(SDLMAIN_SRC)
+	gcc -I$(FRAMEWORKS)/SDL.framework/Headers -c $< -o $@
+
+gnp: $(OBJS) $(SDLMAIN_OBJ)
+	$(CXX) -o $@ $(OBJS) $(LDFLAGS) $(SDLMAIN_OBJ)

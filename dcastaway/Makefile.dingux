@@ -1,0 +1,153 @@
+NAME   = dcastaway.dge
+O      = o
+RM     = rm -f
+CC     = mipsel-linux-gcc
+CXX    = mipsel-linux-g++
+STRIP  = mipsel-linux-strip
+
+PROG   = $(NAME)
+
+all: $(PROG)
+
+DEFAULT_CFLAGS = -I/opt/mipsel-linux-uclibc/include -I/opt/mipsel-linux-uclibc/usr/include  -I/opt/mipsel-linux-uclibc/usr/include/SDL -D_GNU_SOURCE=1 -D_REENTRANT -DDINGUX -DDINGOO
+
+LDFLAGS = -lSDL -lSDL_mixer -lSDL_image -lz -lpthread
+#-s -static
+
+FAME_CORE = 1
+LZMA=1
+
+MORE_CFLAGS = -O3 -DDATA_PREFIX=\"data/\" -ffast-math -fno-common -fno-builtin -fno-exceptions -fstrict-aliasing -DNOARGS -DROM_PATH_PREFIX=\"./\" -DFILE_SEPARATOR=\"/\" -DSAVE_MEM_PREFIX=\"/tmp/\" -DSAVE_PREFIX=\"./\"
+
+MORE_CFLAGS+=-DALWAYS_LOW
+MORE_CFLAGS+=-DEMULATED_JOYSTICK
+MORE_CFLAGS+=-DUSE_SHORT_SLICE
+#MORE_CFLAGS+=-DNO_SOUND
+#MORE_CFLAGS+=-DNO_RENDER -DNO_VKBD
+
+#MORE_CFLAGS+=-DDEBUG_FILEMANAGER
+#MORE_CFLAGS+=-DDEBUG_SAVESTATE
+#MORE_CFLAGS+=-DDEBUG_RENDER
+#MORE_CFLAGS+=-DUSE_DOUBLE_BUFFER
+MORE_CFLAGS+=-DUSE_FULLSCREEN
+MORE_CFLAGS+=-DMENU_MUSIC -DSOUND_16BIT
+#MORE_CFLAGS+=-DMEMSIZE=0x80000
+
+#MORE_CFLAGS+=-DAUTODIR=\"ST\"
+#MORE_CFLAGS+=-DAUTOSAVESTATE
+#MORE_CFLAGS+=-DAUTOLOAD=\"example/jimpower.zip\"
+#MORE_CFLAGS+=-DAUTOEVENTS
+#MORE_CFLAGS+=-DAUTOEVENTS_MAX=130
+#MORE_CFLAGS+=-DDEBUG_IKBD
+#MORE_CFLAGS+=-DDEBUG_FAME
+#MORE_CFLAGS+=-DDEBUG_FAME_FFLUSH
+#MORE_CFLAGS+=-DDEBUG_FAME_START=7000
+#MORE_CFLAGS+=-DDEBUG_FAME_STOP=8000
+#MORE_CFLAGS+=-DFAME_SINGLE_MEMORY
+
+#MORE_CFLAGS+=-DCALCULE_CRC_FILES
+
+MORE_CFLAGS += -DNO_USE_TV_FILTER
+
+CFLAGS  = $(DEFAULT_CFLAGS) $(MORE_CFLAGS) -Isrc -Isrc/m68k -Isrc/st -Isrc/menu -Isrc/vkbd -Isrc/unzip
+
+#CFLAGS += -falign-functions=4 -falign-labels=4 -falign-loops=4 -falign-jumps=4 \
+
+CFLAGS += -falign-functions -falign-labels -falign-loops -falign-jumps \
+	-ffast-math -fsingle-precision-constant -funsafe-math-optimizations \
+	-fomit-frame-pointer -fno-builtin -fno-exceptions -fno-common \
+	-fstrict-aliasing  -fexpensive-optimizations -fno-rtti \
+	-finline -finline-functions -fpeel-loops
+
+CFLAGS += -O3 -mips32 -mtune=mips32 -mno-mips16 -msoft-float -mno-shared -mbranch-likely -pipe
+
+CPPFLAGS  = $(CFLAGS)
+
+OBJS =	\
+	src/main.o \
+	src/dcastaway.o \
+	src/events.o \
+	src/render.o \
+	src/save.o \
+	src/savedisk.o \
+	src/sound/sound.o \
+	src/sound/audio.o \
+	src/disk.o \
+	src/icon.o \
+	src/dingoo.o \
+	src/st/init.o \
+	src/st/st.o \
+	src/st/mem.o \
+	src/st/ikbd.o \
+	src/st/blitter.o \
+	src/st/fdc.o \
+	src/st/tos.o \
+	src/vkbd/vkbd.o \
+	src/unzip/explode.o \
+	src/unzip/unreduce.o \
+	src/unzip/unshrink.o \
+	src/unzip/unzip.o \
+	src/tvfilter/tvfilter.o \
+	src/tvfilter/texture.o \
+	src/tvfilter/scanline.o \
+	src/tvfilter/tvzw5.o \
+	src/menu/fade.o \
+	src/menu/menu.o \
+	src/menu/background.o \
+	src/menu/sfont.o \
+	src/menu/menu_load.o \
+	src/menu/menu_main.o \
+	src/menu/menu_save.o \
+	src/menu/db.o 
+
+ifdef LZMA
+CPPFLAGS+=-DUSE_LZMA
+OBJS += \
+	src/lzma/lzma.o \
+	src/lzma/7z/Alloc.o \
+	src/lzma/7z/LzmaDec.o \
+	src/lzma/7z/LzmaEnc.o \
+	src/lzma/7z/7zDecode.o \
+	src/lzma/7z/Bcj2.o \
+	src/lzma/7z/Bra.o \
+	src/lzma/7z/Bra86.o \
+	src/lzma/7z/BraIA64.o \
+	src/lzma/7z/LzFind.o \
+	src/lzma/7z/7zAlloc.o \
+	src/lzma/7z/7zBuf.o \
+	src/lzma/7z/7zBuf2.o \
+	src/lzma/7z/7zItem.o \
+	src/lzma/7z/7zIn.o \
+	src/lzma/7z/7zExtract.o \
+	src/lzma/7z/7zFile.o \
+	src/lzma/7z/7zStream.o \
+	src/lzma/7z/7zCrc.o \
+	src/lzma/7z/7zHeader.o
+endif
+
+ifdef FAME_CORE
+CPPFLAGS+=-DUSE_FAME_CORE -DUSE_FAME_CORE_C -DFAME_IRQ_CLOCKING -DFAME_CHECK_BRANCHES -DFAME_EMULATE_TRACE -DFAME_DIRECT_MAPPING -DFAME_BYPASS_TAS_WRITEBACK -DFAME_ACCURATE_TIMING -DFAME_GLOBAL_CONTEXT -DFAME_FETCHBITS=12 -DFAME_DATABITS=12 -DFAME_GOTOS -DFAME_EXTRA_INLINE=__inline__ -DINLINE=__inline__ -DFAME_NO_RESTORE_PC_MASKED_BITS
+OBJS += src/m68k/fame/famec.o
+CPPFLAGS+=-DUSE_FAME_CORE
+OBJS += src/m68k/fame/m68k_intrf.o
+else
+OBJS += \
+	src/m68k/castaway/68000.o \
+	src/m68k/castaway/debug.o \
+	src/m68k/castaway/op68kadd.o \
+	src/m68k/castaway/op68karith.o \
+	src/m68k/castaway/op68klogop.o \
+	src/m68k/castaway/op68kmisc.o \
+	src/m68k/castaway/op68kmove.o \
+	src/m68k/castaway/op68kshift.o \
+	src/m68k/castaway/op68ksub.o
+endif
+
+
+$(PROG): $(OBJS) 
+	$(CC) $(CFLAGS) -o $(PROG) $(OBJS) $(LDFLAGS)
+	$(STRIP) $(PROG)
+
+
+clean:
+	$(RM) $(PROG) $(OBJS)

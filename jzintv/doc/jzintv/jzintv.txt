@@ -1,0 +1,210 @@
+==============================================================================
+ jzIntv
+==============================================================================
+
+--------------
+ Introduction
+--------------
+
+jzIntv is, in part, an Intellivision emulator.  That is, jzIntv emulates
+the hardware of the Intellivision Master Component and some of its
+peripherals.
+
+jzIntv is also portable.  Over the years, jzIntv has been ported to the
+following platforms:
+
+    DOS (now defunct)
+    Linux (x86, x86-64, ARM (GP2X))
+    FreeBSD (x86, x86-64, perhaps others)
+    MacOS Classic (PPC-now defunct)
+    MacOS X (PPC and x86)
+    PSP (MIPS)
+    Solaris (SPARC)
+    Win32 (x86)
+
+jzIntv is also a project.  The jzIntv project includes a complete
+development kit.  It originally aimed to include comprehensive
+documentation on the hardware, although now Kyle Davis' excellent
+IntelliWiki has taken on that torch:  http://intelliwiki.kylesblog.com/
+
+This document covers the emulator as opposed to the larger project.
+See jzintv/doc/utilities and jzintv/doc/programming for details on
+the development kit.
+
+---------------
+ Configuration 
+---------------
+
+At the moment, jzIntv does not have a configuration file.  Rather, jzIntv
+configures itself entire through command-line flags and sane defaults.
+jzIntv offers a wealth of command-line flags.  Run jzintv --help for
+a complete and up-to-date list.
+
+jzIntv also looks at an environment variable, JZINTV_ROM_PATH, to
+determine where to look for ROM files.  Under Windows, you can set
+this environment variable under the System Control Panel:  Click on
+the "Advanced" tab, and click "Environment Variables."  Under other
+UNIX-based OSes (including MacOS X), you can set environment variables
+in your login scripts.
+
+The ROM path consists of a list of directories to search for ROM images.
+Directory names are separated by either a ':' (most OSes) or a ';'
+(Windows).
+
+
+---------------
+ Playing Games
+---------------
+
+Using jzIntv is usually fairly simple.  First, obtain copies of
+"exec.bin" and "grom.bin".  The easiest way is to purchase the latest
+version of Intellivision Lives! from http://www.intellivisionlives.com/
+and pull the files from there.
+
+jzIntv is thoroughly a command-line program, although GUIs that wrap
+jzIntv are available.
+
+To start jzIntv, change directories to the directory containing your ROMs
+(or alternately set JZINTV_ROM_PATH to point to that directory), and run
+"jzintv [flags] romname" to start jzIntv.  If all goes well, you should
+be staring at your game.  To change resolutions and other settings,
+use the appropriate command-line flags.  Run "jzintv --help" to get list
+list of flags.
+
+Once in the game, jzIntv uses the following key bindings on most 
+platforms:
+
+Function/Special keys, all maps:
+    F1              Quit
+    F4              Break into debugger
+    F5              Switch to keymap 0 (default keymap)
+    F6              Switch to keymap 1 (left controller only for 1 player games)
+    F7              Switch to keymap 2 (ECS keyboard keymap)
+    F8              Shift to keymap 3 while held (command keys)
+    F9              Toggle fullscreen/windowed 
+    F10             Toggle movie recording 
+    F11             Take screen shot
+    F12             Reset emulator
+    Pause           Pause the emulator
+    PgUp            Increase volume
+    PgDn            Decrease volume
+
+Numeric Keypad, maps 0 and 1
+    1-9             Left controller 1 - 9
+    0               Left controller Clear
+    .               Left controller 0
+    Enter           Left controller Enter
+
+Main Keyboard, map 0.  (Map 1 just moves right controller mappings to left.)
+    0-9             Right controller 0 - 9
+    -               Right controller Clear
+    =               Right controller Enter
+    Left Shift      Right controller top action buttons
+    Left Alt        Right controller lower left action button
+    Left Control    Right controller lower right action button
+
+    Right Shift     Left controller top action buttons
+    Right Alt       Left controller lower left action button
+    Right Control   Left controller lower right action button
+
+    Up Arrow        Left controller disc up
+    Down Arrow      Left controller disc down
+    Left Arrow      Left controller disc left
+    Right Arrow     Left controller disc right
+
+
+Fine-grain directional pad inputs:
+
+    U   I   O
+      \ | /
+       \|/ 
+    J --+-- K      Left controller disc
+       /|\
+      / | \
+    N   M   , 
+   
+    W   E   R
+      \ | /
+       \|/ 
+    S --+-- D      Right controller disc
+       /|\
+      / | \
+    Z   X   C 
+
+
+
+Map 2 configures the keyboard to behave as the ECS keyboard attachment.
+Map 3 is for "command" keys.  If you press the Cmd key on a Mac or the
+"Windows" key on a PC, or F8 on most platforms, jzIntv will be in Map
+3 until you release the key.  The following command key bindings are 
+currently defined:
+
+    Cmd-Q   Quit
+    Cmd-P   Pause
+    Cmd-M   Movie
+    Cmd-S   Screen shot
+    Cmd-R   Reset
+    Cmd-W   Toggle windowed/full-screen mode    
+
+Not all Cmd bindings will work under Windows using the Windows key.  
+This is because Windows itself captures these keystrokes.  Win-M and Win-R
+are known to conflict with Windows' bindings.
+
+
+--------------------
+ Debugging Programs
+--------------------
+
+jzIntv also includes a simple monitor-style debugger that is useful for
+debugging games running on the Intellivision.  The debugger has a handful
+of commands for running, setting breakpoints, inspecting memory and so on.
+It also offers some basic logging and profiling capability.
+
+The debugger's commands are as follows:  (case insensitive)
+
+    S<#>        Step <#> cycles, showing execution trace.
+    R<#>        Run <#> cycles, suppressing execution trace.
+    T           Run until JSR returns.  Works only if no data after JSR.
+    D           Dump logs to disk
+    B<#>        set Breakpoint at <#>
+    N<#>        uNset breakpoint at <#>
+    M<a> <#>    Show <#> words of memory around <a>.  <#> defaults to 64.
+    U<a> <#>    uNassemble <#> instructions at <a>.  <#> defaults to 16.
+    E<a> <#>    Enter the value <#> into address <a>.  Triggers side effects.
+    P<a> <#>    Poke the value <#> into address <a>.  May update ROM.
+    G<r> <#>    set reGister <r> to value <#>.
+    H           toggle History logging
+    W<a> <b>    toggle Watch status on addressed <a> through <b>.
+    A           toggle memory Attribute discovery
+
+For many of these commands, the arguments are optional.  The commands
+will substitute in reasonable defaults.  Argument defaults:
+
+    S           Step forever
+    R           Run forever
+    B, N        Set/uNset breakpoint at current PC
+    M           Addr after prev dump, or 0 if first dump after stop.
+    U           Addr after prev uNassemble, or PC if first unasm after stop.
+    W           If only one argument given, toggles just that address.
+
+
+The R, S and T commands execute the program.  The S command will print
+each instruction and the register state as it executes.  The R command
+will run the program silently, except for watch output.  The T command
+is somewhat more complex.
+
+The T command usually steps 1 instruction forward.  If the instruction
+is a JSR, it will step over the JSR (unless the JSR is followed by data).
+The T command also fails to differentiate between J and JSR.
+
+The E and P commands allow changing memory.  The E command sends the
+write as if the CPU sent it.  This can trigger bank switching, STIC mode
+switching, and all sorts of other side effects.  The P command sidesteps
+side effects.  It also allows modifying ROM in certain cases.
+
+The H command enables register history tracking.  This can be very useful
+for tracing down random crashes or other misbehavior in your program.
+To view the register history, use the D command to dump out the current
+state.  The file dump.hst will contain the register history.
+
+

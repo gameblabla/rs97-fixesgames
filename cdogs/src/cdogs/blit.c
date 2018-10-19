@@ -641,15 +641,18 @@ void BlitFlip(GraphicsDevice *g)
     #else
       int x, y;
       uint32_t col;
+      uint8_t Size_buffer[(320*240)*2];
       uint32_t *s = (uint32_t*)g->buf;
-      uint16_t *d = (uint16_t*)g->ScreenSurface->pixels;
+      //uint16_t *d = (uint16_t*)g->ScreenSurface->pixels;
+      uint16_t *d = (uint16_t*)Size_buffer;
       for(y=0; y<240; y++){
         for(x=0; x<320; x++){
           col = *s++;
           *d++ = SDL_MapRGB(g->ScreenSurface->format, (col & 0xff0000) >> 16, (col & 0xff00) >> 8, col & 0xff);
         }   
-        d+= 320;
-      } 
+        //d+= 320;
+      }
+      memmove(g->ScreenSurface->pixels,Size_buffer,(320*240)*2); 
     #endif
 	}
 	else if (ConfigGetEnum(&gConfig, "Graphics.ScaleMode") == SCALE_MODE_BILINEAR)

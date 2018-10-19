@@ -1,0 +1,55 @@
+;; ======================================================================== ;;
+;;  Emu-Link Support Macros:  Event API                                     ;;
+;;                                                                          ;;
+;;  The Event API was developed mainly to aid debugging jzIntv's SDL        ;;
+;;  event engine at a low level.  It provides a mechanism to read copies    ;;
+;;  of events out of jzIntv's event queue, either as event numbers or as    ;;
+;;  strings representing the SDL event names.                               ;;
+;;                                                                          ;;
+;;  jzIntv keeps a queue of the last 64 events to arrive, to allow some     ;;
+;;  amount of buffering between the code on the Intellivision and the       ;;
+;;  emulator itself.  APIs below return the oldest event or indicate when   ;;
+;;  the queue is empty.                                                     ;;
+;;                                                                          ;;
+;;  API SUMMARY                                                             ;;
+;;                                                                          ;;
+;;  Macro:              Returns:                                            ;;
+;;  ELEV_GET_NUM        Get event by number into R0.                        ;;
+;;  ELEV_GET_NAME       Get event by name into buffer in RAM.               ;;
+;;                                                                          ;;
+;;  For ELEV_GET_NAME, the buffer address can be passed as a constant or    ;;
+;;  a register.  Slightly faster code results if the buffer address is      ;;
+;;  in R2.  The event name returned by ELEV_GET_NAME is limited to 18       ;;
+;;  characters plus a NUL byte (19 bytes total).                            ;;
+;;                                                                          ;;
+;;  OUTPUTS:                                                                ;;
+;;      R0    $FFFF if no event, otherwise the event number                 ;;
+;;      R1    0 = Key-up event, 1 = Key-down event                          ;;
+;;      R2    Zeroed for GET_NUM;  Address of buffer for GET_NAME.          ;;
+;;                                                                          ;;
+;; ======================================================================== ;;
+
+    IF (DEFINED _EMU_LINK_MAC) = 0
+        ERR "You must include emu_link.mac before el_event.mac"
+    ENDI
+
+    IF ((DEFINED _EL_EVENT_MAC) = 0) AND ((DEFINED _EMU_LINK_MAC) <> 0)
+_EL_EVENT_MAC   QEQU    1
+
+MACRO       ELEV_GET_NUM
+            CLRR        R2
+            EL_CALL_SC  9
+ENDM
+
+MACRO   ELEV_GET_NAME buf
+    IF _el_isreg(%buf%)
+        IF EL_CPU_REGS.%buf% <> 2
+            MOVR        %buf%,  R2
+        ENDI
+    ELSE
+            MVII        #%buf%, R2
+    ENDI
+            EL_CALL_SC  9
+ENDM
+
+    ENDI

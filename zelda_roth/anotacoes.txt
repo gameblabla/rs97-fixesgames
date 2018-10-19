@@ -1,0 +1,31 @@
+Personage.cpp 18
+Ennemi.cpp	775 776
+
+ valgrind --leak-check=yes --xml=yes --xml-file=saida.xml ./ZeldaROTH_US
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+I think i have found a lockup (in main.cpp):
+
+if (SDL_GetTicks() < lastAnimTime + 20) SDL_Delay(lastAnimTime+20-SDL_GetTicks());
+
+
+
+This can produce an integer overflow:
+
+    * Assume that lastAnimTime = 0
+    * Assume that the first call to SDL_GetTicks returns 11, which triggers the SDL_Delay part (11 < 0 + 20)
+    * Thread gets preempted for 10ms
+    * SDL_GetTicks gets called again, now returns 21
+    * SDL_Delay gets called with ( 0 + 20 - 21 ) = -1
+    * This is cast to an Uint32: 4294967295
+    * SDL_Delay waits for ~50 days :) (BTW: this is the nanosleep you see in the backtrace...)
+
+
+
+So the code should be replaced with something like this:
+
+Uint32 currentTime = SDL_GetTicks();                                                           |
+if (currentTime < lastAnimTime + 20) SDL_Delay(lastAnimTime+20-currentTime);
+
+

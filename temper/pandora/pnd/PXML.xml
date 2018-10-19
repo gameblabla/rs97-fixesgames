@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- This is a sample PXML.xml file making use of many different things.-->
+<PXML xmlns="http://openpandora.org/namespaces/PXML">
+  <package id="Temper">
+    <version major="0" minor="75" release="1" build="1" type="beta"/> <!--This program's version-->
+    <author name="Exophase" email="exophase@gmail.com"/> <!--Optional email and website, name required-->
+
+    <titles>
+      <title lang="en_US">Temper</title>
+    </titles>
+
+    <descriptions>
+      <description lang="en_US">Temper PC-Engine Emulator</description>
+    </descriptions>
+
+  </package>
+
+  <application id="Temper">
+    <exec background="true" standalone="true" x11="ignore" command="temper.sh"/>
+
+    <version major="0" minor="75" release="1" build="1" type="beta"/> <!--This program's version-->
+    <osversion major="1" minor="0" release="0" build="0"/> <!--The minimum OS version required-->
+
+    <author name="Exophase" email="exophase@gmail.com"/> <!--Optional email and website, name required-->
+
+    <titles>
+      <title lang="en_US">Temper</title>
+    </titles>
+    <title lang="en_US">Temper</title> <!--Extra <title> block for compatibility with OS versions before HF6-->
+
+    <descriptions>
+      <description lang="en_US">Temper PC-Engine Emulator</description>
+    </descriptions>
+    <description lang="en_US">Temper PC-Engine Emulator</description> <!--Extra <description> block for compatibility with OS versions before HF6-->
+
+    <info name="Readme" type="text/plain" src="readme.txt"/>
+
+    <icon src="temper_icon.png"/>
+
+    <licenses>
+      <license name="proprietary"/>
+      <license name="freeware"/>
+    </licenses>
+
+    <previewpics/>
+
+    <categories>
+      <category name="Game"/>
+    </categories>
+
+    <associations>
+      <association name="PC-Engine ROM" filetype="application/binary" exec="%s"/>
+    </associations>
+
+    <clockspeed frequency="500"/><!--Frequency in Hz-->
+
+  </application>
+
+</PXML>

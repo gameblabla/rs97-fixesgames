@@ -1,0 +1,44 @@
+==============================================================================
+  TOHEX  -- Hexdump Generation Utility
+==============================================================================
+
+This utility takes a binary file as an input and generates a textual
+hex-dump as an output.  This can be useful if you're digging through
+a binary dump from something (say, a ROM dump or other mass of 
+binary data).
+
+
+Usage:
+
+    tohex [input [output]]
+
+Where 'input' is the input filename, and 'output' is the output filename.
+If the input filename is not specified, or is given as '-', then the
+input is taken from stdin.  If the output filename is not specified,
+or is given as '-', then the output will go to stdout.
+
+
+The output format of tohex looks like so:
+
+ 00 00 00 00 00 01 00 00   00 30 00 50 00 00 00 00  # .........0.P.... 00000000
+ 00 02 00 50 00 0F 00 61   03 C0 00 00 00 00 00 00  # ...P...a........ 00000010
+ 00 00 00 00 00 00 00 00   5C EB 27 44 5C F2 27 44  # ........\.'D\.'D 00000020
+ 5C C1 27 CC 5D 0B 3F FF   5C E0 3F FF 5C FF 35 EE  # \.'.].?.\.?.\.5. 00000030
+ 5D 44 3F FF 63 1A 3F FF   6D 9C 3F FF 5C DB 3F FF  # ]D?.c.?.m.?.\.?. 00000040
+
+
+The left hand portion (to the left of the '#' divider) shows the bytes
+of the file in hexadecimal.  Each row contains 16 bytes, divided into
+two groups of 8 for readability.
+
+To the right of the # divider is the ASCII interpretation of the data.
+Non-printing characters are shown as dots.  This can be useful for
+looking for human-readable strings in the hex-dump.
+
+At the far right is the "location counter", which merely shows the byte
+offset into the file that the row corresponds to.
+
+This output format is nice because it is fairly readable, and can be
+manipulated in any text viewer or editor.  Additionally, the hex dump
+can be edited and fed into "fromhex" to generate a modified binary file.
+

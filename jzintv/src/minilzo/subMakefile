@@ -1,0 +1,10 @@
+##############################################################################
+## subMakefile for minilzo
+##############################################################################
+
+minilzo/minilzo.o: minilzo/minilzo.c minilzo/minilzo.h minilzo/subMakefile
+minilzo/minilzo.o: minilzo/lzodefs.h minilzo/lzoconf.h
+
+OBJS += minilzo/minilzo.o
+
+FILEOBJ += minilzo/minilzo.o

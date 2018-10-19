@@ -1,0 +1,42 @@
+tuxpang : main.o structures.o ball.o collisions.o plateforme.o player.o ladder.o bonus.o shoot.o objets.o levels.o PCGfxEngine.o PCSoundEngine.o
+	gcc  `sdl-config --libs` -lSDL_mixer -o tuxpang main.o structures.o ball.o collisions.o plateforme.o player.o ladder.o bonus.o shoot.o objets.o levels.o PCGfxEngine.o PCSoundEngine.o
+
+main.o: main.c
+	gcc `sdl-config --cflags` -Wall -c main.c -DPC_VERSION
+
+structures.o: structures.c
+	gcc `sdl-config --cflags` -Wall -c structures.c -DPC_VERSION
+
+ball.o: ball.c
+	gcc `sdl-config --cflags` -Wall -c ball.c -DPC_VERSION
+
+collisions.o: collisions.c
+	gcc `sdl-config --cflags` -Wall -c collisions.c -DPC_VERSION
+
+plateforme.o: plateforme.c
+	gcc `sdl-config --cflags` -Wall -c plateforme.c -DPC_VERSION
+
+player.o: player.c
+	gcc `sdl-config --cflags` -Wall -c player.c -DPC_VERSION
+
+ladder.o: ladder.c
+	gcc `sdl-config --cflags` -Wall -c ladder.c -DPC_VERSION
+
+bonus.o: bonus.c
+	gcc `sdl-config --cflags` -Wall -c bonus.c -DPC_VERSION
+
+shoot.o: shoot.c
+	gcc `sdl-config --cflags` -Wall -c shoot.c -DPC_VERSION
+
+objets.o: objets.c
+	gcc `sdl-config --cflags` -Wall -c objets.c -DPC_VERSION
+
+levels.o: levels.c
+	gcc `sdl-config --cflags` -Wall -c levels.c -DPC_VERSION
+
+PCGfxEngine.o: PCGfxEngine.c
+	gcc `sdl-config --cflags` -Wall -c PCGfxEngine.c -DPC_VERSION
+
+PCSoundEngine.o: PCSoundEngine.c
+	gcc `sdl-config --cflags` -Wall -c PCSoundEngine.c -DPC_VERSION
+

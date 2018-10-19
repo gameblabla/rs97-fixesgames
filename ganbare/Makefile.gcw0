@@ -1,0 +1,17 @@
+CC = mipsel-linux-gcc
+LD = mipsel-linux-ld
+
+CFLAGS  = -O3 -mips32r2 -DGCW -Wall -I/opt/gcw0-toolchain/usr/mipsel-gcw0-linux-uclibc/sysroot/usr/include   -I/opt/gcw0-toolchain/usr/mipsel-gcw0-linux-uclibc/sysroot/usr/include/SDL
+CXXFLAGS = $(CFLAGS)
+LDFLAGS = -lSDL -lSDLmain -lm -lSDL_mixer -lSDL_image
+
+OBJS  = src/ram.o src/util_snd.o src/function.o src/dconv.o src/scene.o src/title.o src/init.o src/act.o src/option.o src/ending.o src/logo.o
+SOURCES = $(patsubst %.o, %.c, $(OBJS))
+
+all: gnp
+
+gnp: $(OBJS)
+	$(CC) -o $@ $(OBJS) $(LDFLAGS)
+	
+clean:
+	rm $(OBJS)

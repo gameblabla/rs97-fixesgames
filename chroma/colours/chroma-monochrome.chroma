@@ -1,0 +1,77 @@
+<!-- Copyright (C) 2010 Amf -->
+<chroma type="colours">
+<head>
+<title translate="yes">Chroma Curses Monochrome</title>
+</head>
+<pieces>
+<piece name="space" character=" " />
+<piece name="wall" character="%" reverse="yes" />
+<piece name="player_one" character="x" bold="yes" reverse="yes" />
+<piece name="player_two" character="+" bold="yes" />
+<piece name="star" character="*" bold="yes" />
+<piece name="dots" character="." />
+<piece name="door" character="E" bold="yes" />
+<piece name="circle" character="o" bold="yes" />
+<piece name="arrow_red_left" character="&lt;" bold="yes" />
+<piece name="arrow_red_up" character="^" bold="yes" />
+<piece name="arrow_red_right" character="&gt;" bold="yes" />
+<piece name="arrow_red_down" character="v" bold="yes" />
+<piece name="bomb_red_left" character="&lt;" bold="yes" reverse="yes" />
+<piece name="bomb_red_up" character="^" bold="yes" reverse="yes" />
+<piece name="bomb_red_right" character="&gt;" bold="yes" reverse="yes" />
+<piece name="bomb_red_down" character="v" bold="yes" reverse="yes" />
+<piece name="arrow_green_left" character="(" bold="yes" />
+<piece name="arrow_green_up" character="n" bold="yes" />
+<piece name="arrow_green_right" character=");" bold="yes" />
+<piece name="arrow_green_down" character="u" bold="yes" />
+<piece name="bomb_green_left" character="(" bold="yes" reverse="yes" />
+<piece name="bomb_green_up" character="n" bold="yes" reverse="yes" />
+<piece name="bomb_green_right" character=")" bold="yes" reverse="yes" />
+<piece name="bomb_green_down" character="u" bold="yes" reverse="yes" />
+<piece name="arrow_blue_left" character="{" bold="yes" />
+<piece name="arrow_blue_up" character="m" bold="yes" />
+<piece name="arrow_blue_right" character="}" bold="yes" />
+<piece name="arrow_blue_down" character="w" bold="yes" />
+<piece name="bomb_blue_left" character="{" bold="yes" reverse="yes" />
+<piece name="bomb_blue_up" character="m" bold="yes" reverse="yes" />
+<piece name="bomb_blue_right" character="}" bold="yes" reverse="yes" />
+<piece name="bomb_blue_down" character="w" bold="yes" reverse="yes" />
+
+<piece name="explosion_red_left" character="*" bold="yes" reverse="yes" />
+<piece name="explosion_red_horizontal" character="*" bold="yes" reverse="yes" />
+<piece name="explosion_red_right" character="*" bold="yes" reverse="yes" />
+<piece name="explosion_red_top" character="*" bold="yes" reverse="yes" />
+<piece name="explosion_red_vertical" character="*" bold="yes" reverse="yes" />
+<piece name="explosion_red_bottom" character="*" bold="yes" reverse="yes" />
+<piece name="explosion_green_left" character="*" bold="yes" reverse="yes" />
+<piece name="explosion_green_horizontal" character="*" bold="yes" reverse="yes" />
+<piece name="explosion_green_right" character="*" bold="yes" reverse="yes" />
+<piece name="explosion_green_top" character="*" bold="yes" reverse="yes" />
+<piece name="explosion_green_vertical" character="*" bold="yes" reverse="yes" />
+<piece name="explosion_green_bottom" character="*" bold="yes" reverse="yes" />
+<piece name="explosion_blue_left" character="*" bold="yes" reverse="yes" />
+<piece name="explosion_blue_horizontal" character="*" bold="yes" reverse="yes" />
+<piece name="explosion_blue_right" character="*" bold="yes" reverse="yes" />
+<piece name="explosion_blue_top" character="*" bold="yes" reverse="yes" />
+<piece name="explosion_blue_vertical" character="*" bold="yes" reverse="yes" />
+<piece name="explosion_blue_bottom" character="*" bold="yes" reverse="yes" />
+
+<enigma>
+<piece name="circle_double" character="8" bold="yes" />
+<piece name="dots_double" character=":" />
+</enigma>
+
+<xor>
+<piece name="dots_x" character="-" />
+<piece name="dots_y" character="|" />
+<piece name="switch" character="S" bold="yes" />
+<piece name="teleport" character="T" bold="yes" />
+<piece name="map_top_left" character="M" bold="yes" />
+<piece name="map_top_right" character="M" bold="yes" />
+<piece name="map_bottom_left" character="M" bold="yes" />
+<piece name="map_bottom_right" character="M" bold="yes" />
+<piece name="darkness" character=" " />
+</xor>
+
+</pieces>
+</chroma>

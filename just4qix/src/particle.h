@@ -1,0 +1,1 @@
+void CreateParticleExplosion(int x, int y, int r, int g, int b, int energy, int density);

@@ -1,0 +1,15 @@
+CC = nspire-gcc
+CXX =  nspire-g++
+CFLAGS  = -O2 -DNSPIRE -DNOSOUND -I/home/hatsune/Ndless/ndless-sdk/include -I/home/hatsune/Ndless/ndless-sdk/include/SDL
+CXXFLAGS = $(CFLAGS)
+LDFLAGS = -lSDL -lm
+OBJS  = src/ram.o src/util_snd.o src/function.o src/dconv.o src/scene.o src/title.o src/init.o src/act.o src/option.o src/ending.o src/logo.o
+SOURCES = $(patsubst %.o, %.c, $(OBJS))
+
+all: gnp
+
+gnp: $(OBJS)
+	$(CC) -o $@ $(OBJS) $(LDFLAGS)
+
+clean:
+	rm $(OBJS)

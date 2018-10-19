@@ -1,0 +1,19 @@
+Internationalisation
+====================
+To initialise the template (only if the source code has changed):
+
+    xgettext -d chroma -s -o chroma.pot ../*.c
+
+but remember to add the level titles, action names and scheme names.
+
+To create a new language (eg en_US):
+
+    msginit -l en_US -o en_US.po -i chroma.pot
+    mkdir ../locale/en_US/
+    mkdir ../locale/en_US/LC_MESSAGES/
+
+To update the translations:
+
+    msgfmt -c -v -o ../locale/en_US/LC_MESSAGES/chroma.mo en_US.po
+
+More translations always welcomed!

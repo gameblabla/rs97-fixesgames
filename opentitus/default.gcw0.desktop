@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=OpenTitus
+Type=Application
+Exec=start.sh
+Icon=Titus icon
+Comment=Classic action platformer. Original game files required
+Terminal=false
+Categories=games;
+X-OD-Manual=readme_gcw.txt

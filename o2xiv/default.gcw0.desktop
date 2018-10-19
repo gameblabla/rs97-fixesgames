@@ -1,0 +1,11 @@
+[Desktop Entry]
+
+Name=Image Viewer
+Comment=View screenshots, photos, etc.
+X-OD-Manual=manual-en.txt
+Icon=o2xiv
+Exec=o2xiv
+Terminal=false
+Type=Application
+StartupNotify=true
+Categories=applications;

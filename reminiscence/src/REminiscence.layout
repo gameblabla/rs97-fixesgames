@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_layout_file>
+	<ActiveTarget name="all" />
+	<File name="Makefile.gcw0" open="1" top="1" tabpos="12">
+		<Cursor position="1498" topLine="12" />
+	</File>
+	<File name="collision.cpp" open="0" top="0" tabpos="12">
+		<Cursor position="892" topLine="12" />
+	</File>
+	<File name="config.cpp" open="1" top="0" tabpos="11">
+		<Cursor position="3628" topLine="98" />
+	</File>
+	<File name="config.h" open="1" top="0" tabpos="1">
+		<Cursor position="875" topLine="4" />
+	</File>
+	<File name="cutscene.cpp" open="0" top="0" tabpos="13">
+		<Cursor position="27895" topLine="935" />
+	</File>
+	<File name="cutscene.h" open="0" top="0" tabpos="14">
+		<Cursor position="952" topLine="20" />
+	</File>
+	<File name="file.cpp" open="1" top="0" tabpos="3">
+		<Cursor position="1346" topLine="17" />
+	</File>
+	<File name="file.h" open="0" top="0" tabpos="0">
+		<Cursor position="1229" topLine="27" />
+	</File>
+	<File name="fs.cpp" open="0" top="0" tabpos="0">
+		<Cursor position="822" topLine="108" />
+	</File>
+	<File name="fs.h" open="0" top="0" tabpos="0">
+		<Cursor position="890" topLine="0" />
+	</File>
+	<File name="game.cpp" open="1" top="0" tabpos="4">
+		<Cursor position="41217" topLine="1547" />
+	</File>
+	<File name="game.h" open="1" top="0" tabpos="9">
+		<Cursor position="2379" topLine="65" />
+	</File>
+	<File name="gcw0staticres.cpp" open="0" top="0" tabpos="13">
+		<Cursor position="737" topLine="0" />
+	</File>
+	<File name="graphics.cpp" open="0" top="0" tabpos="0">
+		<Cursor position="0" topLine="672" />
+	</File>
+	<File name="intern.h" open="0" top="0" tabpos="6">
+		<Cursor position="775" topLine="147" />
+	</File>
+	<File name="locale.cpp" open="0" top="0" tabpos="8">
+		<Cursor position="807" topLine="14" />
+	</File>
+	<File name="locale.h" open="0" top="0" tabpos="10">
+		<Cursor position="1033" topLine="15" />
+	</File>
+	<File name="main.cpp" open="1" top="0" tabpos="6">
+		<Cursor position="2992" topLine="97" />
+	</File>
+	<File name="menu.cpp" open="1" top="0" tabpos="7">
+		<Cursor position="11950" topLine="394" />
+	</File>
+	<File name="menu.h" open="1" top="0" tabpos="8">
+		<Cursor position="1657" topLine="37" />
+	</File>
+	<File name="mixer.cpp" open="0" top="0" tabpos="12">
+		<Cursor position="2453" topLine="72" />
+	</File>
+	<File name="mixer.h" open="0" top="0" tabpos="0">
+		<Cursor position="1259" topLine="42" />
+	</File>
+	<File name="mod_player.cpp" open="0" top="0" tabpos="10">
+		<Cursor position="12032" topLine="413" />
+	</File>
+	<File name="mod_player.h" open="0" top="0" tabpos="0">
+		<Cursor position="871" topLine="16" />
+	</File>
+	<File name="piege.cpp" open="0" top="0" tabpos="3">
+		<Cursor position="14860" topLine="507" />
+	</File>
+	<File name="resource.cpp" open="1" top="0" tabpos="2">
+		<Cursor position="918" topLine="14" />
+	</File>
+	<File name="resource.h" open="1" top="0" tabpos="10">
+		<Cursor position="1086" topLine="162" />
+	</File>
+	<File name="scaler.h" open="0" top="0" tabpos="0">
+		<Cursor position="0" topLine="21" />
+	</File>
+	<File name="seq_player.cpp" open="0" top="0" tabpos="4">
+		<Cursor position="6006" topLine="241" />
+	</File>
+	<File name="seq_player.h" open="0" top="0" tabpos="0">
+		<Cursor position="0" topLine="70" />
+	</File>
+	<File name="staticres.cpp" open="1" top="0" tabpos="5">
+		<Cursor position="167979" topLine="128" />
+	</File>
+	<File name="sys.h" open="0" top="0" tabpos="0">
+		<Cursor position="770" topLine="9" />
+	</File>
+	<File name="systemstub.h" open="0" top="0" tabpos="9">
+		<Cursor position="1240" topLine="36" />
+	</File>
+	<File name="systemstub_sdl.cpp" open="0" top="0" tabpos="13">
+		<Cursor position="10223" topLine="344" />
+	</File>
+	<File name="util.cpp" open="0" top="0" tabpos="3">
+		<Cursor position="807" topLine="9" />
+	</File>
+	<File name="util.h" open="0" top="0" tabpos="0">
+		<Cursor position="793" topLine="11" />
+	</File>
+	<File name="video.h" open="0" top="0" tabpos="0">
+		<Cursor position="847" topLine="15" />
+	</File>
+</CodeBlocks_layout_file>

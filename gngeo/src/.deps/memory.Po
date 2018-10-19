@@ -1,0 +1,177 @@
+memory.o: memory.c \
+ /home/anonymous/Documents/Dev/rs97-toolchain/mipsel-buildroot-linux-musl/sysroot/usr/include/stdc-predef.h \
+ ../config.h emu.h \
+ /home/anonymous/Documents/Dev/rs97-toolchain/mipsel-buildroot-linux-musl/sysroot/usr/include/string.h \
+ /home/anonymous/Documents/Dev/rs97-toolchain/mipsel-buildroot-linux-musl/sysroot/usr/include/features.h \
+ /home/anonymous/Documents/Dev/rs97-toolchain/mipsel-buildroot-linux-musl/sysroot/usr/include/bits/alltypes.h \
+ /home/anonymous/Documents/Dev/rs97-toolchain/mipsel-buildroot-linux-musl/sysroot/usr/include/strings.h \
+ /home/anonymous/Documents/Dev/rs97-toolchain/lib/gcc/mipsel-buildroot-linux-musl/7.3.0/include/stdint.h \
+ /home/anonymous/Documents/Dev/rs97-toolchain/mipsel-buildroot-linux-musl/sysroot/usr/include/stdint.h \
+ /home/anonymous/Documents/Dev/rs97-toolchain/mipsel-buildroot-linux-musl/sysroot/usr/include/bits/stdint.h \
+ /usr/include/SDL/SDL.h /usr/include/SDL/SDL_main.h \
+ /usr/include/SDL/SDL_stdinc.h /usr/include/SDL/SDL_config.h \
+ /usr/include/SDL/SDL_platform.h \
+ /home/anonymous/Documents/Dev/rs97-toolchain/mipsel-buildroot-linux-musl/sysroot/usr/include/sys/types.h \
+ /home/anonymous/Documents/Dev/rs97-toolchain/mipsel-buildroot-linux-musl/sysroot/usr/include/endian.h \
+ /home/anonymous/Documents/Dev/rs97-toolchain/mipsel-buildroot-linux-musl/sysroot/usr/include/sys/select.h \
+ /home/anonymous/Documents/Dev/rs97-toolchain/mipsel-buildroot-linux-musl/sysroot/usr/include/sys/sysmacros.h \
+ /home/anonymous/Documents/Dev/rs97-toolchain/mipsel-buildroot-linux-musl/sysroot/usr/include/stdio.h \
+ /home/anonymous/Documents/Dev/rs97-toolchain/mipsel-buildroot-linux-musl/sysroot/usr/include/stdlib.h \
+ /home/anonymous/Documents/Dev/rs97-toolchain/mipsel-buildroot-linux-musl/sysroot/usr/include/alloca.h \
+ /home/anonymous/Documents/Dev/rs97-toolchain/lib/gcc/mipsel-buildroot-linux-musl/7.3.0/include/stddef.h \
+ /home/anonymous/Documents/Dev/rs97-toolchain/lib/gcc/mipsel-buildroot-linux-musl/7.3.0/include/stdarg.h \
+ /home/anonymous/Documents/Dev/rs97-toolchain/mipsel-buildroot-linux-musl/sysroot/usr/include/inttypes.h \
+ /home/anonymous/Documents/Dev/rs97-toolchain/mipsel-buildroot-linux-musl/sysroot/usr/include/ctype.h \
+ /home/anonymous/Documents/Dev/rs97-toolchain/mipsel-buildroot-linux-musl/sysroot/usr/include/iconv.h \
+ /usr/include/SDL/begin_code.h /usr/include/SDL/close_code.h \
+ /usr/include/SDL/SDL_audio.h /usr/include/SDL/SDL_error.h \
+ /usr/include/SDL/SDL_endian.h /usr/include/SDL/SDL_mutex.h \
+ /usr/include/SDL/SDL_thread.h /usr/include/SDL/SDL_rwops.h \
+ /usr/include/SDL/SDL_cdrom.h /usr/include/SDL/SDL_cpuinfo.h \
+ /usr/include/SDL/SDL_events.h /usr/include/SDL/SDL_active.h \
+ /usr/include/SDL/SDL_keyboard.h /usr/include/SDL/SDL_keysym.h \
+ /usr/include/SDL/SDL_mouse.h /usr/include/SDL/SDL_video.h \
+ /usr/include/SDL/SDL_joystick.h /usr/include/SDL/SDL_quit.h \
+ /usr/include/SDL/SDL_loadso.h /usr/include/SDL/SDL_timer.h \
+ /usr/include/SDL/SDL_version.h /usr/include/SDL/SDL_types.h video.h \
+ memory.h /usr/include/SDL/SDL_endian.h ym2610/2610intf.h ym2610/ym2610.h \
+ ym2610/mvs.h ym2610/../timer.h state.h \
+ /home/anonymous/Documents/Dev/rs97-toolchain/mipsel-buildroot-linux-musl/sysroot/usr/include/zlib.h \
+ /home/anonymous/Documents/Dev/rs97-toolchain/mipsel-buildroot-linux-musl/sysroot/usr/include/zconf.h \
+ /home/anonymous/Documents/Dev/rs97-toolchain/mipsel-buildroot-linux-musl/sysroot/usr/include/limits.h \
+ /home/anonymous/Documents/Dev/rs97-toolchain/mipsel-buildroot-linux-musl/sysroot/usr/include/bits/limits.h \
+ /home/anonymous/Documents/Dev/rs97-toolchain/mipsel-buildroot-linux-musl/sysroot/usr/include/unistd.h \
+ /home/anonymous/Documents/Dev/rs97-toolchain/mipsel-buildroot-linux-musl/sysroot/usr/include/bits/posix.h \
+ roms.h pd4990a.h transpack.h
+
+/home/anonymous/Documents/Dev/rs97-toolchain/mipsel-buildroot-linux-musl/sysroot/usr/include/stdc-predef.h:
+
+../config.h:
+
+emu.h:
+
+/home/anonymous/Documents/Dev/rs97-toolchain/mipsel-buildroot-linux-musl/sysroot/usr/include/string.h:
+
+/home/anonymous/Documents/Dev/rs97-toolchain/mipsel-buildroot-linux-musl/sysroot/usr/include/features.h:
+
+/home/anonymous/Documents/Dev/rs97-toolchain/mipsel-buildroot-linux-musl/sysroot/usr/include/bits/alltypes.h:
+
+/home/anonymous/Documents/Dev/rs97-toolchain/mipsel-buildroot-linux-musl/sysroot/usr/include/strings.h:
+
+/home/anonymous/Documents/Dev/rs97-toolchain/lib/gcc/mipsel-buildroot-linux-musl/7.3.0/include/stdint.h:
+
+/home/anonymous/Documents/Dev/rs97-toolchain/mipsel-buildroot-linux-musl/sysroot/usr/include/stdint.h:
+
+/home/anonymous/Documents/Dev/rs97-toolchain/mipsel-buildroot-linux-musl/sysroot/usr/include/bits/stdint.h:
+
+/usr/include/SDL/SDL.h:
+
+/usr/include/SDL/SDL_main.h:
+
+/usr/include/SDL/SDL_stdinc.h:
+
+/usr/include/SDL/SDL_config.h:
+
+/usr/include/SDL/SDL_platform.h:
+
+/home/anonymous/Documents/Dev/rs97-toolchain/mipsel-buildroot-linux-musl/sysroot/usr/include/sys/types.h:
+
+/home/anonymous/Documents/Dev/rs97-toolchain/mipsel-buildroot-linux-musl/sysroot/usr/include/endian.h:
+
+/home/anonymous/Documents/Dev/rs97-toolchain/mipsel-buildroot-linux-musl/sysroot/usr/include/sys/select.h:
+
+/home/anonymous/Documents/Dev/rs97-toolchain/mipsel-buildroot-linux-musl/sysroot/usr/include/sys/sysmacros.h:
+
+/home/anonymous/Documents/Dev/rs97-toolchain/mipsel-buildroot-linux-musl/sysroot/usr/include/stdio.h:
+
+/home/anonymous/Documents/Dev/rs97-toolchain/mipsel-buildroot-linux-musl/sysroot/usr/include/stdlib.h:
+
+/home/anonymous/Documents/Dev/rs97-toolchain/mipsel-buildroot-linux-musl/sysroot/usr/include/alloca.h:
+
+/home/anonymous/Documents/Dev/rs97-toolchain/lib/gcc/mipsel-buildroot-linux-musl/7.3.0/include/stddef.h:
+
+/home/anonymous/Documents/Dev/rs97-toolchain/lib/gcc/mipsel-buildroot-linux-musl/7.3.0/include/stdarg.h:
+
+/home/anonymous/Documents/Dev/rs97-toolchain/mipsel-buildroot-linux-musl/sysroot/usr/include/inttypes.h:
+
+/home/anonymous/Documents/Dev/rs97-toolchain/mipsel-buildroot-linux-musl/sysroot/usr/include/ctype.h:
+
+/home/anonymous/Documents/Dev/rs97-toolchain/mipsel-buildroot-linux-musl/sysroot/usr/include/iconv.h:
+
+/usr/include/SDL/begin_code.h:
+
+/usr/include/SDL/close_code.h:
+
+/usr/include/SDL/SDL_audio.h:
+
+/usr/include/SDL/SDL_error.h:
+
+/usr/include/SDL/SDL_endian.h:
+
+/usr/include/SDL/SDL_mutex.h:
+
+/usr/include/SDL/SDL_thread.h:
+
+/usr/include/SDL/SDL_rwops.h:
+
+/usr/include/SDL/SDL_cdrom.h:
+
+/usr/include/SDL/SDL_cpuinfo.h:
+
+/usr/include/SDL/SDL_events.h:
+
+/usr/include/SDL/SDL_active.h:
+
+/usr/include/SDL/SDL_keyboard.h:
+
+/usr/include/SDL/SDL_keysym.h:
+
+/usr/include/SDL/SDL_mouse.h:
+
+/usr/include/SDL/SDL_video.h:
+
+/usr/include/SDL/SDL_joystick.h:
+
+/usr/include/SDL/SDL_quit.h:
+
+/usr/include/SDL/SDL_loadso.h:
+
+/usr/include/SDL/SDL_timer.h:
+
+/usr/include/SDL/SDL_version.h:
+
+/usr/include/SDL/SDL_types.h:
+
+video.h:
+
+memory.h:
+
+/usr/include/SDL/SDL_endian.h:
+
+ym2610/2610intf.h:
+
+ym2610/ym2610.h:
+
+ym2610/mvs.h:
+
+ym2610/../timer.h:
+
+state.h:
+
+/home/anonymous/Documents/Dev/rs97-toolchain/mipsel-buildroot-linux-musl/sysroot/usr/include/zlib.h:
+
+/home/anonymous/Documents/Dev/rs97-toolchain/mipsel-buildroot-linux-musl/sysroot/usr/include/zconf.h:
+
+/home/anonymous/Documents/Dev/rs97-toolchain/mipsel-buildroot-linux-musl/sysroot/usr/include/limits.h:
+
+/home/anonymous/Documents/Dev/rs97-toolchain/mipsel-buildroot-linux-musl/sysroot/usr/include/bits/limits.h:
+
+/home/anonymous/Documents/Dev/rs97-toolchain/mipsel-buildroot-linux-musl/sysroot/usr/include/unistd.h:
+
+/home/anonymous/Documents/Dev/rs97-toolchain/mipsel-buildroot-linux-musl/sysroot/usr/include/bits/posix.h:
+
+roms.h:
+
+pd4990a.h:
+
+transpack.h:

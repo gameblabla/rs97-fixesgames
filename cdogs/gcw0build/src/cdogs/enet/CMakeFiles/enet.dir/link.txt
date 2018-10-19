@@ -1,0 +1,2 @@
+/opt/rs97-toolchain/usr/bin/mipsel-buildroot-linux-musl-ar qc libenet.a  CMakeFiles/enet.dir/callbacks.c.o CMakeFiles/enet.dir/compress.c.o CMakeFiles/enet.dir/host.c.o CMakeFiles/enet.dir/list.c.o CMakeFiles/enet.dir/packet.c.o CMakeFiles/enet.dir/peer.c.o CMakeFiles/enet.dir/protocol.c.o CMakeFiles/enet.dir/unix.c.o CMakeFiles/enet.dir/win32.c.o
+/opt/rs97-toolchain/usr/bin/mipsel-buildroot-linux-musl-ranlib libenet.a

@@ -1,0 +1,590 @@
+
+                    здддддддддддддддддддддддддддддддддддд©
+                    Ё  Mattel Electronics Intellivision  Ё
+                    Ё       Intelligent Television       Ё
+                    юдддддддддддддддддддддддддддддддддддды
+
+
+
+             шш
+             ш          "Mattel Electronics Presents"
+         шшшшшш
+         ш шшш
+         ш шшшшш            зддддддддддддддддддд©
+           шш               ЁDe Re IntellivisionЁ
+                            юддддддддддддддддддды
+           шш
+          шшшшшш     (In Latin "All About Intellivision")
+          шшшшшш
+          ш    ш
+         шш    ш       Compilation By William M. Moeller
+         шш    ш
+        шш
+        ш
+
+дддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддд
+                     Last Modified November 8, 1997
+                    ддддддддддддддддддддддддддддддддд
+
+                               Chapter IX
+
+                         "Intellivision T-Card"
+
+                          дддддддддддддддддддд
+         Nov 08/97 - Revision 0.0 - Print in condensed mode
+
+If you have any suspicions of errors or questions, ask now while we
+have the cart to check.  It will be returned to its owner soon.
+ддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддд
+
+INTELLIVISION EDGE CONNECTOR
+Motherboard  CART ROM  TOP       BOTTOM
+                             #       #
+??           NC         ?? - 2       1-GND    -b22
+STIC Pin 19  NC         ?? - 4       3--MSYNC -b21
+Matl Pin 7   NC         ?? - 6       5-D7     -b20
+STIC Pin 9   GND        ?? - 8       7-D8     -b19
+STIC Pin 15* GND        ?? -10       9-D6     -b18
+Supply ??    GND        ?? -12      11-D9     -b17
+CPU INTRM    NC        INT -14      13-D5     -b16
+                       GND -16 д©M  15-D10    -b15
+                       GND -18 д╢T  17-D4     -b14
+                       GND -20 д╢H  19-D11    -b13
+                       GND -22 д╢R  21-D3     -b12
+                       GND -24 д╢B  23-D12    -b11
+                       GND -26 д╢R  25-D13    -b10
+                       GND -28 дыD  27-D2     -b9
+CPU BUSAK    NC         ?? -30      29-D14    -b8
+здSTIC BC1   дддд  зддд *1 -32      31-D1     -b7
+Ё STIC BC2   дддд CЁздд *2 -34      33-D0     -b6
+Ё STIC BDIR  дддд AЁЁзд *3 -36 SLOT 35-D15    -b5
+Ё Mattel Pin 10   RЁЁюд *3 -38 ддддд37-*3     -b4
+Ё Mattel Pin 12   TЁюдд *2 -40 дддд-39-*2     -b3
+цдMattel Pin 14    юддд *1 -42 ддддд41-*1     -b2
+Ё GND        GND        GND-44      43-VCC    -b1
+Ё
+юдTiming Read/Write etc.
+
+здддбдддбддддбддддддбддддддддддддддддддддддддддддддддддддддддддддддддд©
+ЁBC1ЁBC2ЁBDIRЁ      Ё                                                 Ё
+цдддедддеддддеддддддеддддддддддддддддддддддддддддддддддддддддддддддддд╢
+Ё 0 Ё 0 Ё 0  ЁNACT  Ё CPU inactive, and disconnected from bus         Ё
+цдддедддеддддеддддддеддддддддддддддддддддддддддддддддддддддддддддддддд╢
+Ё 0 Ё 0 Ё 1  ЁBAR   Ё A memory address is being presented on the BUS  Ё
+цдддедддеддддеддддддеддддддддддддддддддддддддддддддддддддддддддддддддд╢
+Ё 0 Ё 1 Ё 0  ЁIAB   Ё CPU is acknowledging an interrupt request       Ё
+Ё   Ё   Ё    Ё      Ё External logic must place the starting address  Ё
+Ё   Ё   Ё    Ё      Ё for the interrupt service routine on the bus.   Ё
+цдддедддеддддеддддддеддддддддддддддддддддддддддддддддддддддддддддддддд╢
+Ё 0 Ё 1 Ё 1  ЁDWS   Ё Data write strobe to memory.                    Ё
+цдддедддеддддеддддддеддддддддддддддддддддддддддддддддддддддддддддддддд╢
+Ё 1 Ё 0 Ё 0  ЁADAR  Ё This signal identifies a time interval during   Ё
+Ё   Ё   Ё    Ё      Ё which the Data/Address bus is floated, while    Ё
+Ё   Ё   Ё    Ё      Ё data input on the Data Bus is being interpreted Ё
+Ё   Ё   Ё    Ё      Ё as the effecitve memory address during a direct Ё
+Ё   Ё   Ё    Ё      Ё memory addressing operation.                    Ё
+цдддедддеддддеддддддеддддддддддддддддддддддддддддддддддддддддддддддддд╢
+Ё 1 Ё 0 Ё 1  ЁDW    Ё Data is being written to memory.                Ё
+Ё   Ё   Ё    Ё      Ё Preceeds DWS by one cycle.                      Ё
+цдддедддеддддеддддддеддддддддддддддддддддддддддддддддддддддддддддддддд╢
+Ё 1 Ё 1 Ё 0  ЁDTB   Ё Read strobe (external device is to place data   Ё
+Ё   Ё   Ё    Ё      Ё on the bus.                                     Ё
+Ё 1 Ё 1 Ё 1  ЁINTAK Ё Interrupt acknnowledge.  Followed by IAD.       Ё
+юдддадддаддддаддддддаддддддддддддддддддддддддддддддддддддддддддддддддды
+
+  Ё  BAR MC1  Ё NACT MC2  Ё  DTB MC3  Ё   CP-1600
+  Ёt1Ёt2Ёt3Ёt4Ё  Ё  Ё  Ё  Ёt1Ёt2Ёt3Ёt4Ё   Instruction Fetch timing
+  Ё  Ё  Ё  Ё  Ёt1Ёt2Ёt3Ёt4Ё  Ё  Ё  Ё  Ё   дддддддддддддддддддддддд
+  Ё  Ё  Ё  Ё  Ё  Ё  Ё  Ё  Ё  Ё  Ё  Ё  Ё
+  зд©   зд©   зд©   зд©   зд©   зд©   зд©   здд  O1
+дды юддды юддды юддды юддды юддды юддды юддды
+д©|  зд©|  зд©|  зд©   зд©|  зд©   зд©|  зд©
+ юддды юддды юддды юддды юддды юддды юддды юддд  O2
+  |  |  |     |           зддддддддддд©
+дддддддддддддддддддддддддды           юдддддддд  BC1
+  |  |  |     |           зддддддддддд©
+дддддддддддддддддддддддддды           юдддддддд  BC2
+  зддддддддддд©
+дды  |  |     юдддддддддддддддддддддддддддддддд  BDIR
+     |  зддддддддд©            зддд©
+дддддxxxЁ         цдддддддддддд╢   цддддддддддд  Address
+        юддддддддды            юддды
+        Address out           Data in
+
+
+
+TCART Theory of Operation цдддддддддддддддддддддддддддддддддддддддддддддддддд
+дддддддддддддддддддддддддды
+
+  The TCART is designed to allow 4 independent banks of standard ROM or
+standard static RAM to be mapped into the 1610 address space.  Each ROM
+bank can be up to 4K in size.  Each static RAM bank can be up to 2K in
+size.  Banks can be configured though DIP switches to start at any 4K
+address in the 1610's address space.  The DIP switches also allow the
+selection of RAM/ROM, and in which portion of the 4K bank the 2K of RAM
+resides.
+
+TCART Construction Ё
+ддддддддддддддддддды
+
+                 здббббббббббббббббд©  a   74LS374N high order data/address
+                 Ё ЁЁЁЁЁЁЁЁЁЁЁЁЁЁЁЁ Ё  b   74LS374N low order data/address
+                 Ё                  Ё  c   74LS42N  4 to 10 decoder
+                 Ё    зд© зд©       Ё  d   74LS04N  Hex inverter
+                 Ё    Ё Ё Ё Ё зд©   Ё  e   74LS08N  Quad 2 input +NAND
+                 Ё    ЁaЁ ЁbЁ Ё Ё   Ё  rhx ROM bank a (high)
+                 Ё    Ё Ё Ё Ё ЁcЁ   Ё  rlx ROM bank a (high)
+                 Ё    юды юды юды   Ё  J-M Toggle switches banks 1-4
+                 Ё                  Ё  n   54LS51J and-or-invert gate
+                 Ё      зд© зд©     Ё  o   74LS00N quad 2 input +nand
+                 Ё      ЁdЁ ЁeЁ     Ё  p   74LS05N 4 bit magnitude comparitor
+                 Ё      Ё Ё Ё Ё     Ё  sn  dip switches for base address ROM/RAM
+здддддддддддддддды      юды юды     юдддддддддддддддд©
+Ё                                                    Ё
+Ё                  tcart top view                    Ё
+Ё      здддддддд©здддддддд©здддддддд©здддддддд©      Ё
+Ё      Ё rh1    ЁЁ rh2    ЁЁ rh3    ЁЁ rh4    Ё      Ё
+Ё      юддддддддыюддддддддыюддддддддыюдддддддды      Ё
+Ё      здддддддд©здддддддд©здддддддд©здддддддд©      Ё
+Ё      Ё rl1    ЁЁ rl2    ЁЁ rl3    ЁЁ rl4    Ё      Ё
+Ё      юддддддддыюддддддддыюддддддддыюдддддддды      Ё
+Ё  s1здддддд©  s2здддддд©  s3здддддд©  s4здддддд©    Ё
+Ё    юдддддды    юдддддды    юдддддды    юдддддды    Ё
+Ё           зд©         зд©         зд©         зд©  Ё
+Ё   зд© зд© Ё Ё зд© зд© Ё Ё зд© зд© Ё Ё зд© зд© Ё Ё  Ё
+Ё   ЁnЁ ЁoЁ ЁpЁ Ё Ё Ё Ё Ё Ё Ё Ё Ё Ё Ё Ё Ё Ё Ё Ё Ё Ё  Ё
+Ё   Ё Ё Ё Ё Ё Ё Ё Ё Ё Ё Ё Ё Ё Ё Ё Ё Ё Ё Ё Ё Ё Ё Ё Ё  Ё
+Ё   юды юды юды юды юды юды юды юды юды юды юды юды  Ё
+юддбддддддддддддддддддддддддддддддддддддддддддддддддды
+   юддддбддддддаддддбддддддадддддбдддддадддддбддддды
+     GLUE for    GLUE for    GLUE for    GLUE for
+     ROM/RAM     ROM/RAM     ROM/RAM     ROM/RAM
+     bank 1      bank 2      bank 3      bank 4
+
+
+  Standard 2732 EPROM's (4K) are used.  The type of Static RAM used
+is such that the pinouts are identical to the 2732, with what would be
+A11 on the 2764, being used for R/W.
+
+  What are now standard components need some support circuitry to
+connect them to the 1610 bus.  The 1610 bus is muliplexed and carries
+both addresses and data.  To connect RAM/ROM to the bus, essentially all
+that is needed are a couple of 8 bit latches to take and hold the
+address while it is presented to the address inputs on the RAM/ROM, some
+address decoding to select where the RAM/ROM resides, and some circuitry
+to decode the 1610 bus phases into something that can coordinate the
+data transfer.
+
+  RAM/ROM is organized as 4 banks of 2 chips, each taking or returning 8
+bits of the 16 bit value held at each memory address in the 1610's 64K
+address space.  Address lines A0-A10 are connected in parallel to each
+RAM/ROM chip.  The data ports of all chips taking/returning the high
+order data byte and all chips taking/returning the low order data byte
+byte are respectively connected in parallel.  The Output Enable pin on
+each RAM/ROM chip (both banks) are connected together.  For each of the
+four (high,low) banks the Chip -nable lines are tied to a common source,
+as is the A11 (ROM)- R/W (RAM) lines.
+
+  Since the 1610 address bus is multiplexed, the address presented to
+RAM/ROM and the address decoding circuitry must first be latched to hold
+the value while data is read/written from RAM/ROM.
+
+  The address latch consists of 2 74LS374 octal flip/flops that have
+their inputs tied directly to the 1610 data/address bus.  Output control
+for these latches is constantly low.  The address is latched on eather
+of the 1610's BAR or ADAR bus phases.
+
+  Address bits (A0-A10) from the latches is presented directly to all
+RAM/ROM chips.  A12-A15 is sent to the address decoding section
+associated with each of the 4 (high,low) RAM/ROM banks so that the
+appropirate Chip Enable signal is generated.  A11 is routed through some
+logic that optionally replaces the signal with a Read/Write signal
+needed to support static RAM.
+
+  Address decoding is accomplished through the use of a 74LS85N 4 bit
+comparitor.  This chip compares 4 bits with 4 bits and returns the
+result. as A>B, A<B, A=B.
+
+  This comparitor also takes 3 input signals - intended to be cascaded
+from the 3 outputs of another identical comparitor and is intended to
+allow comparisons of 8, 12, 16 etc, bits.  In this case, the <input> A=B
+is connected to a dip switch labeled ENA and allows the switch to
+enable/disable the A=B output of the comparator, thereby
+enabling/disabling the RAM/ROM bank.
+
+  The MS4bits of the address presented through the latches (A12-A15) are
+presented to the A inputs of the comparitor, and 4 bits selected by DIP
+switches are presented to the B inputs of the comparitor.  When the bits
+match, the A=B output is triggered (presuming it is enabled) indicating
+that the RAM/ROM bank should respond.
+
+  For ROM use, the A=B signal could be directly used to generate the
+Chip Enable signal needed to select the Bank.  However, to support RAM,
+the signal is modified so that the select signal is generated only when
+the address is in the upper half or lower half of the 4K window. (The
+static RAM used can be no more than 2K deep.) This selection is
+accomplished by looking at A11.
+
+  RAM/ROM selection is accomplished by using the dip switches labeled
+RAM and RAMH.  (RAM = RAM select, RAMH = RAM High Low select).  When RAM
+is selcted, Chip Enable is asserted when A11 = RAMH.
+
+  The RAM dip switch also used to select the signal sent to the
+A11(ROM),R/W(RAM) line on the RAM/ROM chip in its corresponding High/Low
+bank.  When the dip switch RAM is in one position, A11 from the address
+latches is routed to A11 on the (presumed) ROM chips in the bank.  In
+the alternate position a signal from the bus phase circuitry -
+indicating a bus write - is sent to the R/W line on the (presumed) RAM
+chips in the bank.
+
+  The data output ports of the RAM/ROM chips are connected directly to
+the 1610's bus and do not require external latches or buffers.  The
+RAM/ROM chips used must present or take their data to/from the 1610 bus
+only when the appropriate Chip Enable and Output Enable signals are
+given, and must keep their output ports in a high impedence state at all
+other times.  Standard 27xx series EPROMS do this.  At this point, I
+don't know what static RAM components are compatible.
+
+A rough conceptual sketch of the TCART is shown below.
+
+
+                              16 bits of Data Returned/Taken
+ здддддддддддддддддддддддддддддбдддддддддддбдддддддддддбддддддддддд©
+ Ё                             Ё           Ё           Ё           Ё
+          зддд© A0-A10      здад©       здад©       здад©       здад©
+ Ё         Ё L цддддддддддддЁ R цддддддЁ R цддддддЁ R цддддддЁ R Ё
+ Ё Address Ё A Ё A12-A15  -OEЁ O Ё    -OEЁ O Ё    -OEЁ O Ё    -OEЁ O Ё
+ Ё Bus     Ё T цддддддддд© зЁ M цддддддЁ M цддддддЁ M цддддддЁ M Ё
+даддддддбдЁ C Ё A11     Ё Ё Ё 1 Ё© A11 Ё 2 Ё© A11 Ё 3 Ё© A11 Ё 4 Ё© A11
+        Ё  Ё H цддддддд© Ё Ё юддды Ё R/W юддды Ё R/W юддды Ё R/W юддды Ё R/W
+        Ё  юддды       Ё Ё Ё  -CE Ё      -CE Ё      -CE Ё      -CE Ё
+        Ё     CLK   здxдxды  Ё    Ё      Ё    Ё      Ё    Ё      Ё    Ё
+        Ё    Ё       Ё Ё Ё   задд© Ё     задд© Ё     задд© Ё     задд© Ё
+        Ё  здад©     Ё Ё юддЁa dцдxддддЁa dцдxддддЁa dцдxддддЁa dЁ Ё Address
+        Ё  Ё D цддддды Ё     Ёd eЁ Ё     Ёd eЁ Ё     Ёd eЁ Ё     Ёd eЁ Ё Decoding
+   BC1  Ё  Ё E Ё       Ё     Ёr cЁ Ё     Ёr cЁ Ё     Ёr cЁ Ё     Ёr cЁ Ё
+   BC2  Ё  Ё C Ё       Ё     юдбдызадд©  юдбдызадд©  юдбдызадд©  юдбдызадд©
+   BDIR юдЁ O Ё       Ё A11   юдд╢ G Ё    юдд╢ G Ё    юдд╢ G Ё    юдд╢ G Ё
+           Ё D Ё       юдддддддддЁ L цддддддЁ L цддддддЁ L цддддддЁ L Ё
+           Ё E цдддддддддддддддддЁ U цддддддЁ U цддддддЁ U цддддддЁ U Ё
+           юддды         R/W      юддды       юддды       юддды       юддды
+
+
+Note that each bank of RAM/ROM 1-4 consists of 2 chips, one holding the
+high order byte, and one holding the low order byte. 16 bits of data can
+be held at each address in the 1610 64K address space.
+
+Also note that for each bank of RAM/ROM there is separate address
+decoding and A11(R/W) and -CE signal generation.  Each bank is
+independently configurable and may hold RAM or ROM starting at any 4K
+address.  RAM may be configured to respond only to addresses only in the
+upper/lower half of the 4K window.  Banks may be set to overlap, and
+while useless for use with ROM's, this allows an entire 4K address space
+to be filled with RAM.  2K from one bank, and 2K from another.
+
+Configurations can include...
+
+x = don't care. Any value/state.
+
+зддддддддддддддддддддддддддддддддддддддддддддд©
+Ё TCART disabled.                             Ё
+цдддддддддбддддддддбддддддддбддддддддбдддддддд╢
+Ё         Ё Bank 1 Ё Bank 2 Ё Bank 3 Ё Bank 4 Ё
+цдддддддддеддддддддеддддддддеддддддддедддддддд╢
+Ё Ena     Ё   0    Ё   0    Ё   0    Ё   0    Ё
+Ё RAM     Ё   x    Ё   x    Ё   x    Ё   x    Ё
+Ё RAMH    Ё   x    Ё   x    Ё   x    Ё   x    Ё
+Ё ADDRESS Ё   x    Ё   x    Ё   x    Ё   x    Ё
+юдддддддддаддддддддаддддддддаддддддддадддддддды
+
+зддддддддддддддддддддддддддддддддддддддддддддд©
+Ё 8 K ROM installed at 05000H to 06FFFH       Ё
+цдддддддддбддддддддбддддддддбддддддддбдддддддд╢
+Ё         Ё Bank 1 Ё Bank 2 Ё Bank 3 Ё Bank 4 Ё
+цдддддддддеддддддддеддддддддеддддддддедддддддд╢
+Ё Ena     Ё   1    Ё   1    Ё   0    Ё   0    Ё
+Ё RAM     Ё   0    Ё   0    Ё   x    Ё   x    Ё
+Ё RAMH    Ё   0    Ё   0    Ё   x    Ё   x    Ё
+Ё ADDRESS Ё   5    Ё   6    Ё   x    Ё   x    Ё
+юдддддддддаддддддддаддддддддаддддддддадддддддды
+
+зддддддддддддддддддддддддддддддддддддддддддддд©
+Ё 8 K ROM installed at 05000H to 06FFFH       Ё
+Ё 2 K RAM installed at 0E000H to 0E7FFH       Ё
+цдддддддддбддддддддбддддддддбддддддддбдддддддд╢
+Ё         Ё Bank 1 Ё Bank 2 Ё Bank 3 Ё Bank 4 Ё
+цдддддддддеддддддддеддддддддеддддддддедддддддд╢
+Ё Ena     Ё   1    Ё   1    Ё   1    Ё   0    Ё
+Ё RAM     Ё   0    Ё   0    Ё   1    Ё   x    Ё
+Ё RAMH    Ё   0    Ё   0    Ё   0    Ё   x    Ё
+Ё ADDRESS Ё   5    Ё   6    Ё   E    Ё   x    Ё
+юдддддддддаддддддддаддддддддаддддддддадддддддды
+
+зддддддддддддддддддддддддддддддддддддддддддддд©
+Ё 8 K ROM installed at 05000H to 06FFFH       Ё
+Ё 4 K RAM installed at 0E000H to 0EFFFH       Ё
+цдддддддддбддддддддбддддддддбддддддддбдддддддд╢
+Ё         Ё Bank 1 Ё Bank 2 Ё Bank 3 Ё Bank 4 Ё
+цдддддддддеддддддддеддддддддеддддддддедддддддд╢
+Ё Ena     Ё   1    Ё   1    Ё   1    Ё   1    Ё
+Ё RAM     Ё   0    Ё   0    Ё   1    Ё   1    Ё
+Ё RAMH    Ё   0    Ё   0    Ё   0    Ё   1    Ё
+Ё ADDRESS Ё   5    Ё   6    Ё   E    Ё   E    Ё
+юдддддддддаддддддддаддддддддаддддддддадддддддды
+
+
+
+Tcart Circuit цдддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддд
+дддддддддддддды
+                                                        LS734 FUNCTION TABLE
+                                                        --------------------
+                                                          Output CLK D Out
+                                                          CNTRL
+     high order address/data     low order address/data     L     ^  H  H
+            74LS374N                    74LS374N            L     ^  L  L
+          Octal D type                 Octal D type         L     L  X  QO
+         Edge triggered               Edge triggered        H     X  X  Z
+            Flip/Flop                    Flip/Flop
+
+           low on BAR or ADAR ?
+зддддддддбддддддддддддддддддддддддддд©                           4 -> 10  (output is inverted)
+Ё        Ё зддддддд©                 Ё зддддддд©                 decoder  0000 -> 0111111111
+Ё        юд╢CLK GNDцд                юд╢CLK GNDцд                74LS42N  0001 -> 1011111111
+Ё (a12) oдд╢5q   4qцдo (a11)       a4 д╢5q   4qцд a3            зддддддд©
+Ё  b11-d4bд╢5d   4dцд d3b-b13  b14-d4aд╢5d   4dцд d3a-b12   nc д╢7   GNDцд
+Ё  b10-d5bд╢6d   3dцд d2b-b15  b16-d5aд╢6d   3dцд d2a-b9    nc д╢8     6цд nc      110 DWS
+Ё (a13) oдд╢6q   3qцд a10          a5 д╢6q   3qцд a2        nc д╢9     5цдддддддд© 101 DW
+Ё (a14) oдд╢7q   2qцд a9           a6 д╢7q   2qцд a1       GND д╢d     4цдддддд© Ё 100 BAR  
+Ё   b8-d6bд╢7d   2dцд d1b-b17  b18-d6aд╢7d   2dцд d1a-b7  bdir д╢c     3цдддд© Ё Ё 011 DTB
+Ё   b5-d7bд╢8d   1dцд d0b-b19  b20-d7aд╢8d   1dцд d0a-b6   bc2 д╢b     2цдnc Ё Ё Ё 010 IAB
+Ё (a15) oдд╢8q   1qцд a8           a7 д╢8q   1qцд a0       bc1 д╢a     1цдд© Ё Ё Ё 001 ADAR
+Ё         д╢+5 Ё-OCцд GND             д╢+5 Ё-OCцд GND          д╢+5 Ё  0ц© Ё Ё Ё Ё 000 NACT
+Ё          юдддаддды                   юдддаддды                юдддадддыo Ё Ё Ё Ё
+юдддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддд©      nc Ё Ё Ё Ё
+                         74LS04N                       74LS08N   Ё         Ё Ё Ё Ё
+                        зддддддд©                     зддддддд©  Ё         Ё Ё Ё Ё
+                    nc д╢4y  GNDцд                nc д╢3y  GNDцд Ё         Ё Ё Ё Ё
+                   GND д╢4a   3yцдnc?            GND д╢3b   2yцдды  bar    Ё Ё Ё Ё
+   a11 (c1ab) oддддддддд╢5y   3aцдGND            GND д╢3a   2bцддддддддддддxдxды Ё
+  oa (bank 1) oддддддддд╢5a   2yцдo a11 (c3ab)    nc д╢4y   2aцддд©        Ё Ё   Ё
+   a11 (c2ab) oддддддддд╢6y   2aцдo oa (bank 3)  GND д╢4b   1yцдддxдд© dtb Ё Ё   Ё
+  oa (bank 2) oддддддддд╢6a   1yцдo a11 (c4ab)   GND д╢4a   1bцдддxддxдддддxды   Ё
+                       д╢+5 Ё 1aцдo oa (bank 4)      д╢+5 Ё 1aцдддаддxддддды     Ё
+                        юдддаддды                     юдддаддды      Ё adar      Ё
+                           hex                          QUAD   a b y Ё           Ё
+                         Inverter                      2 input h h h Ё           Ё
+                          y = -a                       + AND   l x l Ё           Ё
+                                                               x l l Ё           Ё
+                                                                     Ё           Ё
+   For the ROM chips below, -CE and A11 are generated for each       Ё           Ё
+   High/Low chip set from the corresponding bank of address decoding Ё           Ё
+   RAM/ROM selection (glue) that follows.                            Ё           Ё
+                                                                     Ё           Ё
+           line goes low on BAR or DWS ?                             Ё           Ё
+   здддддддддддддддддддддддддддддддддддддбддддддддддддддддддддддддддды        dw o
+   Ё          bank a                     Ё          bank b
+   Ё  здддддддддддддддддддд©             Ё  здддддддддддддддддддд©
+   Ё  Ё   здддддддддддд©   Ё             Ё  Ё   здддддддддддд©   Ё
+   Ё  Ё зд╢D3  c1h  GNDцд  Ё             Ё  Ё зд╢D3  c1l  GNDцд  Ё
+   Ё  Ё цд╢D4        D2цд© Ё             Ё  Ё цд╢D4        D2цд© Ё
+зддxддадед╢D5        D1цдеды           здxддадед╢D5        D1цдеды
+Ё  Ё    цд╢D6        D0цды             Ё Ё    цд╢D6        D0цды
+Ё  Ё    юд╢D7        A0цд©             Ё Ё    юд╢D7        A0цд©
+Ё  Ё    oд╢-CE       A1цд╢             Ё Ё    oд╢-CE       A1цд╢
+Ё  Ё   здд╢A10 2732  A2цд╢             Ё Ё   здд╢A10 2732  A2цд╢
+Ё  цдддxдд╢-OE       A3цдедбдддд╢      Ё цдддxдд╢-OE       A3цдедбддд©
+Ё  Ё oдxдд╢A11 1     A4цд╢ Ё    Ё      Ё Ё oдxдд╢A11 1     A4цд╢ Ё   Ё
+Ё  Ё здедд╢A9        A5цд╢ Ё    Ё      Ё Ё здедд╢A9        A5цд╢ Ё   Ё
+Ё  Ё Ё юдд╢A8        A6цд╢ Ё    Ё      Ё Ё Ё юдд╢A8        A6цд╢ Ё   Ё
+Ё  Ё Ё   д╢VCC здд©  A7цды Ё    Ё      Ё Ё Ё   д╢VCC здд©  A7цды Ё   Ё
+Ё  Ё Ё    юддддаддадддды   Ё    Ё      Ё Ё Ё    юддддаддадддды   Ё   Ё
+Ё  Ё юддддддддддддддддддддды    Ё      Ё Ё юддддддддддддддддддддды   Ё
+Ё  Ё                            Ё      Ё Ё                           Ё
+Ё  Ё  здддддддддддддддддддд©    Ё      Ё Ё  здддддддддддддддддддд©   Ё
+Ё  Ё  Ё   здддддддддддд©   Ё    Ё      Ё Ё  Ё   здддддддддддд©   Ё   Ё
+Ё  Ё  Ё зд╢D3  c2h  GNDцд  Ё    Ё      Ё Ё  Ё зд╢D3  c2l  GNDцд  Ё   Ё
+Ё  Ё  Ё цд╢D4        D2цд© Ё    Ё      цдxдд╢ цд╢D4        D2цд© Ё   Ё
+цддxддадед╢D5        D1цдеды    Ё      Ё Ё  юдед╢D5        D1цдеды   Ё
+Ё  Ё    цд╢D6        D0цды      Ё      Ё Ё    цд╢D6        D0цды     Ё
+Ё  Ё    юд╢D7        A0цд©      Ё      Ё Ё    юд╢D7        A0цд©     Ё
+Ё  Ё   oдд╢-CE       A1цд╢      Ё      Ё Ё    oд╢-CE       A1цд╢     Ё
+Ё  Ё   здд╢A10 2732  A2цд╢      Ё      Ё Ё   здд╢A10 2732  A2цд╢     Ё
+Ё  цдддxдд╢-OE       A3цдедбдддд╢      Ё цдддxдд╢-OE       A3цдедбддд╢
+Ё  Ё oдxдд╢A11 2     A4цд╢ Ё    Ё      Ё Ё oдxдд╢A11 2     A4цд╢ Ё   Ё
+Ё  Ё здедд╢A9        A5цд╢ Ё    Ё      Ё Ё здедд╢A9        A5цд╢ Ё   Ё
+Ё  Ё Ё юдд╢A8        A6цд╢ Ё    Ё      Ё Ё Ё юдд╢A8        A6цд╢ Ё   Ё
+Ё  Ё Ё   д╢VCC здд©  A7цды Ё    Ё      Ё Ё Ё   д╢VCC здд©  A7цды Ё   Ё
+Ё  Ё Ё    юддддаддадддды   Ё    Ё      Ё Ё Ё    юддддаддадддды   Ё   Ё
+Ё  Ё юддддддддддддддддддддды    Ё      Ё Ё юддддддддддддддддддддды   Ё
+Ё  Ё  здддддддддддддддддддд©    Ё      Ё Ё  здддддддддддддддддддд©   Ё
+Ё  Ё  Ё   здддддддддддд©   Ё    Ё      Ё Ё  Ё   здддддддддддд©   Ё   Ё
+Ё  Ё  Ё зд╢D3  c3h  GNDцд  Ё    Ё      Ё Ё  Ё зд╢D3  c3l  GNDцд  Ё   Ё
+Ё  Ё  Ё цд╢D4        D2цд© Ё    Ё      Ё Ё  Ё цд╢D4        D2цд© Ё   Ё
+цддxддадед╢D5        D1цдеды    Ё      цдxддадед╢D5        D1цдеды   Ё
+Ё  Ё    цд╢D6        D0цды      Ё      Ё Ё    цд╢D6        D0цды     Ё
+Ё  Ё    юд╢D7        A0цд©      Ё      Ё Ё    юд╢D7        A0цд©     Ё
+Ё  Ё    oд╢-CE       A1цд╢      Ё      Ё Ё    oд╢-CE       A1цд╢     Ё
+Ё  Ё   здд╢A10 2732  A2цд╢      Ё      Ё Ё   здд╢A10 2732  A2цд╢     Ё
+Ё  цдддxдд╢-OE       A3цдедбдддд╢      Ё цдддxдд╢-OE       A3цдедбддд╢
+Ё  Ё oдxдд╢A11 3     A4цд╢ Ё    Ё      Ё Ё oдxдд╢A11 3     A4цд╢ Ё   Ё
+Ё  Ё здедд╢A9        A5цд╢ Ё    Ё      Ё Ё здедд╢A9        A5цд╢ Ё   Ё
+Ё  Ё Ё юдд╢A8        A6цд╢ Ё    Ё      Ё Ё Ё юдд╢A8        A6цд╢ Ё   Ё
+Ё  Ё Ё   д╢VCC здд©  A7цды Ё    Ё      Ё Ё Ё   д╢VCC здд©  A7цды Ё   Ё
+Ё  Ё Ё    юддддаддадддды   Ё    Ё      Ё Ё Ё    юддддаддадддды   Ё   Ё
+Ё  Ё юддддддддддддддддддддды    Ё      Ё Ё юддддддддддддддддддддды   Ё
+Ё  Ё                            Ё      Ё Ё                           Ё
+Ё  Ё  здддддддддддддддддддд©    Ё      Ё Ё  здддддддддддддддддддд©   Ё
+Ё  Ё  Ё   здддддддддддд©   Ё    Ё      Ё Ё  Ё   здддддддддддд©   Ё   Ё
+Ё  Ё  Ё зд╢D3  c4h  GNDцд  Ё    Ё      Ё Ё  Ё зд╢D3  c4l  GNDцд  Ё   Ё
+Ё  Ё  Ё цд╢D4        D2цд© Ё    Ё      Ё Ё  Ё цд╢D4        D2цд© Ё   Ё
+цддxддадед╢D5        D1цдеды    Ё      цдxддадед╢D5        D1цдеды   Ё
+Ё  Ё    цд╢D6        D0цды      Ё      Ё Ё    цд╢D6        D0цды     Ё
+Ё  Ё    юд╢D7        A0цд©      Ё      Ё Ё    юд╢D7        A0цд©     Ё
+Ё  Ё    oд╢-CE       A1цд╢      Ё      Ё Ё    oд╢-CE       A1цд╢     Ё
+Ё  Ё   здд╢A10 2732  A2цд╢      Ё      Ё Ё   здд╢A10 2732  A2цд╢     Ё
+Ё  юдддxдд╢-OE       A3цдедбдддды      Ё юдддxдд╢-OE       A3цдедбддды
+Ё    oдxдд╢A11 4     A4цд╢ Ё           Ё   oдxдд╢A11 4     A4цд╢ Ё
+Ё    здедд╢A9        A5цд╢ Ё           Ё   здедд╢A9        A5цд╢ Ё
+Ё    Ё юдд╢A8        A6цд╢ Ё           Ё   Ё юдд╢A8        A6цд╢ Ё
+Ё    Ё   д╢VCC здд©  A7цды Ё           Ё   Ё   д╢VCC здд©  A7цды Ё
+Ё    Ё    юддддаддадддды   Ё           Ё   Ё    юддддаддадддды   Ё
+Ё    цдддддддддддддддддддддадддддддддддxдддаддддддддддддддддддддды
+Ё    Ё                                 Ё
+Ё    o From Latches LS11 bits of       Ё
+Ё           Address                    Ё
+Ё      A11 for each set of ROMs        Ё
+Ё      is sent through glue            Ё
+Ё      RAM/RAMH switches may           Ё
+Ё      replace A11 with R/W for        Ё
+Ё      Static RAM access.              Ё
+Ё                                      Ё
+o To edge connector (High Data)        o To edge connector (Low Data)
+
+
+
+
+  One set of address address comparison (glue) for each set of two ROM's
+above.  Set consists of one ROM from each bank.  4 sets in total.
+
+                                                  +5v ддздбдбдбдбдбдбд©
+                      a  b  y                         здадададададададад©
+DW from              дддбддбд                         Ё     r           Ёs
+o  4 to 10 decoder    h Ёh Ёl    74LS00N              Ё   e a r a a a a Ёwb
+Ё                     x Ёl Ёh  quad 2 input           Ё n n m a 1 1 1 1 Ёta
+Ё                     l Ёx Ёh   +nand gates           Ё c a h m 2 3 4 5 Ёcn
+Ё                               y = -(a*b)            юдбдбдбдбдрдрдрдрдыhk
+Ё здддддддддддддддддддддддддддддддддддддддд©     здддддддды Ё Ё ╨ ╨ ╨ ╨
+Ё Ё o (latch a11)     здддддддд(ramh)ддддддxдддддxдддддддддды Ё ╨ ╨ ╨ ╨
+Ё Ё Ё здддддддддддддддxддддд©              Ё здддxдддддддддддды ╨ ╨ ╨ ╨
+Ё Ё цдxдддддддддддддддxддд© Ё здддддддддд© Ё Ё   Ё иммммммммммммxмxмxм╫
+Ё Ё Ё Ёздддббддд©     Ё   Ё Ё Ёздддббддд©Ё Ё Ё   Ё ╨здддббддд©  ╨ ╨ ╨
+Ё Ё Ё ю╢1a юы +5цд    Ё   Ё Ё ц╢1a юы +5цы Ё Ё   Ё х╢b3 юы +5цд ╨ ╨ ╨
+Ё Ё юдд╢2a    1cцдддддxд© Ё Ё ю╢1b    4bцддxд╢ здxдд╢a<bi  a3цммxмxмxммo <(a15 Latch)
+Ё юдддд╢2b    1bцддд© Ё Ё Ё Ёnc╢1y    4aцддxд╢ Ё юдд╢a=bi  b2фммxмxм╪
+юдддддд╢2c    1fцдддxдxдxдадxдд╢2a    4yцдды Ё цдддд╢a>bi  a2цммxмxммммo <(a14 Latch)
+ зддддд╢2d    1eцдддxд╢ Ё здxдд╢2b    3bцдддд╢ Ё  nc╢a>bo  a1фммxмxммммo <(a13 Latch)
+ Ё  здд╢2y    1dцддд╢ Ё Ё Ё юдд╢2y    3aцдд© Ё Ё здд╢a=bo  b1фммxм╪
+ Ё  Ё д╢GND   1yцд© Ё Ё Ё Ё   д╢GND   3yц© Ё Ё Ё Ёnc╢a<bo  a0фммxммммммo <(a12 Latch)
+ Ё  Ё  юдддддддды Ё Ё Ё Ё Ё    юддддддддыЁ Ё Ё юдxдд╢GND   b0фмм╪
+ Ё  юдo oa (bank) Ё Ё Ё юдxдддддддддддддды Ё Ё   Ё  юдддддддды
+ Ё      Inverted  Ё Ё юдддxдддд(ramh)дддддды Ё   Ё
+ Ё      at 74LS04 Ё юдддддxддддддддддддддддддxддды
+ юдддд(ram)дддддддxдддддддадддд(ram)ддддддддды
+                  Ё
+        54LS51j   o TO ROM -CE (c1h c1l)               74LS85N
+    and-or-invert                                  4 bit magnitude
+        gates                                        comparator
+   y1= -(abc+def)
+   y2= -(ab+cd)
+
+
+Glue Logic for 54LS51j Pin 2y - to 74l204 цдддддддддддддддддддддддддддддддддддд
+дддддддддддддддддддддддддддддддддддддддддды
+
+     4y = - RAM
+
+Y2 = A = -(A*B + C*D)
+     A = -(a11 * 4y + DW * RAM)
+     A = -(a11 * -RAM + DW * RAM)
+
+     IF RAM = 0       Result - a11 directed to ROM a11
+        A = -a11
+     IF RAM = 1       Result - DW directed to ROM a11 (Static RAM R/W ???)
+        A = -DW                since ROM a11 = RAM R/W  then RAM is 2K and
+                               can potentially reside in upper or lower half
+                               of each 4K slot available.
+
+
+Glue Logic for 54LS51j Pin 1y - to ROM -CE  цдддддддддддддддддддддддддддддддддд
+дддддддддддддддддддддддддддддддддддддддддддды
+
+     2y = -(a11 * RAM)
+     3y = -(RAMH * RAM)
+
+Y1 = CE = -(A*B*C + D*E*F)
+     CE = -(2y * ADDR * 3y + ADDR * RAMH * a11)
+
+
+     IF RAM = 0 & RAMH = 0 Ё  Result - chip enable = MS4 bits address
+     IF RAM = 0 & RAMH = 1 Ё                         address compare equal
+     дддддддддддддддддддддды
+     2y = 1                            add  a11  add * a11   add + add * a11
+     3y = 1                             0    0       0              0
+                                        0    1       0              0
+     CE = -(ADDR + ADDR * a11)          1    0       0              1
+     CE = -ADDR                         1    1       1              1
+
+
+     IF RAM = 1 & RAMH = 0 Ё  Result - RAM mapped into low 2K bank ?
+     дддддддддддддддддддддды
+     2y = -a11                         a11  add  -a11  -a11 * add
+     3y = 1                             0    0    1        0
+                                        0    1    1        1
+     CE = -(-a11 * ADDR)                1    0    0        0
+                                        1    1    0        0
+
+
+     IF RAM = 1 & RAMH = 1 Ё  Result - RAM mapped into high 2K bank ?
+     дддддддддддддддддддддды
+     2y = -a11                               a11  add  a11 * add
+     3y = 0                                   0    0       0
+                                              0    1       0
+     CE = -(-a11 * ADDR * 0 + ADDR * a11)     1    0       0
+     CE = -(a11 *  ADDR)                      1    1       1
+
+
+2764 Pinout цдддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддд
+дддддддддддды
+     здддбддбддд©         (Ax = Address / Dx = Data)
+  A7 Ё1  юдды 24Ё VCC
+  A6 Ё2       23Ё A8
+  A5 Ё3       22Ё A9
+  A4 Ё4       21Ё A11
+  A3 Ё5       20Ё -OE      Output Enable
+  A2 Ё6  2732 19Ё A10
+  A1 Ё7       18Ё -CE      Chip Select
+  A0 Ё8       17Ё D7
+  D0 Ё9       16Ё D6
+  D1 Ё10      15Ё D5
+  D2 Ё11      14Ё D4
+ GND Ё12      13Ё D3
+     юдддддддддды
+
+Compatible RAM Pinout цддддддддддддддддддддддддддддддддддддддддддддддддддддддд
+дддддддддддддддддддддды
+     здддбддбддд©         (Ax = Address / Dx = Data)
+  A7 Ё1  юдды 24Ё VCC
+  A6 Ё2       23Ё A8
+  A5 Ё3       22Ё A9
+  A4 Ё4       21Ё R/W
+  A3 Ё5       20Ё -OE -IE  Input Enable / Output Enable?
+  A2 Ё6  2732 19Ё A10
+  A1 Ё7       18Ё -CE      Chip Select
+  A0 Ё8       17Ё D7
+  D0 Ё9       16Ё D6
+  D1 Ё10      15Ё D5
+  D2 Ё11      14Ё D4
+ GND Ё12      13Ё D3
+     юдддддддддды
+
+

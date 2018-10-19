@@ -1,0 +1,10 @@
+1.1.2
+
+- Fix file requester issue (unable to go in upper directories)
+- Fix wrong keys name in keyboard menu
+- Compiled using latest SDK (faster ?)
+
+1.1.0
+
+- Intial release with all features from Wiz-Cap32
+  (cheat codes, auto-run disk, etc ...)

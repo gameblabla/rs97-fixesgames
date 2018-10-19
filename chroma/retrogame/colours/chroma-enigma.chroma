@@ -1,0 +1,77 @@
+<!-- Copyright (C) 2010 Amf -->
+<chroma type="colours">
+<head>
+<title translate="yes">Chroma Curses Enigma</title>
+</head>
+<pieces>
+<piece name="space" character=" " foreground="white" background="black" />
+<piece name="wall" character="%" foreground="blue" background="cyan" reverse="yes" />
+<piece name="player_one" character="@" foreground="white" bold="yes" />
+<piece name="player_two" character="O" foreground="white" />
+<piece name="star" character="$" foreground="yellow" bold="yes" />
+<piece name="dots" character="." foreground="yellow" />
+<piece name="door" character="E" foreground="white" />
+<piece name="circle" character="o" foreground="cyan" />
+<piece name="arrow_red_left" character="&lt;" foreground="red" />
+<piece name="arrow_red_up" character="^" foreground="red" />
+<piece name="arrow_red_right" character="&gt;" foreground="red" />
+<piece name="arrow_red_down" character="v" foreground="red" />
+<piece name="bomb_red_left" character="Z" foreground="red" bold="yes" />
+<piece name="bomb_red_up" character="Y" foreground="red" bold="yes" />
+<piece name="bomb_red_right" character="W" foreground="red" bold="yes" />
+<piece name="bomb_red_down" character="X" foreground="red" bold="yes" />
+<piece name="arrow_green_left" character="&lt;" foreground="green" />
+<piece name="arrow_green_up" character="^" foreground="green" />
+<piece name="arrow_green_right" character="&gt;" foreground="green" />
+<piece name="arrow_green_down" character="v" foreground="green" />
+<piece name="bomb_green_left" character="Z" foreground="green" bold="yes" />
+<piece name="bomb_green_up" character="Y" foreground="green" bold="yes" />
+<piece name="bomb_green_right" character="W" foreground="green" bold="yes" />
+<piece name="bomb_green_down" character="X" foreground="green" bold="yes" />
+<piece name="arrow_blue_left" character="&lt;" foreground="blue" />
+<piece name="arrow_blue_up" character="^" foreground="blue" />
+<piece name="arrow_blue_right" character="&gt;" foreground="blue" />
+<piece name="arrow_blue_down" character="v" foreground="blue" />
+<piece name="bomb_blue_left" character="Z" foreground="blue" bold="yes" />
+<piece name="bomb_blue_up" character="Y" foreground="blue" bold="yes" />
+<piece name="bomb_blue_right" character="W" foreground="blue" bold="yes" />
+<piece name="bomb_blue_down" character="X" foreground="blue" bold="yes" />
+
+<piece name="explosion_red_left" character="*" foreground="white" background="yellow" bold="yes" reverse="yes" />
+<piece name="explosion_red_horizontal" character="*" foreground="white" background="yellow" bold="yes" reverse="yes" />
+<piece name="explosion_red_right" character="*" foreground="white" background="yellow" bold="yes" reverse="yes" />
+<piece name="explosion_red_top" character="*" foreground="white" background="yellow" bold="yes" reverse="yes" />
+<piece name="explosion_red_vertical" character="*" foreground="white" background="yellow" bold="yes" reverse="yes" />
+<piece name="explosion_red_bottom" character="*" foreground="white" background="yellow" bold="yes" reverse="yes" />
+<piece name="explosion_green_left" character="*" foreground="white" background="yellow" bold="yes" reverse="yes" />
+<piece name="explosion_green_horizontal" character="*" foreground="white" background="yellow" bold="yes" reverse="yes" />
+<piece name="explosion_green_right" character="*" foreground="white" background="yellow" bold="yes" reverse="yes" />
+<piece name="explosion_green_top" character="*" foreground="white" background="yellow" bold="yes" reverse="yes" />
+<piece name="explosion_green_vertical" character="*" foreground="white" background="yellow" bold="yes" reverse="yes" />
+<piece name="explosion_green_bottom" character="*" foreground="white" background="yellow" bold="yes" reverse="yes" />
+<piece name="explosion_blue_left" character="*" foreground="white" background="yellow" bold="yes" reverse="yes" />
+<piece name="explosion_blue_horizontal" character="*" foreground="white" background="yellow" bold="yes" reverse="yes" />
+<piece name="explosion_blue_right" character="*" foreground="white" background="yellow" bold="yes" reverse="yes" />
+<piece name="explosion_blue_top" character="*" foreground="white" background="yellow" bold="yes" reverse="yes" />
+<piece name="explosion_blue_vertical" character="*" foreground="white" background="yellow" bold="yes" reverse="yes" />
+<piece name="explosion_blue_bottom" character="*" foreground="white" background="yellow" bold="yes" reverse="yes" />
+
+<enigma>
+<piece name="circle_double" character="8" foreground="cyan" />
+<piece name="dots_double" character=":" foreground="yellow" />
+</enigma>
+
+<xor>
+<piece name="dots_x" character="!" foreground="yellow" />
+<piece name="dots_y" character="=" foreground="yellow" />
+<piece name="switch" character="S" foreground="white" />
+<piece name="teleport" character="#" foreground="green" bold="yes" />
+<piece name="map_top_left" character="M" foreground="white" />
+<piece name="map_top_right" character="M" foreground="white" />
+<piece name="map_bottom_left" character="M" foreground="white" />
+<piece name="map_bottom_right" character="M" foreground="white" />
+<piece name="darkness" character=" " foreground="white" background="black" />
+</xor>
+
+</pieces>
+</chroma>

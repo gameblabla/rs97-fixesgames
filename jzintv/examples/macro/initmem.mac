@@ -1,0 +1,259 @@
+;* ======================================================================== *;
+;*     This file is hereby placed into the public domain by its author,     *;
+;*     Joseph Zbiciak.  It may therefore be incorporated into programs      *;
+;*     with any license with no restrictions on the resulting program.      *;
+;* ======================================================================== *;
+                IF (DEFINED _INITMEM_MAC) = 0
+_INITMEM_MAC    QEQU     1
+
+;; ======================================================================== ;;
+;;  INITMEM                                                                 ;;
+;;                                                                          ;;
+;;  These are the macros that work with the INITMEM function.               ;;
+;;                                                                          ;;
+;;  MACROS:                                                                 ;;
+;;                                                                          ;;
+;;      INIT val, addr      Set 'addr' to 'value' as part of init list.     ;;
+;;      INIT_DONE           Terminates an init list                         ;;
+;;      EMIT_CST8           Outputs the accumulated CST8 table.             ;;
+;;      EMIT_CST16          Outputs the accumulated CST16 table.            ;;
+;;                                                                          ;;
+;;  DETAILS                                                                 ;;
+;;                                                                          ;;
+;;  Initialize a set of variables to initial values.  Initialization        ;;
+;;  records are 1 word each typically.  All variables are in the range      ;;
+;;  $0F0 - $35F.  So, each record is formatted as follows.                  ;;
+;;                                                                          ;;
+;;        15                 10  9                                0         ;;
+;;       +---------------------+-----------------------------------+        ;;
+;;       |       Value         |             Address               |        ;;
+;;       +---------------------+-----------------------------------+        ;;
+;;                                                                          ;;
+;;  A record of 0 terminates the initializer list.                          ;;
+;;                                                                          ;;
+;;  The "value" field is actually encoded.  $20 - $3F directly map to       ;;
+;;  the constants $00 - $1F.  $00 - $1E map to constants in a separate      ;;
+;;  constants table.  $1F indicates the constant appears in the following   ;;
+;;  word.  Furthermore, constant table entries $00 - $0F are packed 8-bit   ;;
+;;  contants, whereas $10 - $1E are unpacked 16-bit constants.              ;;
+;;                                                                          ;;
+;; ======================================================================== ;;
+
+_init_const     QSET 0
+_init_escape    QSET 0
+
+;; ======================================================================== ;;
+;;  Helper macros:  (Programs should not call these.)                       ;;
+;;                                                                          ;;
+;;      _init_try       See if constant is already allocated in CST tables. ;;
+;;      _init_alloc8    Allocate an 8-bit constant.                         ;;
+;;      _init_alloc16   Allocate a 16-bit constant.                         ;;
+;;      _init_encode_constant   Given a cst, return bits 15:10 of init rec. ;;
+;;      _emit_cst8      Output two entries of CST8 table if defined.        ;;
+;;      _emit_cst16     Output an entry of CST16 table if defined.          ;;
+;;                                                                          ;;
+;; ======================================================================== ;;
+MACRO           _init_try(v,c)
+                IF      (%v% = _init_cst_%c%)
+_init_const     QSET    ($%c%) SHL 10
+                ENDI
+ENDM
+
+MACRO           _init_alloc8(v,c)
+                IF (_init_const = -1) AND (DEFINED _init_cst_%c%) = 0
+_init_cst_%c%   QEQU    (%v%)
+_init_const     QSET    ($%c%) SHL 10
+                ENDI
+ENDM
+MACRO           _init_alloc16(v,c)
+                IF (_init_const = -1) AND (DEFINED _init_cst_%c%) = 0
+_init_cst_%c%   QEQU    (%v%)
+_init_const     QSET    ($%c%) SHL 10
+                ENDI
+ENDM
+
+
+MACRO           _init_encode_constant(v)
+
+_init_escape    QSET    0
+_init_const     QSET    -1 
+
+                IF  (%v% >= $00) AND (%v% <= $1F)
+_init_const     QSET    (%v% + $20) SHL 10
+                ELSE
+                _init_try(%v%,00)
+                _init_try(%v%,01)
+                _init_try(%v%,02)
+                _init_try(%v%,03)
+                _init_try(%v%,04)
+                _init_try(%v%,05)
+                _init_try(%v%,06)
+                _init_try(%v%,07)
+                _init_try(%v%,08)
+                _init_try(%v%,09)
+                _init_try(%v%,0A)
+                _init_try(%v%,0B)
+                _init_try(%v%,0C)
+                _init_try(%v%,0D)
+                _init_try(%v%,0E)
+                _init_try(%v%,0F)
+                _init_try(%v%,10)
+                _init_try(%v%,11)
+                _init_try(%v%,12)
+                _init_try(%v%,13)
+                _init_try(%v%,14)
+                _init_try(%v%,15)
+                _init_try(%v%,16)
+                _init_try(%v%,17)
+                _init_try(%v%,18)
+                _init_try(%v%,19)
+                _init_try(%v%,1A)
+                _init_try(%v%,1B)
+                _init_try(%v%,1C)
+                _init_try(%v%,1D)
+                _init_try(%v%,1E)
+                ENDI
+
+                IF ((%v% - $20) AND $FF00) = 0
+                _init_alloc8(%v%,00)
+                _init_alloc8(%v%,01)
+                _init_alloc8(%v%,02)
+                _init_alloc8(%v%,03)
+                _init_alloc8(%v%,04)
+                _init_alloc8(%v%,05)
+                _init_alloc8(%v%,06)
+                _init_alloc8(%v%,07)
+                _init_alloc8(%v%,08)
+                _init_alloc8(%v%,09)
+                _init_alloc8(%v%,0A)
+                _init_alloc8(%v%,0B)
+                _init_alloc8(%v%,0C)
+                _init_alloc8(%v%,0D)
+                _init_alloc8(%v%,0E)
+                _init_alloc8(%v%,0F)
+                ELSE
+                _init_alloc16(%v%,10)
+                _init_alloc16(%v%,11)
+                _init_alloc16(%v%,12)
+                _init_alloc16(%v%,13)
+                _init_alloc16(%v%,14)
+                _init_alloc16(%v%,15)
+                _init_alloc16(%v%,16)
+                _init_alloc16(%v%,17)
+                _init_alloc16(%v%,18)
+                _init_alloc16(%v%,19)
+                _init_alloc16(%v%,1A)
+                _init_alloc16(%v%,1B)
+                _init_alloc16(%v%,1C)
+                _init_alloc16(%v%,1D)
+                _init_alloc16(%v%,1E)
+                ENDI
+
+                IF _init_const = -1
+_init_const     QEQU    $1F SHL 10
+_init_escape    QEQU    1
+                ENDI
+ENDM
+
+MACRO           _emit_cst8(a,b)
+                IF      (DEFINED _init_cst_%a%) <> 0
+_init_tmp       QSET    (((_init_cst_%a% - $20) AND $FF) SHL 8)
+                ENDI
+                IF      (DEFINED _init_cst_%b%) <> 0
+_init_tmp       QSET    _init_tmp OR ((_init_cst_%b% - $20) AND $FF)
+                ENDI
+                IF      (DEFINED _init_cst_%a%) OR (DEFINED _init_cst_%b%)
+                DECLE   _init_tmp
+                ENDI
+ENDM
+
+MACRO           _emit_cst16(a)
+                IF  (DEFINED _init_cst_%a%) <> 0
+                DECLE _init_cst_%a%
+                ENDI
+ENDM
+
+
+
+;; ======================================================================== ;;
+;;  INIT val, addr -- Output an initialization record                       ;;
+;; ======================================================================== ;;
+MACRO           INIT    v, a
+
+                LISTING "code"
+                _init_encode_constant(%v%)
+                IF      _init_escape = 0
+                DECLE   _init_const OR %a%
+                ELSE
+                DECLE   _init_const OR %a%, %v%
+                ENDI
+                LISTING "prev"
+ENDM
+
+;; ======================================================================== ;;
+;;  INIT_DONE   Terminate an initialization list.                           ;;
+;; ======================================================================== ;;
+MACRO           INIT_DONE
+                DECLE   0
+ENDM
+
+
+;; ======================================================================== ;;
+;;  EMIT_CST8   Output the CST8 table.  This call must appear after all     ;;
+;;              INIT lists due to assembler restrictions.                   ;;
+;; ======================================================================== ;;
+MACRO           EMIT_CST8
+
+CST8            PROC
+                LISTING "code"
+                IF  (DEFINED _cst8_fix) AND ((CST8 AND $8000) = 0)
+_init_tmp       QSET    $
+                ORG     _cst8_fix
+                CLRC                ; patch up INITMEM
+                ORG     _init_tmp
+                ENDI
+
+                _emit_cst8(00, 01)
+                _emit_cst8(02, 03)
+                _emit_cst8(04, 05)
+                _emit_cst8(06, 07)
+                _emit_cst8(08, 09)
+                _emit_cst8(0A, 0B)
+                _emit_cst8(0C, 0D)
+                _emit_cst8(0E, 0F)
+                LISTING "prev"
+                ENDP
+ENDM
+
+;; ======================================================================== ;;
+;;  EMIT_CST16  Output the CST16 table.  This call must appear after all    ;;
+;;              INIT lists due to assembler restrictions.                   ;;
+;; ======================================================================== ;;
+MACRO           EMIT_CST16
+
+CST16           PROC
+                LISTING "code"
+                _emit_cst16(10)
+                _emit_cst16(11)
+                _emit_cst16(12)
+                _emit_cst16(13)
+                _emit_cst16(14)
+                _emit_cst16(15)
+                _emit_cst16(16)
+                _emit_cst16(17)
+                _emit_cst16(18)
+                _emit_cst16(19)
+                _emit_cst16(1A)
+                _emit_cst16(1B)
+                _emit_cst16(1C)
+                _emit_cst16(1D)
+                _emit_cst16(1E)
+                LISTING "prev"
+                ENDP
+ENDM
+
+                ENDI
+
+;; ======================================================================== ;;
+;;  End of File:  initmem.mac                                               ;;
+;; ======================================================================== ;;

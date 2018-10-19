@@ -1,0 +1,6 @@
+#define BARD_PROJECT_NAME "Bard Storyteller"
+#define BARD_PROJECT_PREFIX "bard"
+#define BARD_PROJECT_VERSION "0.10.0"
+#define BARD_PROJECT_DATE "Jul 2014"
+#define BARD_PROJECT_STATE "release"
+#define BARD_PROJECT_SHLIB_VERSION "1"

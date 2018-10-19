@@ -1,0 +1,16 @@
+CC = gcc
+
+CFLAGS  = -Os -fomit-frame-pointer -I/usr/include/SDL -I./src/gfx
+LDFLAGS = -lSDL -lSDL_mixer -lm
+OBJS  = src/ram.o src/util_snd.o src/function.o src/dconv.o src/scene.o src/title.o src/init.o src/act.o src/option.o src/ending.o src/logo.o
+SOURCES = $(patsubst %.o, %.c, $(OBJS))
+
+OUTPUT= gnp
+
+all: $(OUTPUT)
+
+$(OUTPUT): $(OBJS)
+	$(CC) -o $@ $(OBJS) $(LDFLAGS)
+
+clean:
+	rm $(OBJS)

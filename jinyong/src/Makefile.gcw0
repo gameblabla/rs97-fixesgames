@@ -1,0 +1,33 @@
+OBJ = charset.o jymain.o luafun.o mainmap.o piccache.o sdlfun.o
+HEADERS = config.h list.h luafun.h
+CC = /opt/rs97-toolchain/bin/mipsel-linux-gcc
+CXX = mipsel-linux-g++
+TARGET = jysdllua.dge
+BASEFLAGS = -g3 -D_DEBUG=0
+#BASEFLAGS = -s -O3
+CFLAGS = ${BASEFLAGS} `/opt/rs97-toolchain/usr/mipsel-buildroot-linux-uclibc/sysroot/usr/bin/sdl-config --cflags` -I/opt/rs97-toolchain/usr/include/
+LDFLAGS = ${BASEFLAGS} `/opt/rs97-toolchain/usr/mipsel-buildroot-linux-uclibc/sysroot/usr/bin/sdl-config --libs` -L/opt/rs97-toolchain/usr/lib/lua -lSDL_image -lSDL_mixer -lSDL_ttf
+
+#CFLAGS += -DHAS_SDL_MPEG=1
+#LDFLAGS += -lsmpeg
+
+all: ${TARGET}
+
+${TARGET}: ${OBJ}
+	${CXX} ${LDFLAGS} -o ${TARGET} ${OBJ}
+	rm -f jysdllua.opk
+	mksquashfs ../gcw0/* $(TARGET) jysdllua.opk
+
+clean:
+	rm -f *.o ${TARGET}
+	rm -rf jysdllua.opk
+
+distclean:
+	rm -f *.o ${TARGET}
+
+%.o:    %.cpp ${HEADERS}
+	${CXX} ${CFLAGS} -c $< -o $@
+
+%.o:    %.c ${HEADERS}
+	${CC} ${CFLAGS} -c $< -o $@
+

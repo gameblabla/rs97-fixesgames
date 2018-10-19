@@ -1,0 +1,32 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/anonymous/Documents/Dev/rs97-source/cdogs/src/json/json.c
+json.h
+/home/anonymous/Documents/Dev/rs97-source/cdogs/src/json/json.h
+stdlib.h
+-
+stdio.h
+-
+string.h
+-
+assert.h
+-
+memory.h
+-
+sys/types.h
+-
+
+/home/anonymous/Documents/Dev/rs97-source/cdogs/src/json/json.h
+stdint.h
+-
+stdio.h
+-
+limits.h
+-
+

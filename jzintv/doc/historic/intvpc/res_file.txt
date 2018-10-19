@@ -1,0 +1,159 @@
+===============================================================================
+    INTVPC Resource File Format                                        
+    J. Zbiciak
+===============================================================================
+
+
+This description is reverse engineered from the simulator's data files,
+and as such may not be complete or 100% correct.  Some feedback has
+been provided by Carl Mueller, Jr.  himself to provide some corrections,
+though.  Nonetheless, Caveat Hackor.
+
+Acknowledgements:  The Intellivision simulator code was developed
+solely by Carl Mueller, Jr.  Technical assistance, including providing
+some hardware and other software support was provided Scott Nudds and
+William Moeller.  Please see De Re Intellivision volume 1 for a more
+detailed history of the development of the Intellivision for PC and a
+more complete set of credits for its development.
+
+    http://2bits.simplenet.com/intv/dri/index.html
+
+
+Resource Archive Format
+=======================
+
+ Archive Header
+ Length: 49 bytes
+
+ Offset  Length  Format   Description
+ ------  ------  ------   --------------------------------------------
+    0      13    String   Identification string  -- always "Resource"
+   13       2    Word     Status (0000 = Normal, 0001 = Deleted)
+   15       2    Word     Number of resources
+   17      32    n/a      Reserved.
+   49      xx    Record   Resource record, length noted in record header
+
+  
+ Resource Record Header
+ Length: 31 bytes
+
+ Offset  Length  Format     Description
+ ------  ------  ------     --------------------------------------------
+    0      13    String     Name of resource
+   13       2    Word       Resource type (see type table below)
+   15       4    Long       Length of resource in bytes
+   19       4    Long       Offset to next resource *
+   23       4    Long       Offset into archive in bytes **
+   27       4    n/a        Unused (?) -- always zeroes
+   31     len    Data       Resource data, length given in header
+
+ *  This is always equal to the length in "packed" archives, but might
+    be larger in "unpacked" archives.  I currently only handle "packed"
+    archives.  
+
+ ** This field is supposedly only used internally in Carl Mueller's
+    software, and can be ignored.  It is usually not set in most archives.
+    Its value should not be trusted.
+
+Image File Format
+=================
+
+ Offset  Length  Format     Description
+ ------  ------  ------     --------------------------------------------
+    0       2    Word       Width of uncompressed image
+    2       2    Word       Height of uncompressed image
+    4       2    Word       Length of compressed data, (0 == not compr.)
+    6       2    Word       Colors in palette (0 = no palette)
+    8     len    RLE        Run-length encoded data
+
+ Data is encoded as a sequence of runs.  Each run is of the form
+ "Run", "Data".  The "Run" value is encoded in a single byte like so:
+
+                 7   6   5   4   3   2   1   0
+               +---+---+---+---+---+---+---+---+
+               |         Run Length        |RPT|
+               +---+---+---+---+---+---+---+---+
+
+ The "Run Length" is a value in the range 0 - 127.  I'm not certain what
+ a run length of 0 does -- it could act as a special code, or as a run of
+ 128.  
+
+ The "RPT" bit determines how this run is treated.  If this bit is set,
+ then the next byte is repeated "Run Length" times in the output image.
+ If this bit is cleared, then the next "Run Length" bytes are copied from
+ the compressed data stream directly to the image.  I refer to runs with
+ RPT==1 as "Repeat Runs", and runs with RPT==0 as "Escape Runs".
+
+ The image itself is treated as a linear stream of bytes during decode.
+ This stream of bytes is corresponds to a left-to-right, top-to-bottom
+ scan of the image -- eg. a standard row-major-order raster scan.
+ 
+ Notes:
+
+ -- If the compressed length field is set to 0, then the image file is
+    not compressed.
+
+ -- No image files currently have palettes attached.
+
+Rom File Format
+===============
+
+ The cartridge ROM images store the decles in two portions.  The first
+ 4/5ths of the file contains the lower 8 bits of every decle.  The last
+ 1/5ths of the file contains the upper 2 bits of each decle, packed
+ four to a byte.  Packing order is not yet known.  I will refer to this
+ format as the 8+2 format (in the spirit of the Apple ]['s 6+2 and 5+3
+ disk formats).
+
+ The packing order appears to be like so, although I need to verify:
+
+            Bits      7   6   5   4   3   2   1   0
+                    [   3   |   2   |   1   |   0   ]
+
+ The last two bytes of the file contain a 2-byte count value.  This count
+ appears to be the number of bytes the rom image occupies when unpacked
+ so that each decle occupies a 16-bit word.  (eg. a 4Kdecle ROM has a
+ length of 0x2000.)
+
+ Notes:
+
+ -- EXEC.CBN in vol1.res doesn't appear to adhere to this format.  It was
+    apparently modified to remove some routines related to rotating/flipping
+    bitmaps.
+ 
+
+Other Information
+=================
+
+ Type numbers for resource records:
+
+   0000 -- Binary object (Intellivision objects and other binary resources.)
+   0001 -- Resource files
+   0002 -- Compressed image files (custom RLE format)
+   0003 -- Font character (in same format as image files, it appears)
+   0004 -- Palette file (only?) (in 6-bit RGB triples.)
+   0005 -- Sound file, (.SND in Mac .ub format, 11025Hz, AYxxxx files unknown)
+   0006 -- PCX files (none observed so far)
+   0007 -- HTML documentation file
+
+ Data formats:
+
+   String       First byte is length, next 12 bytes are zero-padded (but not
+                necessarily zero-terminated) string.
+
+   Word         2-byte integer, little-endian format
+
+   Long         4-byte integer, little-endian format
+
+   Data         Raw data, in one of the noted type formats (see type-table 
+                above).
+
+   RLE          Run-length encoded image data.  
+
+
+
+===============================================================================
+
+ $Id: res_file.txt,v 1.2 1998/12/28 07:17:45 im14u2c Exp $
+
+===============================================================================

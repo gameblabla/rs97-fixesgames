@@ -1,0 +1,254 @@
+==============================================================================
+ jzIntv Debugger
+ J. Zbiciak
+==============================================================================
+
+jzIntv includes a debugging monitor that is useful for debugging code.
+It is similar in style to the Apple ][ monitor and the old DOS DEBUG
+environment.
+
+All commands are single letters followed by 0, 1 or 2 hexadecimal numbers.
+Commands are case insensitive.  
+
+---------------
+Command Summary
+---------------
+
+R <#>       Run for <#> cycles.  If no argument given, runs "forever"
+S <#>       Step for <#> cycles.  If no argument given, steps "forever"
+T <#>       sTep over CALL, or run <#> cycles, whichever is less.
+
+M <A> <B>   show Memory at location <A>.  Show at least <B> locations.
+E <A> <B>   Enter the value <B> into memory at location <A>
+P <A> <B>   Poke the value <B> into memory at location <A>
+U <A> <B>   Unassemble memory at location <A>.  Show at least <B> instrs.
+G <R> <V>   change the value reGister <R> to the value <V>
+
+
+B <#>       set Breakpoint at location <#>
+N <#>       uNset breakpoint at location <#>
+W <A> <B>   toggle Watches on locations <A> through <B>.  Toggles watch
+            for a single location if only one number given.
+
+H           toggle History logging on/off
+A           toggle memory Attribute logging on/off
+D           Dump emulator state. 
+Q           Quit jzIntv
+
+
+Also, pressing 'enter' with no command is the same as entering "S 1".
+
+
+--------------
+Command Prompt
+--------------
+
+The debugger has a simple command prompt that includes some basic status
+information:
+
+ 0000 0000 0000 0000 0000 1003 0000 1026 -------?  MVII #$02f1,R6           12
+> 
+
+The 8 numbers at the left show the contents of R0 through R7, with R0 
+at the far left.  The next 9 characters show the state of various flags.
+Each flag is assigned a letter.  Some flags are "virtual", in that they
+say something about the state of the machine, but are not actual CPU
+flags.  When the flag is set, its letter appears in this field.  When
+it's clear, a dash appears instead. 
+
+The debugger uses following flag letters:
+
+    S   Sign bit
+    C   Carry bit
+    O   Overflow bit
+    Z   Zero bit
+    I   Interrupts enabled
+    D   SDBD active
+    i   Interruptible instruction
+
+The following 4 letters all appear in the last flag position to indicate
+interrupt state information:
+
+    q   Interrupt asserted
+    b   BUSRQ asserted
+    Q   Interrupt being taken
+    B   CPU halted by BUSRQ
+
+After the flag information, the debugger shows the disassembly for the
+instruction that is about to execute, and finally the cumulative cycle
+count since jzIntv was launched.
+
+If you step through code, jzIntv's will also print what memory accesses
+it sees.  That output looks like so:
+
+ RD a=1000 d=0004 CP-1610          (PC = $1000) t=0
+ |    |      |     |                      |       |
+ |    |      |     +---- Requestor        |       +---- Time stamp
+ |    |      |                            |
+ |    |      +---- Data value             +---- Current program counter
+ |    |
+ |    +---- Address
+ |
+ +---- RD for a read, WR for a write.
+
+
+------------
+Running Code
+------------
+
+The 'R'un, 'S'tep and s'T'ep-over commands run your program.  With no
+arguments, these commands default to "run forever."  Otherwise, you can
+specify how many instructions to execute for.
+
+'R' runs code silently.  The debugger prints minimal information while
+running with 'R'.  The running program stops when one of the following
+happens:
+
+1)  The requested # of instructions ran.  (Never happens if 'r' had
+    no argument.)
+
+2)  Breakpoint reached.
+
+3)  User pressed F4.
+
+4)  The program 'crashed.'
+
+
+'S' steps through code.  It will print out the current CPU state after
+each instruction, as well as a log of all memory accesses.  This is useful
+when you're stepping through a function and you want to see what it does.
+Notes:
+
+1.  I recommend always giving 'S' an argument, unless you're certain 
+    there's a breakpoint near by.
+
+2.  Pressing <enter> on an empty command line is equivalent to "S 1".  
+    That is, it steps by 1 instruction.
+
+
+'T' attempts to step-over a function call.  It does this by setting a
+temporary breakpoint on the instruction following the current one, and
+then running as if the user pressed 'R'.  This works if the CALL has
+code immediately following it.  This does not work when there is data 
+after the CALL, such as:
+
+        CALL    FOO
+        DECLE   arg1
+        DECLE   arg2
+
+-------------------
+Setting Breakpoints
+-------------------
+
+The 'B'reakpoint command sets a breakpoint at the specified location.
+jzIntv will halt when and return to the debugger prompt when it reaches
+a breakpoint.  You can 'R'un or 'S'tep to resume after a breakpoint
+without clearing the breakpoint.
+
+The u'N'set command clears a breakpoint.  This is useful when you no
+longer need a specific breakpoint.
+
+For both 'N' and 'B' commands, if you give them no argument, they'll 
+use the current program counter as the argument.  This is particularly
+useful for 'N':  When you stop at a breakpoint, you can unset that
+breakpoint simply by pressing 'N' and <enter>.
+
+
+-----------------
+Looking at Memory 
+-----------------
+
+The 'M'emory command dumps memory.  The memory dump looks like so:
+
+0000:  3800 3800 3800 3800  3800 3800 3800 3800   # 8.8.8.8.8.8.8.8.
+0008:  3000 3000 3000 3000  3000 3000 3000 3000   # 0.0.0.0.0.0.0.0.
+0010:  0000 0000 0000 0000  0000 0000 0000 0000   # ................
+0018:  3C00 3C00 3C00 3C00  3C00 3C00 3C00 3C00   # ................
+0020:  3FFF 3FFF 3FFF 3FFF  3FFF 3FFF 3FFF 3FFF   # ................
+0028:  3FF0 3FF0 3FF0 3FF0  3FF0 3FFF 3FFF 3FFF   # ................
+0030:  3FF8 3FF8 3FFC 3FFF  3FFF 3FFF 3FFF 3FFF   # ................
+0038:  3FFF 3FFF 3FFF 3FFF  3FFF 3FFF 3FFF 3FFF   # ................
+
+The numbers at the left give addresses.  The numbers in the middle
+give the contents of memory.  The text at the right gives an ASCII
+representation of the contents of memory, with '.' characters in place
+of non-printing characters.
+
+The memory dumper always rounds addresses down to the next lowest 
+multiple of 8, and always dumps a multiple of 8 locations.  
+
+The 'U'nassemble command shows a code disassembly, such as this:
+
+    $5472:    0281 0103              MVI  $0103,R1    
+    $5474:    0341 0102              CMP  $0102,R1    
+    $5476:    0204 0010              BEQ  $5488     
+    $5478:    0009                   INCR R1     
+    $5479:    03b9 0007              ANDI #$0007,R1    
+    $547B:    0241 0103              MVO  R1,$0103    
+
+The numbers at the left are the program addresses.  The numbers in the
+middle are the opcode words, and the actual disassembly apepars at the
+right.
+
+If you run 'U' without an argument, jzIntv will disassemble a handful
+of instructions starting at the current program counter location.
+
+The 'W'atch command toggles whether jzIntv watches a particular address
+or range of addresses.  When 'W'atch is enabled on a location, jzIntv
+will print out information about writes it sees to that location.  This
+information is the same format as described under "command prompt."
+
+Providing 'W' with a single argument toggles watching that location only.
+Providing 'W' with two arguments toggles watching an entire range of 
+locations.
+
+---------------
+Changing Memory 
+---------------
+
+The 'P'oke and 'E'nter commands let you change the contents of memory.  
+
+The 'E' command writes to memory as if the CPU was writing to memory. It
+triggers all the same side effects the CPU might trigger, and is subject
+to the same restrictions.  The 'P' command does not trigger side effects,
+and it bypasses bus restrictions. 
+
+For example, when the ECS is enabled, you can toggle the $7000 - $7FFF
+ROM on and off with these commands:
+
+e7FFF 7A50     # Turn $7xxx ROM on
+e7FFF 7A51     # Turn $7xxx ROM off
+
+In contrast these commands won't work:
+
+p7FFF 7A50     # Does nothing
+p7FFF 7A51     # Does nothing
+
+On the flip side, you can always use 'P' to write to GRAM, whereas 'E'
+only works when the System RAM is in "bus copy" mode.
+
+
+-------------------
+Logging and Dumping
+-------------------
+
+The 'D'ump command writes jzIntv internal state out to files:
+
+    dump.hst    Logging history, if enabled with 'H'
+    dump.atr    Memory attribute information, if enabled with 'A'
+    dump.cpu    CP-1610 emulation internal state
+    dump.mem    Binary image of memory as seen by the CPU
+
+The 'H'istory command toggles history logging.  With this enabled, jzIntv
+keeps track of the last several thousand instructions executed, as well
+as the register states and flags associated with each.  The history log
+also includes instruction-level profile information.
+
+The 'A'ttribute command toggles memory attribute discovery.  jzIntv
+will keep track of every memory access type for each memory location.
+Access types include:
+
+    code:    An instruction was fetched from this location.
+    data:    The CPU read or wrote data to this location.
+    dbdata:  The CPU read this location while SDBD was active.
+    

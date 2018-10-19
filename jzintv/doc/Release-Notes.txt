@@ -1,0 +1,37 @@
+Release Notes
+-------------
+
+jzIntv 1.0:  This is the first jzIntv with a proper version number.  Many
+things have been added or changed since the last snapshot release.  There
+are too many to list here.
+
+Look around the documentation.  It actually exists now.  It's still somewhat
+thin, but it's infinitely more than there was before.  And most of all,
+enjoy!    
+
+
+Platform specific notes
+-----------------------
+
+The generic jzIntv documentation lives mostly under doc/jzintv/.  Platform
+specific documentation lives under doc/platform/.
+
+Please note that jzIntv is a Linux / UNIX program first, and has been ported 
+to Windows and MacOS X.  As a result, using it under these platforms is 
+somewhat different than using other software that natively targets these 
+platforms.
+
+Arnauld Chevallier and John Tanner have put in work on Windows and MacOS X
+GUIs that wrap jzIntv.  These wrappers provide a much more native feel to
+jzIntv.  An eventual goal of the jzIntv project is to provide up-to-date
+wrappers with each major release of jzIntv, so that every platform can use
+jzIntv in the manner that platform prefers.  The raw version I currently
+distribute does not contain these niceties.
+
+
+Administrivia
+-------------
+
+Intellivision (TM) is a trademark of Intellivision Productions.  Joe
+Zbiciak and jzIntv are not affiliated with Intellivision Productions.
+

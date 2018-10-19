@@ -1,0 +1,30 @@
+# Copyright (C) 2010 Amf
+
+chroma level
+
+title: chroma 0.00 : pieces
+size: 17 21
+
+data:
+%%%%%%%%%%%%%%%%%
+%               %
+% 1 2 . a b c d %
+%               %
+% o * / A B C D %
+%               %
+% - | % e f g h %
+%               %
+% S M m E F G H %
+%               %
+% T N n i j k l %
+%               %
+% : 8 % I J K L %
+%               %
+% %%% %  % %  % %
+%     % %% %%   %
+% %%% %       % %
+% %%%   %% %%   %
+% %%% %  % %  % %
+%               %
+%%%%%%%%%%%%%%%%%
+

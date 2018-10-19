@@ -8,8 +8,10 @@ backends/graphics/surfacesdl/surfacesdl-graphics.o: \
  common/util.h common/textconsole.h common/memory.h common/keyboard.h \
  graphics/palette.h backends/graphics/sdl/sdl-graphics.h \
  backends/graphics/windowed.h common/frac.h common/rect.h common/debug.h \
- graphics/scaler/aspect.h graphics/scaler.h graphics/surface.h \
- backends/platform/sdl/sdl-window.h backends/platform/sdl/sdl-sys.h \
+ common/config-manager.h common/hashmap.h common/memorypool.h \
+ common/singleton.h common/hash-str.h graphics/scaler/aspect.h \
+ graphics/scaler.h graphics/surface.h backends/platform/sdl/sdl-window.h \
+ backends/platform/sdl/sdl-sys.h \
  /opt/rs97-toolchain/mipsel-buildroot-linux-musl/sysroot/usr/include/SDL/SDL.h \
  /opt/rs97-toolchain/mipsel-buildroot-linux-musl/sysroot/usr/include/SDL/SDL_main.h \
  /opt/rs97-toolchain/mipsel-buildroot-linux-musl/sysroot/usr/include/SDL/SDL_stdinc.h \
@@ -37,20 +39,18 @@ backends/graphics/surfacesdl/surfacesdl-graphics.o: \
  /opt/rs97-toolchain/mipsel-buildroot-linux-musl/sysroot/usr/include/SDL/SDL_timer.h \
  /opt/rs97-toolchain/mipsel-buildroot-linux-musl/sysroot/usr/include/SDL/SDL_version.h \
  /opt/rs97-toolchain/mipsel-buildroot-linux-musl/sysroot/usr/include/SDL/SDL_syswm.h \
- common/events.h common/queue.h common/singleton.h \
- backends/events/sdl/sdl-events.h backends/platform/sdl/sdl.h \
- backends/modular-backend.h backends/base-backend.h \
- backends/mixer/sdl/sdl-mixer.h audio/mixer_intern.h common/mutex.h \
- audio/mixer.h common/types.h backends/log/log.h common/config-manager.h \
- common/hashmap.h common/memorypool.h common/hash-str.h \
- common/translation.h common/fs.h common/archive.h common/ptr.h \
- common/safe-bool.h common/str-array.h graphics/font.h common/ustr.h \
- graphics/fontman.h gui/EventRecorder.h common/savefile.h common/stream.h \
- common/endian.h common/error.h engines/advancedDetector.h \
- engines/metaengine.h engines/game.h common/language.h common/platform.h \
- engines/savestate.h base/plugins.h backends/plugins/elf/version.h \
- engines/engine.h common/gui_options.h common/file.h image/png.h \
- image/image_decoder.h
+ common/events.h common/queue.h backends/events/sdl/sdl-events.h \
+ backends/platform/sdl/sdl.h backends/modular-backend.h \
+ backends/base-backend.h backends/mixer/sdl/sdl-mixer.h \
+ audio/mixer_intern.h common/mutex.h audio/mixer.h common/types.h \
+ backends/log/log.h common/translation.h common/fs.h common/archive.h \
+ common/ptr.h common/safe-bool.h common/str-array.h graphics/font.h \
+ common/ustr.h graphics/fontman.h gui/EventRecorder.h common/savefile.h \
+ common/stream.h common/endian.h common/error.h \
+ engines/advancedDetector.h engines/metaengine.h engines/game.h \
+ common/language.h common/platform.h engines/savestate.h base/plugins.h \
+ backends/plugins/elf/version.h engines/engine.h common/gui_options.h \
+ common/file.h image/png.h image/image_decoder.h
 
 common/scummsys.h:
 
@@ -101,6 +101,16 @@ common/frac.h:
 common/rect.h:
 
 common/debug.h:
+
+common/config-manager.h:
+
+common/hashmap.h:
+
+common/memorypool.h:
+
+common/singleton.h:
+
+common/hash-str.h:
 
 graphics/scaler/aspect.h:
 
@@ -170,8 +180,6 @@ common/events.h:
 
 common/queue.h:
 
-common/singleton.h:
-
 backends/events/sdl/sdl-events.h:
 
 backends/platform/sdl/sdl.h:
@@ -191,14 +199,6 @@ audio/mixer.h:
 common/types.h:
 
 backends/log/log.h:
-
-common/config-manager.h:
-
-common/hashmap.h:
-
-common/memorypool.h:
-
-common/hash-str.h:
 
 common/translation.h:
 

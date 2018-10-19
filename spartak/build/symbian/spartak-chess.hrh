@@ -1,0 +1,9 @@
+#ifndef __SPARTAK_CHESS_HRH__
+#define __SPARTAK_CHESS_HRH__
+
+enum TMenuCommands
+{
+	EDummy = 1
+};
+
+#endif//__SPARTAK_CHESS_HRH__

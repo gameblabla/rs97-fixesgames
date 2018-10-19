@@ -1,0 +1,270 @@
+<!-- Copyright (C) 2010 Amf -->
+<chroma type="graphics">
+
+<head>
+
+<title translate="yes">Chroma Zen</title>
+
+<sizes>
+<size x="16" y="16" small="yes" pieces="yes" />
+<size x="20" y="20" small="yes" pieces="yes" />
+<size x="24" y="24" small="yes" pieces="yes" />
+<size x="32" y="32" small="yes" pieces="yes" />
+<size x="40" y="40" small="yes" pieces="yes" />
+<size x="64" y="64" small="yes" pieces="yes" />
+</sizes>
+
+</head>
+
+<background colour="#808080" />
+
+<pieces path="chroma-zen">
+
+<piece name="space" tile="yes">
+<image colour="#ffffff" />
+</piece>
+
+<piece name="wall" bevel="piece" tile="yes">
+<image colour="#808080" />
+<image file="%x_wall_x.png" />
+<image file="%x_wall_y.png" />
+<image file="%x_wall_outside.png" />
+<image file="%x_wall_inside.png" />
+</piece>
+
+<piece name="player_one">
+<image file="%x_player_one.png" />
+<image file="%x_player_one_swapped.png" />
+<image type="small" file="%x_player_one.png" />
+<image type="small" file="%x_player_one_swapped.png" />
+</piece>
+
+<piece name="player_two">
+<image file="%x_player_two.png" />
+<image file="%x_player_two_swapped.png" />
+<image type="small" file="%x_player_two.png" />
+<image type="small" file="%x_player_two_swapped.png" />
+</piece>
+
+<piece name="dots">
+<image file="%x_dots.png" />
+</piece>
+
+<piece name="arrow_red_left">
+<image file="%x_arrow_red_left.png" />
+</piece>
+
+<piece name="arrow_red_up">
+<image file="%x_arrow_red_up.png" />
+</piece>
+
+<piece name="arrow_red_right">
+<image file="%x_arrow_red_right.png" />
+</piece>
+
+<piece name="arrow_red_down">
+<image file="%x_arrow_red_down.png" />
+</piece>
+
+<piece name="bomb_red_left">
+<image file="%x_bomb_red_left.png" />
+</piece>
+
+<piece name="bomb_red_up">
+<image file="%x_bomb_red_up.png" />
+</piece>
+
+<piece name="bomb_red_right">
+<image file="%x_bomb_red_right.png" />
+</piece>
+
+<piece name="bomb_red_down">
+<image file="%x_bomb_red_down.png" />
+</piece>
+
+<piece name="arrow_green_left">
+<image file="%x_arrow_green_left.png" />
+</piece>
+
+<piece name="arrow_green_up">
+<image file="%x_arrow_green_up.png" />
+</piece>
+
+<piece name="arrow_green_right">
+<image file="%x_arrow_green_right.png" />
+</piece>
+
+<piece name="arrow_green_down">
+<image file="%x_arrow_green_down.png" />
+</piece>
+
+<piece name="bomb_green_left">
+<image file="%x_bomb_green_left.png" />
+</piece>
+
+<piece name="bomb_green_up">
+<image file="%x_bomb_green_up.png" />
+</piece>
+
+<piece name="bomb_green_right">
+<image file="%x_bomb_green_right.png" />
+</piece>
+
+<piece name="bomb_green_down">
+<image file="%x_bomb_green_down.png" />
+</piece>
+
+<piece name="arrow_blue_left">
+<image file="%x_arrow_blue_left.png" />
+</piece>
+
+<piece name="arrow_blue_up">
+<image file="%x_arrow_blue_up.png" />
+</piece>
+
+<piece name="arrow_blue_right">
+<image file="%x_arrow_blue_right.png" />
+</piece>
+
+<piece name="arrow_blue_down">
+<image file="%x_arrow_blue_down.png" />
+</piece>
+
+<piece name="bomb_blue_left">
+<image file="%x_bomb_blue_left.png" />
+</piece>
+
+<piece name="bomb_blue_up">
+<image file="%x_bomb_blue_up.png" />
+</piece>
+
+<piece name="bomb_blue_right">
+<image file="%x_bomb_blue_right.png" />
+</piece>
+
+<piece name="bomb_blue_down">
+<image file="%x_bomb_blue_down.png" />
+</piece>
+
+<piece name="circle">
+<image file="%x_circle.png" />
+</piece>
+
+<piece name="star">
+<image file="%x_star.png" />
+<image type="small" file="%x_star.png" />
+</piece>
+
+<piece name="door">
+<image file="%x_door.png" />
+<image type="small" file="%x_door.png" />
+</piece>
+
+<piece name="explosion_red_left">
+<image colour="#ff0000" />
+</piece>
+<piece name="explosion_red_horizontal">
+<clone piece="explosion_red_left" />
+</piece>
+<piece name="explosion_red_right">
+<clone piece="explosion_red_left" />
+</piece>
+<piece name="explosion_red_top">
+<clone piece="explosion_red_left" />
+</piece>
+<piece name="explosion_red_vertical">
+<clone piece="explosion_red_left" />
+</piece>
+<piece name="explosion_red_bottom">
+<clone piece="explosion_red_left" />
+</piece>
+
+<piece name="explosion_green_left">
+<image colour="#00ff00" />
+</piece>
+<piece name="explosion_green_horizontal">
+<clone piece="explosion_green_left" />
+</piece>
+<piece name="explosion_green_right">
+<clone piece="explosion_green_left" />
+</piece>
+<piece name="explosion_green_top">
+<clone piece="explosion_green_left" />
+</piece>
+<piece name="explosion_green_vertical">
+<clone piece="explosion_green_left" />
+</piece>
+<piece name="explosion_green_bottom">
+<clone piece="explosion_green_left" />
+</piece>
+
+<piece name="explosion_blue_left">
+<image colour="#0000ff" />
+</piece>
+<piece name="explosion_blue_horizontal">
+<clone piece="explosion_blue_left" />
+</piece>
+<piece name="explosion_blue_right">
+<clone piece="explosion_blue_left" />
+</piece>
+<piece name="explosion_blue_top">
+<clone piece="explosion_blue_left" />
+</piece>
+<piece name="explosion_blue_vertical">
+<clone piece="explosion_blue_left" />
+</piece>
+<piece name="explosion_blue_bottom">
+<clone piece="explosion_blue_left" />
+</piece>
+
+<xor>
+<piece name="dots_x">
+<image file="%x_dots_x.png" />
+</piece>
+
+<piece name="dots_y">
+<image file="%x_dots_y.png" />
+</piece>
+
+<piece name="switch">
+<image file="%x_switch.png" />
+</piece>
+
+<piece name="teleport">
+<image file="%x_teleport.png" />
+</piece>
+
+<piece name="map_top_left">
+<image file="%x_map_top_left.png" />
+</piece>
+
+<piece name="map_top_right">
+<image file="%x_map_top_right.png" />
+</piece>
+
+<piece name="map_bottom_left">
+<image file="%x_map_bottom_left.png" />
+</piece>
+
+<piece name="map_bottom_right">
+<image file="%x_map_bottom_right.png" />
+</piece>
+
+<piece name="darkness">
+<image colour="#000000" />
+</piece>
+</xor>
+
+<enigma>
+<piece name="dots_double">
+<image file="%x_dots_double.png" />
+</piece>
+
+<piece name="circle_double">
+<image file="%x_circle_double.png" />
+</piece>
+</enigma>
+
+</pieces>
+
+</chroma>

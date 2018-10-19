@@ -1,0 +1,29 @@
+file /home/anonymous/Documents/Dev/rs97-source/gamebatte/gambatte_sdl/SConstruct,line 66:
+	Configure(confdir = .sconf_temp)
+scons: Configure: Checking for C library z... 
+.sconf_temp/conftest_0.c <-
+  |
+  |
+  |
+  |int
+  |main() {
+  |  
+  |return 0;
+  |}
+  |
+/opt/rs97-toolchain/bin/mipsel-linux-gcc -o .sconf_temp/conftest_0.o -c -Wall -Wextra -O2 -fomit-frame-pointer -ffunction-sections -ffast-math -fsingle-precision-constant -G0 -I/opt/rs97-toolchain/usr/mipsel-buildroot-linux-uclibc/sysroot/usr/include/SDL -DHAVE_STDINT_H -D_GNU_SOURCE=1 -D_REENTRANT -Isrc -I/home/anonymous/Documents/Dev/rs97-source/gamebatte/libgambatte/include -I/home/anonymous/Documents/Dev/rs97-source/gamebatte/common -I/usr/include/SDL .sconf_temp/conftest_0.c
+mipsel-linux-gcc: WARNING: unsafe header/library path used in cross-compilation: '-I/usr/include/SDL'
+/opt/rs97-toolchain/bin/mipsel-linux-gcc -o .sconf_temp/conftest_0 -Wl,--gc-sections -lSDL_image .sconf_temp/conftest_0.o -L/usr/lib/x86_64-linux-gnu -lSDL -lz
+mipsel-linux-gcc: WARNING: unsafe header/library path used in cross-compilation: '-L/usr/lib/x86_64-linux-gnu'
+/home/anonymous/Documents/Dev/rs97-toolchain/bin/../lib/gcc/mipsel-buildroot-linux-musl/7.3.0/../../../../mipsel-buildroot-linux-musl/bin/ld: warning: library search path "/usr/lib/x86_64-linux-gnu" is unsafe for cross-compilation
+/home/anonymous/Documents/Dev/rs97-toolchain/bin/../lib/gcc/mipsel-buildroot-linux-musl/7.3.0/../../../../mipsel-buildroot-linux-musl/bin/ld: skipping incompatible /usr/lib/x86_64-linux-gnu/libSDL_image.so when searching for -lSDL_image
+/home/anonymous/Documents/Dev/rs97-toolchain/bin/../lib/gcc/mipsel-buildroot-linux-musl/7.3.0/../../../../mipsel-buildroot-linux-musl/bin/ld: skipping incompatible /usr/lib/x86_64-linux-gnu/libSDL_image.a when searching for -lSDL_image
+/home/anonymous/Documents/Dev/rs97-toolchain/bin/../lib/gcc/mipsel-buildroot-linux-musl/7.3.0/../../../../mipsel-buildroot-linux-musl/bin/ld: skipping incompatible /usr/lib/x86_64-linux-gnu/libSDL.so when searching for -lSDL
+/home/anonymous/Documents/Dev/rs97-toolchain/bin/../lib/gcc/mipsel-buildroot-linux-musl/7.3.0/../../../../mipsel-buildroot-linux-musl/bin/ld: skipping incompatible /usr/lib/x86_64-linux-gnu/libSDL.a when searching for -lSDL
+/home/anonymous/Documents/Dev/rs97-toolchain/bin/../lib/gcc/mipsel-buildroot-linux-musl/7.3.0/../../../../mipsel-buildroot-linux-musl/bin/ld: skipping incompatible /usr/lib/x86_64-linux-gnu/libz.so when searching for -lz
+/home/anonymous/Documents/Dev/rs97-toolchain/bin/../lib/gcc/mipsel-buildroot-linux-musl/7.3.0/../../../../mipsel-buildroot-linux-musl/bin/ld: skipping incompatible /usr/lib/x86_64-linux-gnu/libz.a when searching for -lz
+/home/anonymous/Documents/Dev/rs97-toolchain/bin/../lib/gcc/mipsel-buildroot-linux-musl/7.3.0/../../../../mipsel-buildroot-linux-musl/bin/ld: skipping incompatible /usr/lib/x86_64-linux-gnu/libc.so when searching for -lc
+/home/anonymous/Documents/Dev/rs97-toolchain/bin/../lib/gcc/mipsel-buildroot-linux-musl/7.3.0/../../../../mipsel-buildroot-linux-musl/bin/ld: skipping incompatible /usr/lib/x86_64-linux-gnu/libc.a when searching for -lc
+scons: Configure: yes
+
+

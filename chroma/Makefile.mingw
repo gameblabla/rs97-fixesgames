@@ -1,0 +1,38 @@
+TMPDIR = /tmp/chroma-win32
+LINK = gcc
+LFLAGS = -L/usr/local/cross-tools/lib/
+
+WINDRES = i386-mingw32msvc-windres
+
+OBJECTSCOMMON = main.o level.o engine.o menu.o colours.o util.o enigma.o xor.o editor.o xmlparser.o names.o
+OBJECTSCURSES = cursesdisplay.o cursesmenudisplay.o iconcurses.o
+OBJECTSSDL = sdldisplay.o sdlshadowdisplay.o sdlmenudisplay.o sdlfont.o sdlscreen.o graphics.o iconsdl.o 
+
+all: chromacurses chromasdl
+
+iconsdl.o: iconsdl.rc iconsdl.ico
+	$(WINDRES) -o iconsdl.o iconsdl.rc
+
+iconcurses.o: iconcurses.rc iconcurses.ico
+	$(WINDRES) -o iconcurses.o iconcurses.rc
+
+chromacurses: $(OBJECTSCOMMON) $(OBJECTSCURSES)
+	$(LINK) $(LFLAGS) -o chroma-curses.exe $(OBJECTSCOMMON) $(OBJECTSCURSES) -lpdcurses -lintl
+
+chromasdl: $(OBJECTSCOMMON) $(OBJECTSSDL)
+	$(LINK) $(LFLAGS) -o chroma.exe $(OBJECTSCOMMON) $(OBJECTSSDL) -lSDL -lSDL_image -mwindows -lfreetype -lintl
+
+clean:
+	-rm $(OBJECTSCOMMON) $(OBJECTSCURSES) $(OBJECTSSDL) $(OBJECTSVALIDATE) chroma.exe chroma-curses.exe chroma-setup.exe chroma-win32.zip
+
+install:
+	-rm -rf $(TMPDIR)
+	mkdir $(TMPDIR)
+	cp *.exe *.dll $(TMPDIR)
+	cp -r graphics/ $(TMPDIR)
+	cp -r colours/ $(TMPDIR)
+	cp -r locale/ $(TMPDIR)
+	mkdir $(TMPDIR)/levels/
+	cp -r levels/chroma-1/ levels/chroma-2/ levels/regression/ $(TMPDIR)/levels/
+	zip -r chroma-win32.zip $(TMPDIR)
+

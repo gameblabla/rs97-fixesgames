@@ -1,0 +1,2 @@
+/opt/rs97-toolchain/usr/bin/mipsel-buildroot-linux-musl-ar qc libcdogsedlib.a  CMakeFiles/cdogsedlib.dir/charsed.c.o CMakeFiles/cdogsedlib.dir/editor_brush.c.o CMakeFiles/cdogsedlib.dir/editor_ui.c.o CMakeFiles/cdogsedlib.dir/editor_ui_color.c.o CMakeFiles/cdogsedlib.dir/editor_ui_common.c.o CMakeFiles/cdogsedlib.dir/editor_ui_static.c.o CMakeFiles/cdogsedlib.dir/editor_ui_static_additem.c.o CMakeFiles/cdogsedlib.dir/ui_object.c.o
+/opt/rs97-toolchain/usr/bin/mipsel-buildroot-linux-musl-ranlib libcdogsedlib.a

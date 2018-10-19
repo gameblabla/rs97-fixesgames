@@ -1,0 +1,415 @@
+;; ======================================================================== ;;
+;;  STIC.MAC                                            Default Macro Set   ;;
+;;  Joseph Zbiciak <intvnut AT gmail.com>                                   ;;
+;;  These macros are hereby released into the Public Domain.                ;;
+;; ======================================================================== ;;
+
+    IF (DEFINED _STIC_MAC) = 0
+
+_STIC_MAC QEQU 1
+
+;; ======================================================================== ;;
+;;  Note:  For each of the macros below that accepts a color name, the      ;;
+;;  following aliases are supported:                                        ;;
+;;                                                                          ;;
+;;          Black       BLK                 Grey (or Gray)  GRY             ;;
+;;          Blue        BLU                 Cyan            CYN             ;;
+;;          Red         RED                 Orange          ORG             ;;
+;;          Tan         TAN                 Brown           BRN             ;;
+;;          DarkGreen   DGR                 Pink            PNK             ;;
+;;          Green       GRN                 LightBlue       LBL             ;;
+;;          Yellow      YEL                 YellowGreen     YGR             ;;
+;;          White       WHT                 Purple          PUR             ;;
+;;                                                                          ;;
+;; ======================================================================== ;;
+
+;; ======================================================================== ;;
+;;  gen_cstk_card(c, g, fg, a)                                              ;;
+;;  Generate constant for a Color-Stack mode card.                          ;;
+;;                                                                          ;;
+;;  ARGUMENTS                                                               ;;
+;;      c   Card #, from 0 to 255 for GROM, 0 to 63 for GRAM.  When using   ;;
+;;          gen_cs_card() to generate a "format word", simply use Card #0.  ;;
+;;                                                                          ;;
+;;      g   Specify GROM to indicate card comes from GROM, or GRAM to       ;;
+;;          indicate card comes from GRAM.                                  ;;
+;;                                                                          ;;
+;;      fg  Foreground color, from the following set of names:              ;;
+;;                                                                          ;;
+;;              Black       DarkGreen       Grey (or Gray)  Pink            ;;
+;;              Blue        Green           Cyan            LightBlue       ;;
+;;              Red         Yellow          Orange          YellowGreen     ;;
+;;              Tan         White           Brown           Purple          ;;
+;;                                                                          ;;
+;;          NOTE: Foreground colors Grey through Purple are only available  ;;
+;;          on GRAM cards.  Attempts to use these colors on GROM cards      ;;
+;;          will result in (intentional) assembly errors.  This is a        ;;
+;;          limitation of the STIC itself.                                  ;;
+;;                                                                          ;;
+;;      a   Specifiy "Adv" or "Advance" to advance color stack.  Specify    ;;
+;;          "NoAdv" or "NoAdvance" to not advance color stack.              ;;
+;; ======================================================================== ;;
+MACRO gen_cstk_card(c, g, fg, a)
+        ((%c%)*8 + __CSTK.%g%_%fg% + __CSTK.%a%)
+ENDM
+
+;; ======================================================================== ;;
+;;  gen_csqr_card(p0, p1, p2, p3)                                           ;;
+;;  Generate constant for a Colored-Squares mode card                       ;;
+;;  Pixels are laid out like so:                                            ;;
+;;                              +-----+-----+                               ;;
+;;                              |Pixel|Pixel|                               ;;
+;;                              |  0  |  1  |                               ;;
+;;                              +-----+-----+                               ;;
+;;                              |Pixel|Pixel|                               ;;
+;;                              |  2  |  3  |                               ;;
+;;                              +-----+-----+                               ;;
+;;                                                                          ;;
+;;  ARGUMENTS                                                               ;;
+;;      p0  Color for Pixel 0 from set below.                               ;;
+;;      p1  Color for Pixel 1 from set below.                               ;;
+;;      p2  Color for Pixel 2 from set below.                               ;;
+;;      p3  Color for Pixel 3 from set below.                               ;;
+;;                                                                          ;;
+;;              Black       Red         DarkGreen       Yellow              ;;
+;;              Blue        Tan         Green           Stack               ;;
+;;                                                                          ;;
+;;          Note:  "Stack" refers to the color on the top of the color      ;;
+;;          stack.  It is not possible to advance the color stack from      ;;
+;;          colored-squares mode.  Use a color-stack card to do that.       ;;
+;; ======================================================================== ;;
+MACRO gen_csqr_card(p0,p1,p2,p3)
+        ($1000+__CSQR.p0_%p0%+__CSQR.p1_%p1%+__CSQR.p2_%p2%+__CSQR.p3_%p3%)
+ENDM
+
+;; ======================================================================== ;;
+;;  gen_fgbg_card(c, g, fg, bg)                                             ;;
+;;  Generate constant for a Foreground/Background mode                      ;;
+;;                                                                          ;;
+;;  ARGUMENTS                                                               ;;
+;;      c   Card #, from 0 to 255 for GROM, 0 to 63 for GRAM.  When using   ;;
+;;          gen_cs_card() to generate a "format word", simply use Card #0.  ;;
+;;                                                                          ;;
+;;      g   Specify GROM to indicate card comes from GROM, or GRAM to       ;;
+;;          indicate card comes from GRAM.                                  ;;
+;;                                                                          ;;
+;;      fg  Foreground color, from the following set of names:              ;;
+;;              Black       DarkGreen                                       ;;
+;;              Blue        Green                                           ;;
+;;              Red         Yellow                                          ;;
+;;              Tan         White                                           ;;
+;;                                                                          ;;
+;;      bg  Background color, from the following set of names:              ;;
+;;              Black       DarkGreen       Grey (or Gray)  Pink            ;;
+;;              Blue        Green           Cyan            LightBlue       ;;
+;;              Red         Yellow          Orange          YellowGreen     ;;
+;;              Tan         White           Brown           Purple          ;;
+;; ======================================================================== ;;
+MACRO gen_fgbg_card(c, g, fg, bg)
+        ((%c%)*8 + __FGBG.%g% + __FGBG.f_%fg% + __FGBG.b_%bg%)
+ENDM
+
+;; ======================================================================== ;;
+;;  __CSTK:  Constants used by the color-stack macros.                      ;;
+;; ======================================================================== ;;
+__CSTK          PROC
+@@GROM_Black    QEQU    00000000000000b     ; foreground ==  0  
+@@GROM_Blue     QEQU    00000000000001b     ; foreground ==  1
+@@GROM_Red      QEQU    00000000000010b     ; foreground ==  2
+@@GROM_Tan      QEQU    00000000000011b     ; foreground ==  3
+@@GROM_DarkGreen   QEQU 00000000000100b     ; foreground ==  4
+@@GROM_Green    QEQU    00000000000101b     ; foreground ==  5
+@@GROM_Yellow   QEQU    00000000000110b     ; foreground ==  6
+@@GROM_White    QEQU    00000000000111b     ; foreground ==  7
+
+@@GRAM_Black    QEQU    00100000000000b     ; foreground ==  0  
+@@GRAM_Blue     QEQU    00100000000001b     ; foreground ==  1
+@@GRAM_Red      QEQU    00100000000010b     ; foreground ==  2
+@@GRAM_Tan      QEQU    00100000000011b     ; foreground ==  3
+@@GRAM_DarkGreen   QEQU 00100000000100b     ; foreground ==  4
+@@GRAM_Green    QEQU    00100000000101b     ; foreground ==  5
+@@GRAM_Yellow   QEQU    00100000000110b     ; foreground ==  6
+@@GRAM_White    QEQU    00100000000111b     ; foreground ==  7
+@@GRAM_Grey     QEQU    01100000000000b     ; foreground ==  8
+@@GRAM_Gray     QEQU    01100000000000b     ; foreground ==  8
+@@GRAM_Cyan     QEQU    01100000000001b     ; foreground ==  9
+@@GRAM_Orange   QEQU    01100000000010b     ; foreground == 10
+@@GRAM_Brown    QEQU    01100000000011b     ; foreground == 11
+@@GRAM_Pink     QEQU    01100000000100b     ; foreground == 12
+@@GRAM_LightBlue   QEQU 01100000000101b     ; foreground == 13
+@@GRAM_YellowGreen QEQU 01100000000110b     ; foreground == 14
+@@GRAM_Purple   QEQU    01100000000111b     ; foreground == 15
+
+@@GROM_BLK      QEQU    00000000000000b     ; foreground ==  0  
+@@GROM_BLU      QEQU    00000000000001b     ; foreground ==  1
+@@GROM_RED      QEQU    00000000000010b     ; foreground ==  2
+@@GROM_TAN      QEQU    00000000000011b     ; foreground ==  3
+@@GROM_DGR      QEQU    00000000000100b     ; foreground ==  4
+@@GROM_GRN      QEQU    00000000000101b     ; foreground ==  5
+@@GROM_YEL      QEQU    00000000000110b     ; foreground ==  6
+@@GROM_WHT      QEQU    00000000000111b     ; foreground ==  7
+
+@@GRAM_BLK      QEQU    00100000000000b     ; foreground ==  0  
+@@GRAM_BLU      QEQU    00100000000001b     ; foreground ==  1
+@@GRAM_RED      QEQU    00100000000010b     ; foreground ==  2
+@@GRAM_TAN      QEQU    00100000000011b     ; foreground ==  3
+@@GRAM_DGR      QEQU    00100000000100b     ; foreground ==  4
+@@GRAM_GRN      QEQU    00100000000101b     ; foreground ==  5
+@@GRAM_YEL      QEQU    00100000000110b     ; foreground ==  6
+@@GRAM_WHT      QEQU    00100000000111b     ; foreground ==  7
+@@GRAM_GRY      QEQU    01100000000000b     ; foreground ==  8
+@@GRAM_CYN      QEQU    01100000000001b     ; foreground ==  9
+@@GRAM_ORG      QEQU    01100000000010b     ; foreground == 10
+@@GRAM_BRN      QEQU    01100000000011b     ; foreground == 11
+@@GRAM_PNK      QEQU    01100000000100b     ; foreground == 12
+@@GRAM_LBL      QEQU    01100000000101b     ; foreground == 13
+@@GRAM_YGR      QEQU    01100000000110b     ; foreground == 14
+@@GRAM_PUR      QEQU    01100000000111b     ; foreground == 15
+
+
+@@Adv           QEQU    10000000000000b     ; Advances color stack.
+@@Advance       QEQU    10000000000000b     ; Advances color stack.
+@@NoAdv         QEQU    00000000000000b     ; Does not advance color stack
+@@NoAdvance     QEQU    00000000000000b     ; Does not advance color stack
+                ENDP
+
+;; ======================================================================== ;;
+;;  __CSQR:  Constants used by the colored-squares macros.                  ;;
+;; ======================================================================== ;;
+__CSQR          PROC
+@@p0_Black      QEQU    00000000000000b 
+@@p0_Blue       QEQU    00000000000001b 
+@@p0_Red        QEQU    00000000000010b 
+@@p0_Tan        QEQU    00000000000011b 
+@@p0_DarkGreen  QEQU    00000000000100b 
+@@p0_Green      QEQU    00000000000101b 
+@@p0_Yellow     QEQU    00000000000110b 
+@@p0_Stack      QEQU    00000000000111b 
+
+@@p1_Black      QEQU    00000000000000b 
+@@p1_Blue       QEQU    00000000001000b 
+@@p1_Red        QEQU    00000000010000b 
+@@p1_Tan        QEQU    00000000011000b 
+@@p1_DarkGreen  QEQU    00000000100000b 
+@@p1_Green      QEQU    00000000101000b 
+@@p1_Yellow     QEQU    00000000110000b 
+@@p1_Stack      QEQU    00000000111000b 
+
+@@p2_Black      QEQU    00000000000000b 
+@@p2_Blue       QEQU    00000001000000b 
+@@p2_Red        QEQU    00000010000000b 
+@@p2_Tan        QEQU    00000011000000b 
+@@p2_DarkGreen  QEQU    00000100000000b 
+@@p2_Green      QEQU    00000101000000b 
+@@p2_Yellow     QEQU    00000110000000b 
+@@p2_Stack      QEQU    00000111000000b 
+
+@@p3_Black      QEQU    00000000000000b 
+@@p3_Blue       QEQU    00001000000000b 
+@@p3_Red        QEQU    00010000000000b 
+@@p3_Tan        QEQU    00011000000000b 
+@@p3_DarkGreen  QEQU    10000000000000b 
+@@p3_Green      QEQU    10001000000000b 
+@@p3_Yellow     QEQU    10010000000000b 
+@@p3_Stack      QEQU    10011000000000b 
+
+@@p0_BLK        QEQU    00000000000000b 
+@@p0_BLU        QEQU    00000000000001b 
+@@p0_RED        QEQU    00000000000010b 
+@@p0_TAN        QEQU    00000000000011b 
+@@p0_DGR        QEQU    00000000000100b 
+@@p0_GRN        QEQU    00000000000101b 
+@@p0_YEL        QEQU    00000000000110b 
+@@p0_STK        QEQU    00000000000111b 
+
+@@p1_BLK        QEQU    00000000000000b 
+@@p1_BLU        QEQU    00000000001000b 
+@@p1_RED        QEQU    00000000010000b 
+@@p1_TAN        QEQU    00000000011000b 
+@@p1_DGR        QEQU    00000000100000b 
+@@p1_GRN        QEQU    00000000101000b 
+@@p1_YEL        QEQU    00000000110000b 
+@@p1_STK        QEQU    00000000111000b 
+
+@@p2_BLK        QEQU    00000000000000b 
+@@p2_BLU        QEQU    00000001000000b 
+@@p2_RED        QEQU    00000010000000b 
+@@p2_TAN        QEQU    00000011000000b 
+@@p2_DGR        QEQU    00000100000000b 
+@@p2_GRN        QEQU    00000101000000b 
+@@p2_YEL        QEQU    00000110000000b 
+@@p2_STK        QEQU    00000111000000b 
+
+@@p3_BLK        QEQU    00000000000000b 
+@@p3_BLU        QEQU    00001000000000b 
+@@p3_RED        QEQU    00010000000000b 
+@@p3_TAN        QEQU    00011000000000b 
+@@p3_DGR        QEQU    10000000000000b 
+@@p3_GRN        QEQU    10001000000000b 
+@@p3_YEL        QEQU    10010000000000b 
+@@p3_STK        QEQU    10011000000000b 
+                ENDP
+
+;; ======================================================================== ;;
+;;  __FGBG:  Constants used by the Foreground/Background mode macros.       ;;
+;; ======================================================================== ;;
+__FGBG          PROC
+@@f_Black       QEQU    00000000000000b     ; foreground ==  0
+@@f_Blue        QEQU    00000000000001b     ; foreground ==  1
+@@f_Red         QEQU    00000000000010b     ; foreground ==  2
+@@f_Tan         QEQU    00000000000011b     ; foreground ==  3
+@@f_DarkGreen   QEQU    00000000000100b     ; foreground ==  4
+@@f_Green       QEQU    00000000000101b     ; foreground ==  5
+@@f_Yellow      QEQU    00000000000110b     ; foreground ==  6
+@@f_White       QEQU    00000000000111b     ; foreground ==  7
+
+@@b_Black       QEQU    00000000000000b     ; background ==  0
+@@b_Blue        QEQU    00001000000000b     ; background ==  1
+@@b_Red         QEQU    00010000000000b     ; background ==  2
+@@b_Tan         QEQU    00011000000000b     ; background ==  3
+@@b_DarkGreen   QEQU    10000000000000b     ; background ==  4
+@@b_Green       QEQU    10001000000000b     ; background ==  5
+@@b_Yellow      QEQU    10010000000000b     ; background ==  6
+@@b_White       QEQU    10011000000000b     ; background ==  7
+@@b_Grey        QEQU    01000000000000b     ; background ==  8
+@@b_Gray        QEQU    01000000000000b     ; background ==  8
+@@b_Cyan        QEQU    01001000000000b     ; background ==  9
+@@b_Orange      QEQU    01010000000000b     ; background == 10
+@@b_Brown       QEQU    01011000000000b     ; background == 11
+@@b_Pink        QEQU    11000000000000b     ; background == 12
+@@b_LightBlue   QEQU    11001000000000b     ; background == 13
+@@b_YellowGreen QEQU    11010000000000b     ; background == 14
+@@b_Purple      QEQU    11011000000000b     ; background == 15
+
+@@f_BLK         QEQU    00000000000000b     ; foreground ==  0
+@@f_BLU         QEQU    00000000000001b     ; foreground ==  1
+@@f_RED         QEQU    00000000000010b     ; foreground ==  2
+@@f_TAN         QEQU    00000000000011b     ; foreground ==  3
+@@f_DGR         QEQU    00000000000100b     ; foreground ==  4
+@@f_GRN         QEQU    00000000000101b     ; foreground ==  5
+@@f_YEL         QEQU    00000000000110b     ; foreground ==  6
+@@f_WHT         QEQU    00000000000111b     ; foreground ==  7
+               
+@@b_BLK         QEQU    00000000000000b     ; background ==  0
+@@b_BLU         QEQU    00001000000000b     ; background ==  1
+@@b_RED         QEQU    00010000000000b     ; background ==  2
+@@b_TAN         QEQU    00011000000000b     ; background ==  3
+@@b_DGR         QEQU    10000000000000b     ; background ==  4
+@@b_GRN         QEQU    10001000000000b     ; background ==  5
+@@b_YEL         QEQU    10010000000000b     ; background ==  6
+@@b_WHT         QEQU    10011000000000b     ; background ==  7
+@@b_GRY         QEQU    01000000000000b     ; background ==  8
+@@b_CYN         QEQU    01001000000000b     ; background ==  9
+@@b_ORG         QEQU    01010000000000b     ; background == 10
+@@b_BRN         QEQU    01011000000000b     ; background == 11
+@@b_PNK         QEQU    11000000000000b     ; background == 12
+@@b_LBL         QEQU    11001000000000b     ; background == 13
+@@b_YGR         QEQU    11010000000000b     ; background == 14
+@@b_PUR         QEQU    11011000000000b     ; background == 15
+
+@@GRAM          QEQU    00100000000000b     ; Select card from GRAM
+@@GROM          QEQU    00000000000000b     ; Select card from GROM
+
+                ENDP
+
+;; ======================================================================== ;;
+;;  disp_ptr(r, c)                                                          ;;
+;;  Generates a pointer to display memory for a given row and column #.     ;;
+;;                                                                          ;;
+;;  ARGUMENTS                                                               ;;
+;;      r   Row number.  0 is top row, 11 is bottom row.                    ;;
+;;      c   Column number.  0 is left edge, 19 is right edge.               ;;
+;; ======================================================================== ;;
+MACRO disp_ptr(r, c)
+        ($200 + %r%*20 + %c%)
+ENDM
+
+;; ======================================================================== ;;
+;;  disp_ofs(r, c)                                                          ;;
+;;  Generates offset into display buffer that corresponds to a given row    ;;
+;;  and column number.                                                      ;;
+;;                                                                          ;;
+;;  ARGUMENTS                                                               ;;
+;;      r   Row number.  0 is top row, 11 is bottom row.                    ;;
+;;      c   Column number.  0 is left edge, 19 is right edge.               ;;
+;; ======================================================================== ;;
+MACRO disp_ofs(r, c)
+        (%r%*20 + %c%)
+ENDM
+
+;; ======================================================================== ;;
+;;  DISP_OFS    r, c                                                        ;;
+;;  Generates an offset into display memory for a given row and column #    ;;
+;;  held in registers.  Result is left in "c".  The value "r" is left       ;;
+;;  left-shifted by 4.  Both "r" and "c" must be different registers.       ;;
+;;                                                                          ;;
+;;  ARGUMENTS                                                               ;;
+;;      r   Register holding row number.  Must be R0 through R3.            ;;
+;;      c   Register holding column number.  Result will be left in this    ;;
+;;          register.                                                       ;;
+;; ======================================================================== ;;
+MACRO   DISP_OFS    r,  c
+        SLL     %r%,    2
+        ADDR    %r%,    %c%
+        SLL     %r%,    2
+        ADDR    %r%,    %c%
+ENDM
+
+;; ======================================================================== ;;
+;;  DISP_OFS3   r, c, rs                                                    ;;
+;;  Generates an offset into display memory for a given row and column #    ;;
+;;  held in registers.  Result is left in "rs".  Both "r" and "c" are       ;;
+;;  left unmodified.  All three arguments must point to different           ;;
+;;  registers.                                                              ;;
+;;                                                                          ;;
+;;  ARGUMENTS                                                               ;;
+;;      r   Register holding row number.                                    ;;
+;;      c   Register holding column number.                                 ;;
+;;      rs  Register to hold the result.  Must be R0 through R3.            ;;
+;; ======================================================================== ;;
+MACRO   DISP_OFS3   r,  c,  rs
+        MOVR    %r%,    %rs%
+        SLL     %rs%,   2
+        ADDR    %r%,    %rs%
+        SLL     %rs%,   2
+        ADDR    %c%,    %rs%
+ENDM
+
+;; ======================================================================== ;;
+;;  DISP_PTR    r, c                                                        ;;
+;;  Generates a pointer to display memory for a given row and column #      ;;
+;;  held in registers.  Result is left in "c".  The value "r" is left       ;;
+;;  left-shifted by 4.  Both "r" and "c" must be different registers.       ;;
+;;                                                                          ;;
+;;  ARGUMENTS                                                               ;;
+;;      r   Register holding row number.  Must be R0 through R3.            ;;
+;;      c   Register holding column number.  Result will be left in this    ;;
+;;          register.                                                       ;;
+;; ======================================================================== ;;
+MACRO   DISP_PTR    r,  c
+        DISP_OFS    r,  c
+        ADDI    #$200,  %c%
+ENDM
+
+;; ======================================================================== ;;
+;;  DISP_PTR3   r, c, rs                                                    ;;
+;;  Generates a pointer to display memory for a given row and column #      ;;
+;;  held in registers.  Result is left in "rs".  Both "r" and "c" are       ;;
+;;  left unmodified.  All three arguments must point to different           ;;
+;;  registers.                                                              ;;
+;;                                                                          ;;
+;;  ARGUMENTS                                                               ;;
+;;      r   Register holding row number.                                    ;;
+;;      c   Register holding column number.                                 ;;
+;;      rs  Register to hold the result.  Must be R0 through R3.            ;;
+;; ======================================================================== ;;
+MACRO   DISP_PTR3   r,  c
+        DISP_OFS3   r,  c,  rs
+        ADDI        #$200,  %rs%
+ENDM
+
+    ENDI
+
+;; ======================================================================== ;;
+;;  End of File:  stic.mac                                                  ;;
+;; ======================================================================== ;;

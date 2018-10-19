@@ -1,0 +1,134 @@
+# Copyright (C) 2010 Amf
+#
+# Regression tests for XOR
+#
+# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+# % (9)                 % (7)  %%%                        
+# %HHHHHH%              % F$  |VC%                        
+# %HHHHHH%              % FT$  %%%                        
+# %HHHHHH%              % -$C  %%%                        
+# %HHHHHH%  F (8)       % $T$  %%%                        
+# %HHHHHH%  $%          % %$  |VC%                        
+# %HHHHHH% %E$C         % %% %%%%%                        
+# %HHHHHH% %%        (6)     F   %                        
+# %HHHHHH%         F  H  H   F   %                        
+# %HHHHHH% F  F   %$V $C $V  $   %                        
+# %HHHHHH%%C %$C      %     F F  %                        
+# %HHHHHH% (1)    %F%F      %H%C %                        
+# %HHHHHH%   F    %C%%C     %%%% %                        
+# %HHHHHH%FC $C   %C%V $CC  FFFC %                        
+# %HHHHHH%%  %    %C%%C (3) %%%% %                        
+# %HHHHHH%                       %                        
+# %HHHHHH%  MMMM  %F FFF      F  %                        
+# %HHHHHH%    (2) %F -H-$CC   F  %                        
+# %HHHHHH%-H$CC % %$ %%% (4)  $  %
+# %HHHHHH%%%%%% % %V   F  %FC%|C %                        
+# %HHHHHH%C     %F%- FFC  %C %VC %                        
+# %HHHHHH%%%%%% %%%% %%%  %C %|C %                        
+# %HHHHHH%                       %                        
+# %HHHHHH%  %F  %FF      F  FFF  %                        
+# %HHHHHH%  %$  %V-$C    $  -H-$C%                        
+# %HHHHHH% C%|C %%%%% %C%|C %%%  %                        
+# %HHHHHH%  %HC % F   %C%VC FFF  %                        
+# %HHHHHH%%%%%% %%%%% %C%|C %%%  %
+# %HHHHHH     (5)         (5)    %                        
+# %HHHHHH$C                      %
+# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#
+# Key:
+#     F Fish       H H-Bomb     - Dots       $ Mask         T Teleport
+#     C Chicken    V V-Bomb     | Waves      M Map          % Wall
+#
+# XOR has some subtleties that are easily overlooked. In particular:
+#
+# (1) Precedence depends on which way the player leaves the space.
+#         (approximate engine ok; exact engine ok)
+#
+# (2) When a stream of pieces hits a bomb, only the first should be destroyed.
+#         (approximate engine ok; exact engine ok)
+#
+# (3) Precendence after an explosion depends on the bomb that produced it.
+#         (approximate engine ok; exact engine ok)
+#
+# (4) Spaces vacated by explosions are added to the end of the move stack.
+#         (approximate engine fails; exact engine ok)
+#
+# (5) When a fish detonates an H-bomb, a chicken may erroneously be left
+#     hanging in mid-air. The other combinations of detonation are as expected.
+#         (approximate engine fails; exact engine ok)
+#
+#     This omission does not seem to affect any of the original levels.
+#
+# (6) If a space in the move stack has a bomb and a detonator that can both
+#     fall into it, the bomb will be detonated, contrary to expectations. If
+#     two bombs are involved, the bomb that moves first detonates; this
+#     depends on how the space was vacated. 
+#         (approximate engine fails; exact engine ok)
+#
+#     This phenomenon may be seen at the start of "Patience Pending", and
+#     may be exploited to good effect near its end.
+#
+# (7) When considering how to exit a teleport, the spaces around it are
+#     considered in the following order: right, up, left, down. If the only
+#     exit from a teleport is the square the player is currently on, no move
+#     is made. If the player attempts to enter a teleport when its companion
+#     has been destroyed, the teleport is converted into a wall.
+#         (approximate engine fails to convert the teleport to a wall, but is
+#          otherwise fine; exact engine ok)
+#
+# (8) It is sufficient for a player to enter the door to finish the level -
+#     evolution of the level stops at that point, even if the player would
+#     otherwise be killed.
+#         (approximate engine marks the level as solved, but continues to
+#          evolve it; exact engine ok)
+#
+# (9) It is possible to overflow the move stack if it contains more than 127
+#     entries, causing it to behave unpredictably. A wraparound effect occurs
+#     when there are 256 entries, causing all motion to cease.
+#          (neither engine attempts to handle such a pathological case!)
+
+chroma level
+
+mode: xor
+
+title: XOR regression tests
+size: 32 32
+view1: 7 15
+view2: 9 15
+viewteleport1: 22 0 (25 3)
+viewteleport2: 22 0 (25 5)
+
+data:
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                     %      %%%
+%DDDDDD%              % d*  |Aa%
+%DDDDDD%              % dT*  %%%
+%DDDDDD%              % -*a  %%%
+%DDDDDD%  d           % *T*  %%%
+%DDDDDD%  *%          % %*  |Aa%
+%DDDDDD% %/*a         % %% %%%%%
+%DDDDDD% %%                d   %
+%DDDDDD%         d  D  D   d   %
+%DDDDDD% d  d   %*A *a *A  *   %
+%DDDDDD%%a %*a      %     d d  %
+%DDDDDD%        %d%d      %D%a %
+%DDDDDD%   d    %a%%a     %%%% %
+%DDDDDD%da *a   %a%A *aa  ddda %
+%DDDDDD%%  %    %a%%a     %%%% %
+%DDDDDD%                       %
+%DDDDDD% 1MmNn2 %d ddd      d  %
+%DDDDDD%        %d -D-*aa   d  %
+%DDDDDD%-D*aa % %* %%%      *  %
+%DDDDDD%%%%%% % %A   d  %da%|a %
+%DDDDDD%a     %d%- dda  %a %Aa %
+%DDDDDD%%%%%% %%%% %%%  %a %|a %
+%DDDDDD%                       %
+%DDDDDD%  %d  %dd      d  ddd  %
+%DDDDDD%  %*  %A-*a    *  -D-*a%
+%DDDDDD% a%|a %%%%% %a%|a %%%  %
+%DDDDDD%  %Da % d   %a%Aa ddd  %
+%DDDDDD%%%%%% %%%%% %a%|a %%%  %
+%DDDDDD                        %
+%DDDDDD*a                      %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+

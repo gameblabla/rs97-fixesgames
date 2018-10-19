@@ -1,0 +1,124 @@
+NAME   = dcastaway.i386
+O      = o
+RM     = rm -f
+CC     = gcc
+CXX    = g++
+STRIP  = strip
+
+PROG   = dcastaway.app/Contents/MacOS/$(NAME)
+
+all: $(PROG)
+
+DEFAULT_CFLAGS = `sdl-config --cflags` -I/usr/include/malloc
+LDFLAGS        = `sdl-config --libs` -lSDL_mixer -lSDL_image -lpng -ljpeg -lz
+
+FAME_CORE = 1
+FAME_CORE_C = 1
+TV_FILTER =1
+
+MORE_CFLAGS = -Di386 -O3 -DDATA_PREFIX=\"./\" -ffast-math -fno-common -fno-builtin -fno-exceptions -fstrict-aliasing -O3 -march=i686 -DNOARGS -DROM_PATH_PREFIX=\"../../../\" -DFILE_SEPARATOR=\"/\" -DSAVE_MEM_PREFIX=\"/tmp/\" -DSAVE_PREFIX=\"./\" -DMACOSX
+
+MORE_CFLAGS+=-DEMULATED_JOYSTICK
+MORE_CFLAGS+=-DUSE_SHORT_SLICE
+#MORE_CFLAGS+=-DDEBUG_FILEMANAGER
+#MORE_CFLAGS+=-DDEBUG_SAVESTATE
+MORE_CFLAGS+=-DUSE_DOUBLE_BUFFER
+MORE_CFLAGS+=-DUSE_FULLSCREEN
+MORE_CFLAGS+=-DMENU_MUSIC -DSOUND_16BIT
+#MORE_CFLAGS+=-DMEMSIZE=0x80000
+
+#MORE_CFLAGS+=-DAUTOSAVESTATE
+#MORE_CFLAGS+=-DAUTOLOAD=\"example/lastninja.zip\"
+#MORE_CFLAGS+=-DDEBUG_FAME
+##MORE_CFLAGS+=-DDEBUG_FAME_FFLUSH
+#MORE_CFLAGS+=-DDEBUG_FAME_START=9913700
+#MORE_CFLAGS+=-DDEBUG_FAME_STOP=9813800
+#MORE_CFLAGS+=-DFAME_SINGLE_MEMORY
+
+#MORE_CFLAGS+=-DCALCULE_CRC_FILES
+
+ifndef TV_FILTER
+MORE_CFLAGS += -DNO_USE_TV_FILTER
+else
+#MORE_CFLAGS += -DDEBUG_TVFILTER
+#MORE_CFLAGS += -I/System/Library/Frameworks/OpenGL.framework/Headers/
+#LDFLAGS += -lGL
+LDFLAGS += -framework OpenGL
+endif
+
+CFLAGS  = $(DEFAULT_CFLAGS) $(MORE_CFLAGS) -Isrc -Isrc/m68k -Isrc/st -Isrc/menu -Isrc/vkbd -Isrc/unzip
+CPPFLAGS  = $(CFLAGS)
+
+OBJS =	\
+	src/main.o \
+	src/dcastaway.o \
+	src/events.o \
+	src/render.o \
+	src/save.o \
+	src/savedisk.o \
+	src/sound/sound.o \
+	src/sound/audio.o \
+	src/disk.o \
+	src/icon.o \
+	src/st/init.o \
+	src/st/st.o \
+	src/st/mem.o \
+	src/st/ikbd.o \
+	src/st/blitter.o \
+	src/st/fdc.o \
+	src/st/tos.o \
+	src/vkbd/vkbd.o \
+	src/unzip/explode.o \
+	src/unzip/unreduce.o \
+	src/unzip/unshrink.o \
+	src/unzip/unzip.o \
+	src/tvfilter/tvfilter.o \
+	src/tvfilter/texture.o \
+	src/tvfilter/scanline.o \
+	src/tvfilter/tvzw5.o \
+	src/menu/fade.o \
+	src/menu/menu.o \
+	src/menu/background.o \
+	src/menu/sfont.o \
+	src/menu/menu_load.o \
+	src/menu/menu_main.o \
+	src/menu/menu_save.o \
+	src/menu/db.o 
+
+ifdef FAME_CORE
+ifdef FAME_CORE_C
+CPPFLAGS+=-DUSE_FAME_CORE_C
+OBJS += src/m68k/fame/famec.o
+else
+src/m68k/fame/fame1.asm: src/m68k/fame/fame.asm
+	sed -e "s/m68k_reset/_m68k_reset/g" -e "s/m68k_emulate/_m68k_emulate/g" -e "s/m68k_init/_m68k_init/g" -e "s/m68k_set_context/_m68k_set_context/g" -e "s/m68k_fetch/_m68k_fetch/g" -e "s/_m68kcontext/__m68kcontext/g" -e "s/__io_cycle_counter/___io_cycle_counter/g" src/m68k/fame/fame.asm > src/m68k/fame/fame1.asm
+src/m68k/fame/fame1.o: src/m68k/fame/fame1.asm
+	nasm -f macho src/m68k/fame/fame1.asm
+OBJS += src/m68k/fame/fame1.o 
+endif
+CPPFLAGS+=-DUSE_FAME_CORE
+OBJS += src/m68k/fame/m68k_intrf.o
+else
+OBJS += \
+	src/m68k/castaway/68000.o \
+	src/m68k/castaway/debug.o \
+	src/m68k/castaway/op68kadd.o \
+	src/m68k/castaway/op68karith.o \
+	src/m68k/castaway/op68klogop.o \
+	src/m68k/castaway/op68kmisc.o \
+	src/m68k/castaway/op68kmove.o \
+	src/m68k/castaway/op68kshift.o \
+	src/m68k/castaway/op68ksub.o
+endif
+
+
+$(PROG): $(OBJS) 
+	$(CC) $(CFLAGS) -o $(PROG) $(OBJS) $(LDFLAGS)
+	$(STRIP) $(PROG)
+
+
+run: $(PROG)
+	./dcastaway.app/Contents/MacOS/dcastaway
+
+clean:
+	$(RM) $(PROG) $(OBJS) example/dcastaway.sav example/*.raw src/m68k/fame/fame1.asm

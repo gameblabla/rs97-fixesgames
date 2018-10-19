@@ -1,0 +1,2 @@
+/opt/rs97-toolchain/usr/bin/mipsel-buildroot-linux-musl-ar qc libcbehave.a  CMakeFiles/cbehave.dir/cbehave.c.o
+/opt/rs97-toolchain/usr/bin/mipsel-buildroot-linux-musl-ranlib libcbehave.a

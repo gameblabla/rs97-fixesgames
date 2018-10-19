@@ -1,0 +1,18 @@
+/* Microsoft say:
+
+We recommend that your icon contains these three sizes:
+
+    * 48 x 48 pixels
+    * 32 x 32 pixels
+    * 16 x 16 pixels
+
+Each Windows XP icon should contain these three color depths to support
+different monitor display settings:
+
+    * 24-bit with 8-bit alpha (32-bit)
+    * 8-bit (256 colors) with 1-bit transparency
+    * 4-bit (16 colors) with 1-bit transparency
+
+*/
+
+AppIcon ICON "iconsdl.ico"

@@ -1,0 +1,663 @@
+;; ======================================================================== ;;
+;;  UTIL.MAC                                            Default Macro Set   ;;
+;;  General utility macros.                                                 ;;
+;;  Joseph Zbiciak <intvnut AT gmail.com>                                   ;;
+;;  These macros are hereby released into the Public Domain.                ;;
+;;                                                                          ;;
+;;  Macros defined in this file:                                            ;;
+;;                                                                          ;;
+;;      SETISR  a, r       Sets ISR vector to point to 'a'. 'r' is a temp.  ;;
+;;      MVOD    r, a       Writes 'r' as double-byte-data to 'a'.           ;;
+;;      MVOD@   r, p       Writes 'r' as double-byte-date via 'p'.          ;;
+;;      COPY    s, t, d    Copies address 's' to address 'd' via 't'.       ;;
+;;      COPY@   s, t, d    Copies from ptr 's' to ptr 'd' via 't'.          ;;
+;;      CALLD   label      Calls 'label' and disables interrupts.           ;;
+;;      LOOP    r, l       Decrements 'r' and loops to 'l' if non-zero.     ;;
+;;      LOOPPL  r, l       Decrements 'r' and loops to 'l' if non-negative. ;;
+;;      SWITCH  r, tbl     Implements switch-case via branch lookup table.  ;;
+;;      SWITCHB r          Implements switch-case via series of branches.   ;;
+;;      SPINEQ  a, r       Loop while value at address is equal to 'r'      ;;
+;;      SPINEQ@ p, r       Loop while value at address is equal to 'r'      ;;
+;;      SPINNE  a, r       Loop while value at address is not equal to 'r'  ;;
+;;      SPINNE@ p, r       Loop while value at address is not equal to 'r'  ;;
+;;      SLRC    r, n       Shift Logically Right into Carry/Overflow        ;;
+;;      DSLLC   h, l, n    32-bit Shift Logically Left into Carry/Overflow  ;;
+;;      DSLRC   h, l, n    32-bit Shift Logically Right into Carry/Overflow ;;
+;;      DSARC   h, l, n    32-bit Shift Arithmetically Right into Carry/Ov. ;;
+;;      SLLn    r, n       Shift Logically Left                             ;;
+;;      SLLCn   r, n       Shift Logically Left into Carry/Overflow         ;;
+;;      SLRn    r, n       Shift Logically Right                            ;;
+;;      SARn    r, n       Shift Arithmetically Right                       ;;
+;;      SLRCn   r, n       Shift Logically Right into Carry/Overflow        ;;
+;;      SARCn   r, n       Shift Arithmetically Right into Carry/Overflow   ;;
+;;      DSLLCn  h, l, n    32-bit Shift Logically Left into Carry/Overflow  ;;
+;;      DSLRCn  h, l, n    32-bit Shift Logically Right into Carry/Overflow ;;
+;;      DSARCn  h, l, n    32-bit Shift Arithmetically Right into Carry/Ov. ;;
+;;      DADDR h0,l0,h1,l1  Add 32-bit value in h0:l0 to value in h1:l1      ;;
+;;      DSUBR h0,l0,h1,l1  Subtract 32-bit value in h0:l0 from h1:l1        ;;
+;;      XCHG    a, b       Exchange contents of reg 'a' with reg 'b'        ;;
+;;      ORR     a, b       Bitwise OR register 'a' into register 'b'        ;;
+;;      ORI     a, b       Bitwise OR constant 'a' into register 'b'        ;;
+;;      OR@     a, b       Bitwise OR value at ptr 'a' into register 'b'    ;;
+;;      ORD     a, b       Bitwise OR value at addr 'a' into register 'b'   ;;
+;;      XTND8   r          Sign-extend 'r' from 8 to 16 bits.               ;;
+;;      UNPKL   r, l       Unpack 8-bit values to lower byte of two regs.   ;;
+;;      UNPKH   r, l       Unpack 8-bit values to upper byte of two regs.   ;;
+;;                                                                          ;;
+;; ======================================================================== ;;
+
+    IF (DEFINED _UTIL_MAC) = 0
+
+_UTIL_MAC QEQU 1
+
+;; ======================================================================== ;;
+;;  SETISR a, r                                                             ;;
+;;  Sets ISR vector to point to address 'a'.  Trashes 'r'.                  ;;
+;;                                                                          ;;
+;;  ARGUMENTS                                                               ;;
+;;      a   Address of ISR                                                  ;;
+;;      r   Register to use as a temporary (R0 thru R3)                     ;;
+;; ======================================================================== ;;
+MACRO   SETISR  a, r
+        MVII    #%a%, %r%
+        MVOD    %r%, $100
+ENDM
+
+;; ======================================================================== ;;
+;;  MVOD r, a                                                               ;;
+;;  Write a 16-bit value as Double-Byte-Data.  Leaves its first operand     ;;
+;;  byte-swapped.                                                           ;;
+;;                                                                          ;;
+;;  ARGUMENTS                                                               ;;
+;;      r   Register to write.  Must be one of R0, R1, R2, R3               ;;
+;;      a   Address to write to.  Macro will write to Addr and Addr + 1.    ;;
+;; ======================================================================== ;;
+MACRO   MVOD    r,  a
+        MVO     %r%,    %a%
+        SWAP    %r%
+        MVO     %r%,    %a% + 1
+ENDM
+
+;; ======================================================================== ;;
+;;  MVOD@ r, p                                                              ;;
+;;  Write a 16-bit value as Double-Byte-Data.  Leaves its first operand     ;;
+;;  byte-swapped.  If 'p' is R4, R5, or R6, it is left pointing after the   ;;
+;;  written data.  If 'p' is R1, R2, or R3, it is left pointing at the      ;;
+;;  same location.                                                          ;;
+;;                                                                          ;;
+;;  ARGUMENTS                                                               ;;
+;;      r   Register to write.  Must be one of R0, R1, R2, R3               ;;
+;;      p   Register containing address to write to.  Must be one of R1     ;;
+;;          through R6.                                                     ;;
+;; ======================================================================== ;;
+MACRO   MVOD@   r,  p
+        MVO@    %r%,    %p%
+        SWAP    %r%
+        MVO@    %r%,    %p%
+ENDM
+
+
+;; ======================================================================== ;;
+;;  COPY  s, t, d                                                           ;;
+;;  Copies a value from the source address 's' to the destination address   ;;
+;;  'd', holding the copy in temporary register 't'.                        ;;
+;;                                                                          ;;
+;;  ARGUMENTS                                                               ;;
+;;      s   Source address (R1 thru R6)                                     ;;
+;;      t   Temporary register (R0 thru R6)                                 ;;
+;;      d   Destination address (R1 thru R6)                                ;;
+;; ======================================================================== ;;
+MACRO   COPY    s, t, d
+        MVI     %s%, %t%
+        MVO     %t%, %d%
+ENDM
+
+;; ======================================================================== ;;
+;;  COPY@ s, t, d                                                           ;;
+;;  Copies a value from the source pointer 's' to the destination pointer   ;;
+;;  'd', holding the copy in temporary register 't'.                        ;;
+;;                                                                          ;;
+;;  ARGUMENTS                                                               ;;
+;;      s   Source pointer (R1 thru R6)                                     ;;
+;;      t   Temporary register (R0 thru R6)                                 ;;
+;;      d   Destination pointer (R1 thru R6)                                ;;
+;; ======================================================================== ;;
+MACRO   COPY@   s, t, d
+        MVI@    %s%, %t%
+        MVO@    %t%, %d%
+ENDM
+
+;; ======================================================================== ;;
+;;  CALLD   label                                                           ;;
+;;  Call and disable interrupts.  Return address goes to R5.                ;;
+;; ======================================================================== ;;
+MACRO   CALLD   label
+        JSRD    R5, %label%
+ENDM
+
+;; ======================================================================== ;;
+;;  LOOP r, l                                                               ;;
+;;  Implements a simple looping construct.  Decrements 'r', and branches    ;;
+;;  to the label 'l' if it's non-zero.                                      ;;
+;;                                                                          ;;
+;;  ARGUMENTS                                                               ;;
+;;      r   Register to decrement.                                          ;;
+;;      l   Label to jump to if register is non-zero.                       ;;
+;;                                                                          ;;
+;;  EXAMPLE                                                                 ;;
+;;      MVII    #10,    R0                                                  ;;
+;;  @@l MVO@    R1,     R4      ;\__ This iterates 10 times.                ;;
+;;      LOOP    R0,     @@l     ;/                                          ;;
+;; ======================================================================== ;;
+MACRO   LOOP    r, l
+        DECR    %r%
+        BNEQ    %l%
+ENDM
+
+;; ======================================================================== ;;
+;;  LOOPPL r, l                                                             ;;
+;;  Implements a simple looping construct.  Decrements 'r', and branches    ;;
+;;  to the label 'l' if it's non-negative.                                  ;;
+;;                                                                          ;;
+;;  ARGUMENTS                                                               ;;
+;;      r   Register to decrement.                                          ;;
+;;      l   Label to jump to if register is non-zero.                       ;;
+;;                                                                          ;;
+;;  EXAMPLE                                                                 ;;
+;;      MVII    #10,    R0                                                  ;;
+;;  @@l MVO@    R1,     R4      ;\__ This iterates 11 times.                ;;
+;;      LOOPPL  R0,     @@l     ;/                                          ;;
+;; ======================================================================== ;;
+MACRO   LOOPPL  r, l
+        DECR    %r%
+        BPL     %l%
+ENDM
+
+;; ======================================================================== ;;
+;;  SWITCH r, tbl                                                           ;;
+;;  Implements a simple "jump table".  The argument 'tbl' points to an      ;;
+;;  array of labels representing the 'cases' of the SWITCH.  The register   ;;
+;;  provided by the user will be left pointing into the jump table.  If     ;;
+;;  the register is auto-incrementing, it will point *after* the entry      ;;
+;;  used, otherwise it will point at the entry used.                        ;;
+;;                                                                          ;;
+;;  The switch table can appear immediately after SWITCH, or it can         ;;
+;;  appear elsewhere in the program.  This SWITCH macro only works with     ;;
+;;  16-bit ROM widths.                                                      ;;
+;;                                                                          ;;
+;;  ARGUMENTS                                                               ;;
+;;      r   Value to "switch" on.  Must be a register R1 thru R5.  Value    ;;
+;;          in the register must be in range 0...n.                         ;;
+;;                                                                          ;;
+;;  EXAMPLE                                                                 ;;
+;;      SWITCH  R0, @@swtbl                                                 ;;
+;;  @@swtbl:                                                                ;;
+;;      DECLE   @@case_0, @@case_1, @@case_2, @@case_3                      ;;
+;;                                                                          ;;
+;;  @@case_0:                                                               ;;
+;;      ;....                                                               ;;
+;;                                                                          ;;
+;;  @@case_1:                                                               ;;
+;;      ;....                                                               ;;
+;;                                                                          ;;
+;;  @@case_2:                                                               ;;
+;;      ;....                                                               ;;
+;;                                                                          ;;
+;;  @@case_3:                                                               ;;
+;;      ;....                                                               ;;
+;;                                                                          ;;
+;; ======================================================================== ;;
+MACRO   SWITCH  r,  tbl
+        ADDI    #%tbl%, %r%
+        MVI@    %r%, PC
+ENDM
+
+
+;; ======================================================================== ;;
+;;  SWITCHB r                                                               ;;
+;;  Implements a simple "jump table".  User must follow "SWITCH" with a     ;;
+;;  series of "B @@label" for each of the cases.  The register supplied to  ;;
+;;  the switch will be left doubled.                                        ;;
+;;                                                                          ;;
+;;  This form of switch statement requires the branch instructions to       ;;
+;;  immediately follow the SWITCHB.  This version may be more useful if     ;;
+;;  retaining the value of 'r' is required.                                 ;;
+;;                                                                          ;;
+;;  ARGUMENTS                                                               ;;
+;;      r   Value to "switch" on.  Must be in range 0...n.  Value will be   ;;
+;;          doubled after this macro.                                       ;;
+;;                                                                          ;;
+;;  EXAMPLE                                                                 ;;
+;;      SWITCHB R0                                                          ;;
+;;      B       @@case_0                                                    ;;
+;;      B       @@case_1                                                    ;;
+;;      B       @@case_2                                                    ;;
+;;      B       @@case_3                                                    ;;
+;; ======================================================================== ;;
+MACRO   SWITCHB r
+        ADDR    %r%, %r%
+        ADDR    %r%, PC
+ENDM
+
+;; ======================================================================== ;;
+;;  SPINEQ a, r                                                             ;;
+;;  Loop while value at 'a' equals value held in 'r'.  Can be useful for    ;;
+;;  synchronizing with ISRs.                                                ;;
+;;                                                                          ;;
+;;  ARGUMENTS                                                               ;;
+;;      a   Address to spin on.                                             ;;
+;;      r   Value to look for.                                              ;;
+;;                                                                          ;;
+;;  EXAMPLE                                                                 ;;
+;;      CLRR    R0                                                          ;;
+;;      MVO     R0,     FLAG    ; Clear flag                                ;;
+;;      SPINEQ  FLAG,   R0      ; Wait until ISR sets flag.                 ;;
+;; ======================================================================== ;;
+MACRO   SPINEQ  a, r
+        CMP     %a%, %r%  ; 2 words
+        BEQ     $ - 2     ; $ avoids label.  ;-)
+ENDM
+
+;; ======================================================================== ;;
+;;  SPINEQ@ p, r                                                            ;;
+;;  Loop while value pointed to by 'a' equals value held in 'r'.  Can be    ;;
+;;  useful for synchronizing with ISRs.                                     ;;
+;;                                                                          ;;
+;;  NOTE:  'p' should be a non-incrementing pointer!  If an incrementing    ;;
+;;  pointer is used, then this becomes a sort of "string search" instead.   ;;
+;;                                                                          ;;
+;;  ARGUMENTS                                                               ;;
+;;      p   Address to spin on.                                             ;;
+;;      r   Value to look for.                                              ;;
+;;                                                                          ;;
+;;  EXAMPLE                                                                 ;;
+;;      CLRR    R0                                                          ;;
+;;      MVO@    R0,     R3      ; Clear flag                                ;;
+;;      SPINEQ@ R3,     R0      ; Wait until ISR sets flag.                 ;;
+;; ======================================================================== ;;
+MACRO   SPINEQ@ a, r
+        CMP@    %a%, %r%  ; 1 words
+        BEQ     $ - 1     ; $ avoids label.  ;-)
+ENDM
+
+;; ======================================================================== ;;
+;;  SPINNE a, r                                                             ;;
+;;  Loop while value at 'a' does not equal value held in 'r'.               ;;
+;;  Can be useful for synchronizing with ISRs.                              ;;
+;;                                                                          ;;
+;;  ARGUMENTS                                                               ;;
+;;      a   Address to spin on.                                             ;;
+;;      r   Value to look for.                                              ;;
+;;                                                                          ;;
+;;  EXAMPLE                                                                 ;;
+;;      MVII    #3,     R0                                                  ;;
+;;      MVO@    R0,     CNT     ; Wait 3 frames                             ;;
+;;      CLRR    R0                                                          ;;
+;;      SPINNE  CNT,    R0      ; Wait until ISR's counter expires          ;;
+;; ======================================================================== ;;
+MACRO   SPINNE  a, r
+        CMP     %a%, %r%  ; 2 words
+        BNEQ    $ - 2     ; $ avoids label.  ;-)
+ENDM
+
+;; ======================================================================== ;;
+;;  SPINEQ@ p, r                                                            ;;
+;;  Loop while value pointed to by 'a' does not equal value held in 'r'.    ;;
+;;  Can be useful for synchronizing with ISRs.                              ;;
+;;                                                                          ;;
+;;  NOTE:  'p' should be a non-incrementing pointer!  If an incrementing    ;;
+;;  pointer is used, then this becomes a sort of "string search" instead.   ;;
+;;                                                                          ;;
+;;  ARGUMENTS                                                               ;;
+;;      p   Address to spin on.                                             ;;
+;;      r   Value to look for.                                              ;;
+;;                                                                          ;;
+;;  EXAMPLE                                                                 ;;
+;;      MVII    #3,     R0                                                  ;;
+;;      MVO@    R0,     R3      ; Wait 3 frames                             ;;
+;;      CLRR    R0                                                          ;;
+;;      SPINNE@ R3,     R0      ; Wait until ISR's counter expires          ;;
+;; ======================================================================== ;;
+MACRO   SPINNE@ a, r
+        CMP@    %a%, %r%  ; 1 words
+        BNEQ    $ - 1     ; $ avoids label.  ;-)
+ENDM
+
+
+;; ======================================================================== ;;
+;;  SHIFT MACROS                                                            ;;
+;;  The following set of macros implement "extended shifts", extending the  ;;
+;;  shift amount of the existing CP-1600 shift instructions.                ;;
+;;                                                                          ;;
+;;  WARNING:  These shift sequences are non-interruptible, so be careful.   ;;
+;;  Shift amounts larger than 8, and double-precision shift amounts larger  ;;
+;;  than 4 can potentially affect video display in a negative way.          ;;
+;;                                                                          ;;
+;;  The following shift macros are provided:                                ;;
+;;                                                                          ;;
+;;      SLRC   h, l, n  ; Shift logically right into Carry/Overflow         ;;
+;;      DSLLC  h, l, n  ; 32-bit Shift Logically Left into Carry/Overflow   ;;
+;;      DSLRC  h, l, n  ; 32-bit Shift Logically Right into Carry/Overflow  ;;
+;;      DSARC  h, l, n  ; 32-bit Shift Arithmetically Right into Carry/Ov.  ;;
+;;      SLLn   r, n     ; Shift Logically Left                              ;;
+;;      SLLCn  r, n     ; Shift Logically Left into Carry/Overflow          ;;
+;;      SLRn   r, n     ; Shift Logically Right                             ;;
+;;      SARn   r, n     ; Shift Arithmetically Right                        ;;
+;;      SLRCn  r, n     ; Shift Logically Right into Carry/Overflow         ;;
+;;      SARCn  r, n     ; Shift Arithmetically Right into Carry/Overflow    ;;
+;;      DSLLCn h, l, n  ; 32-bit Shift Logically Left into Carry/Overflow   ;;
+;;      DSLRCn h, l, n  ; 32-bit Shift Logically Right into Carry/Overflow  ;;
+;;      DSARCn h, l, n  ; 32-bit Shift Arithmetically Right into Carry/Ov.  ;;
+;;                                                                          ;;
+;;  The Dxxxx macros implement a double-precision (32-bit) shift across     ;;
+;;  two registers.  The variants lacking the 'n' suffix only support        ;;
+;;  shift amounts of 1 or 2.                                                ;;
+;;                                                                          ;;
+;;  For each of the above, the final shift in the expanded series is        ;;
+;;  always a shift-by-2, except of course in the case where the user        ;;
+;;  specifies a shift of exactly 1.                                         ;;
+;; ======================================================================== ;;
+
+
+;; ======================================================================== ;;
+;;  SLRC r, n                                                               ;;
+;;  Shift logical right into carry/overflow.                                ;;
+;;                                                                          ;;
+;;  ARGUMENTS                                                               ;;
+;;      r   Register to shift right.                                        ;;
+;;      n   Shift amount.  Must be a constant expression that evaluates to  ;;
+;;          1 or 2.                                                         ;;
+;; ======================================================================== ;;
+MACRO   SLRC r, n  
+        LISTING "code"
+    IF ((%n%) < 1) OR ((%n%) > 2)
+        ERR  "SLRC shift amount out of range!"
+    ENDI
+    IF (%n%) = 1
+        CLRC
+        RRC  %r%, 1
+    ENDI
+    IF (%n%) = 2
+        SARC %r%, %n%
+        ANDI #$3FFF, %r%
+    ENDI
+        LISTING "prev"
+ENDM
+
+;; ======================================================================== ;;
+;;  DSLLC, DSARC, DSLRC                                                     ;;
+;;  Double-precision shift macros.  These macros combine a shift with a     ;;
+;;  rotate in order to shift a 32-bit value across two registers.           ;;
+;;                                                                          ;;
+;;  ARGUMENTS                                                               ;;
+;;      h   Upper register of register pair to shift (R0 through R3)        ;;
+;;      l   Lower register of register pair to shift (R0 through R3)        ;;
+;;      n   Shift amount.  Must be a constant expression that evaluates to  ;;
+;;          1 or 2.                                                         ;;
+;; ======================================================================== ;;
+MACRO   DSLLC h, l, n  ;; double-precision shift logical left into carry/over
+        SLLC %l%, %n%  
+        RLC  %h%, %n%
+ENDM
+MACRO   DSARC h, l, n  ;; double-precision shift arith right into carry/over
+        SARC %h%, %n%
+        RRC  %l%, %n%
+ENDM
+MACRO   DSLRC h, l, n  ;; double-precision shift logical right into carry/over
+    LISTING "code"
+    IF ((%n%) < 1) OR ((%n%) > 2)
+        ERR  "DSLRC shift amount out of range!"
+    ENDI
+    IF (%n%) = 1
+        CLRC
+        RRC  %h%, 1
+        RRC  %l%, 1
+    ENDI
+    IF (%n%) = 2
+        SARC %h%, %n%
+        RRC  %l%, %n%
+        ANDI #$3FFF, %h%
+    ENDI
+    LISTING "prev"
+ENDM
+
+;; ======================================================================== ;;
+;;  __shft_n s, r, n                                                        ;;
+;;  Generic "shift expansion" macro set.  Expands shift amounts out to a    ;;
+;;  series of shifts by 1 or 2.  The macro uses a repeat block to generate  ;;
+;;  the series of shifts.                                                   ;;
+;; ======================================================================== ;;
+MACRO   __shft_n s, r, n
+    LISTING "code"
+    IF ((%n%) < 1)
+      ERR "Shift amount out of range.  Must be >= 1."
+    ELSE
+      IF ((%n%) AND 1) 
+        %s% %r%, 1
+      ENDI
+      RPT ((%n%) SHR 1)
+        %s% %r%, 2
+      ENDR
+    ENDI
+    LISTING "prev"
+ENDM
+
+;; ======================================================================== ;;
+;;  SLLn, SLLCn, SARn, SARCn, SLRn, SLRCn                                   ;;
+;;  Shift macros that expand the allowed constant range on the CP-1600's    ;;
+;;  shift instructions.  These rely on the generic macro above to expand    ;;
+;;  each macro out as a series of shifts.                                   ;;
+;;                                                                          ;;
+;;  ARGUMENTS                                                               ;;
+;;      r   Register to shift (R0 thru R3)                                  ;;
+;;      n   Shift amount.  Must be a constant expression >= 1               ;;
+;; ======================================================================== ;;
+MACRO   SLLn r, n
+        __shft_n SLL, %r%, %n%
+ENDM
+
+MACRO   SLLCn r, n
+        __shft_n SLLC, %r%, %n%
+ENDM
+
+MACRO   SARn r, n
+        __shft_n SAR, %r%, %n%
+ENDM
+
+MACRO   SARCn r, n
+        __shft_n SARC, %r%, %n%
+ENDM
+
+MACRO   SLRn r, n
+        __shft_n SLR, %r%, %n%
+ENDM
+
+MACRO   SLRCn r, n
+        LISTING "code"
+ IF ((%n%) < 3)
+        SLRC %r%, %n%
+ ELSE
+        __shft_n SLR, %r%, ((%n%) - 2)
+        SARC %r%, 2
+ ENDI
+        LISTING "prev"
+ENDM
+
+;; ======================================================================== ;;
+;;  DSLLCn, DSARCn, DSLRCn                                                  ;;
+;;  Shift macros that expand the allowed constant range on the double-      ;;
+;;  precision shift macros.  These rely on the generic macro above to       ;;
+;;  expand each macro out as a series of shifts, and on the Dxxxx shift     ;;
+;;  macros to provide the double-precision shifts.                          ;;
+;;                                                                          ;;
+;;  Notice how the 'h' and 'l' operands are grouped together as a single    ;;
+;;  operand when invoking __shft_n using the [] grouping operators.         ;;
+;;                                                                          ;;
+;;  ARGUMENTS                                                               ;;
+;;      h   Upper register of register pair to shift (R0 through R3)        ;;
+;;      l   Lower register of register pair to shift (R0 through R3)        ;;
+;;      n   Shift amount.  Must be a constant expression >= 1               ;;
+;; ======================================================================== ;;
+MACRO   DSLLCn h, l, n
+        __shft_n DSLLC, [%h%,%l%], %n%
+ENDM
+
+MACRO   DSARCn h, l, n
+        __shft_n DSARC, [%h%,%l%], %n%
+ENDM
+
+MACRO   DSLRCn h, l, n
+        __shft_n DSARC, [%h%,%l%], %n%
+        ANDI #($FFFF SHR %n%), %h%
+ENDM
+
+;; ======================================================================== ;;
+;;  DADDR h0,l0, h1,l1                                                      ;;
+;;  Adds register pair h0:l0 to register pair h1:l1 (32-bit ADDR).          ;;
+;; ======================================================================== ;;
+MACRO   DADDR h0,l0,h1,l1
+        ADDR  %l0%, %l1%  ; add lower halves
+        ADCR  %h1%        ; propogate carry into upper half
+        ADDR  %h0%, %h1%  ; add upper halves
+ENDM
+
+;; ======================================================================== ;;
+;;  DSUBR h0,l0, h1,l1                                                      ;;
+;;  Subtracts register pair h0:l0 from register pair h1:l1 (32-bit SUBR).   ;;
+;; ======================================================================== ;;
+MACRO   DSUBR h0,l0,h1,l1
+        SUBR  %l0%, %l1%  ; subtract lower halves
+        ADCR  %h1%        ; propogate borrow to upper half
+        DECR  %h1%        ; turn borrow into not-borrow
+        SUBR  %h0%, %h1%  ; subtract upper halves
+ENDM
+
+;; ======================================================================== ;;
+;;  XCHG a, b                                                               ;;
+;;  Exchanges two values in registers using three-XOR-swap.                 ;;
+;;                                                                          ;;
+;;  ARGUMENTS                                                               ;;
+;;      a   Register 1 to swap                                              ;;
+;;      b   Register 2 to swap                                              ;;
+;; ======================================================================== ;;
+MACRO   XCHG a, b
+        XORR %a%, %b%
+        XORR %b%, %a%
+        XORR %a%, %b%
+ENDM
+
+;; ======================================================================== ;;
+;;  ORR a, b  -- Register-mode OR                                           ;;
+;;  Bitwise-ORs register 'a' into register 'b'                              ;;
+;;                                                                          ;;
+;;  ARGUMENTS                                                               ;;
+;;      a   Register with value to "OR"                                     ;;
+;;      b   Register holding result                                         ;;
+;; ======================================================================== ;;
+MACRO   ORR a, b
+        COMR %a%
+        ANDR %a%, %b%
+        COMR %a%
+        XORR %a%, %b%
+ENDM
+       
+;; ======================================================================== ;;
+;;  ORI a, b  -- Immediate mode OR                                          ;;
+;;  Bitwise-ORs constant 'a' into register 'b'                              ;;
+;;                                                                          ;;
+;;  ARGUMENTS                                                               ;;
+;;      a   Value to "OR"                                                   ;;
+;;      b   Register holding result                                         ;;
+;; ======================================================================== ;;
+MACRO   ORI a, b
+        ANDI #($FFFF AND (NOT (%a%))), %b%
+        XORI #($FFFF AND      (%a%) ), %b%
+ENDM
+       
+;; ======================================================================== ;;
+;;  OR@ a, b   -- Indirect mode OR                                          ;;
+;;  Bitwise-ORs value pointed to by 'a' into register 'b'.  This macro      ;;
+;;  requires one word of stack space.                                       ;;
+;;                                                                          ;;
+;;  ARGUMENTS                                                               ;;
+;;      a   Address holding value to OR.                                    ;;
+;;      b   Register holding result.  (R0 thru R5)                          ;;
+;; ======================================================================== ;;
+MACRO   OR@ a, b
+        PSHR %b%
+        COMR %b%
+        AND@ %a%, %b%
+        XOR@ SP,  %b%
+ENDM
+       
+;; ======================================================================== ;;
+;;  ORD a, b   -- Direct mode OR                                            ;;
+;;  Bitwise-ORs value at address 'a' into register 'b'.  This macro         ;;
+;;  requires one word of stack space.                                       ;;
+;;                                                                          ;;
+;;  This macro is named "ORD" so as to not conflict with the assembler      ;;
+;;  keyword "OR".                                                           ;;
+;;                                                                          ;;
+;;  ARGUMENTS                                                               ;;
+;;      a   Address holding value to OR.                                    ;;
+;;      b   Register holding result.  (R0 thru R5)                          ;;
+;; ======================================================================== ;;
+MACRO   ORD  a, b
+        PSHR %b%
+        COMR %b%
+        AND  %a%, %b%
+        XOR@ SP,  %b%
+ENDM
+
+;; ======================================================================== ;;
+;;  XTND8 r                                                                 ;;
+;;  Sign-extend 8-bit value to 16 bits.  Assumes value has 0s in upper      ;;
+;;  half already.                                                           ;;
+;;                                                                          ;;
+;;  ARGUMENTS                                                               ;;
+;;      r   Register to extend from 8 to 16 bits                            ;;
+;; ======================================================================== ;;
+MACRO   XTND8 r
+        XORI    #$80, %r%
+        SUBI    #$80, %r%
+ENDM
+
+;; ======================================================================== ;;
+;;  UNPKL r, l                                                              ;;
+;;  Unpack 16-bit value in 'r' to two 8-bit values in 'r' and 'l'.          ;;
+;;  The unpacked values are left in the lower 8 bits of 'r' and 'l'.        ;;
+;;                                                                          ;;
+;;  ARGUMENTS                                                               ;;
+;;      r   Register to unpack.  When done, this will hold upper 8 bits.    ;;
+;;          Note: 'r' must be R0 through R3.                                ;;
+;;      l   Register to place lower 8 bits in.                              ;;
+;; ======================================================================== ;;
+MACRO   UNPKL r, l
+        MOVR    %r%, %l%
+        ANDI    #$FF, %l%
+        XORR    %l%, %r%
+        SWAP    %r%
+ENDM
+
+;; ======================================================================== ;;
+;;  UNPKH r, l                                                              ;;
+;;  Unpack 16-bit value in 'r' to two 8-bit values in 'r' and 'l'.          ;;
+;;  The unpacked values are left in the upper 8 bits of 'r' and 'l'.        ;;
+;;                                                                          ;;
+;;  ARGUMENTS                                                               ;;
+;;      r   Register to unpack.  When done, this will hold upper 8 bits.    ;;
+;;          Note: 'r' must be R0 through R3.                                ;;
+;;      l   Register to place lower 8 bits in.                              ;;
+;; ======================================================================== ;;
+MACRO   UNPK r, l
+        MOVR    %r%, %l%
+        ANDI    #$FF, %l%
+        XORR    %l%, %r%
+        SWAP    %l%
+ENDM
+
+    ENDI
+
+;; ======================================================================== ;;
+;;  End of File:  util.mac                                                  ;;
+;; ======================================================================== ;;

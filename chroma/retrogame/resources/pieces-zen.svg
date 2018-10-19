@@ -1,0 +1,960 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Sodipodi ("http://www.sodipodi.com/") -->
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   id="chroma pieces"
+   sodipodi:version="0.32"
+   width="700"
+   height="1300"
+   sodipodi:docname="pieces-zen.svg"
+   inkscape:version="0.46"
+   sodipodi:docbase="/chroma"
+   inkscape:output_extension="org.inkscape.output.svg.inkscape"
+   version="1.0">
+  <metadata
+     id="metadata2386">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title>Chroma Zen</dc:title>
+        <dc:creator>
+          <cc:Agent>
+            <dc:title>Copyright (C) 2010 Amf</dc:title>
+          </cc:Agent>
+        </dc:creator>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs716">
+    <inkscape:perspective
+       sodipodi:type="inkscape:persp3d"
+       inkscape:vp_x="0 : 650 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_z="900 : 650 : 1"
+       inkscape:persp3d-origin="450 : 433.33333 : 1"
+       id="perspective217" />
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     inkscape:zoom="0.44384552"
+     inkscape:cx="-276.81864"
+     inkscape:cy="820.19561"
+     inkscape:window-width="1266"
+     inkscape:window-height="885"
+     inkscape:window-x="0"
+     inkscape:window-y="75"
+     inkscape:current-layer="chroma pieces"
+     showgrid="false"
+     inkscape:showpageshadow="false" />
+  <g
+     id="arrow_red">
+    <rect
+       style="font-size:12px;fill:#ffffff;fill-opacity:0;fill-rule:evenodd;stroke-width:1pt"
+       id="rect608"
+       width="100"
+       height="100"
+       x="0"
+       y="0" />
+    <path
+       style="font-size:12px;fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:#ff0000;stroke-width:5;stroke-linecap:round;stroke-linejoin:round"
+       d="M 5,50 L 95,5 L 95,95 L 5,50 z"
+       id="path868" />
+    <path
+       style="font-size:12px;fill:#ff0000;fill-opacity:0.4;fill-rule:evenodd;stroke:#ff0000;stroke-width:5;stroke-linecap:round;stroke-linejoin:round"
+       d="M 5,50 L 95,5 L 95,95 L 5,50 z"
+       id="path609" />
+  </g>
+  <g
+     id="arrow_green"
+     transform="translate(200,0)">
+    <rect
+       style="font-size:12px;fill:#ffffff;fill-opacity:0;fill-rule:evenodd;stroke-width:1pt"
+       id="rect613"
+       width="100"
+       height="100"
+       x="0"
+       y="0" />
+    <path
+       style="font-size:12px;fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:#00cc00;stroke-width:5;stroke-linecap:round;stroke-linejoin:round"
+       d="M 5,50 L 95,5 L 95,95 L 5,50 z"
+       id="path873" />
+    <path
+       style="font-size:12px;fill:#00ff00;fill-opacity:0.4;fill-rule:evenodd;stroke:#00cc00;stroke-width:5;stroke-linecap:round;stroke-linejoin:round"
+       d="M 5,50 L 95,5 L 95,95 L 5,50 z"
+       id="path614" />
+  </g>
+  <g
+     id="arrow_blue"
+     transform="translate(400,0)">
+    <rect
+       style="font-size:12px;fill:#ffffff;fill-opacity:0;fill-rule:evenodd;stroke-width:1pt"
+       id="rect616"
+       width="100"
+       height="100"
+       x="0"
+       y="0" />
+    <path
+       style="font-size:12px;fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:#0000ff;stroke-width:5;stroke-linecap:round;stroke-linejoin:round"
+       d="M 5,50 L 95,5 L 95,95 L 5,50 z"
+       id="path878" />
+    <path
+       style="font-size:12px;fill:#0000ff;fill-opacity:0.4;fill-rule:evenodd;stroke:#0000ff;stroke-width:5;stroke-linecap:round;stroke-linejoin:round"
+       d="M 5,50 L 95,5 L 95,95 L 5,50 z"
+       id="path617" />
+  </g>
+  <g
+     id="widget_light"
+     transform="translate(600,0)">
+    <rect
+       style="font-size:12px;fill:#ffffff;fill-opacity:0;fill-rule:evenodd;stroke-width:1pt"
+       id="rect943"
+       width="100"
+       height="100"
+       x="0"
+       y="0" />
+    <path
+       sodipodi:type="arc"
+       style="font-size:12px;fill:#ffffff;fill-rule:evenodd;stroke:#8000ff;stroke-width:5;stroke-linecap:round;stroke-linejoin:round"
+       id="path942"
+       d="M 95,50 A 45,45 0 1 1 5,50 A 45,45 0 1 1 95,50 z"
+       sodipodi:cx="50"
+       sodipodi:cy="50"
+       sodipodi:rx="45"
+       sodipodi:ry="45" />
+    <path
+       sodipodi:type="arc"
+       style="font-size:12px;fill:#8000ff;fill-opacity:0.4;fill-rule:evenodd;stroke:#8000ff;stroke-width:5;stroke-linecap:round;stroke-linejoin:round"
+       id="path944"
+       d="M 95,50 A 45,45 0 1 1 5,50 A 45,45 0 1 1 95,50 z"
+       sodipodi:cx="50"
+       sodipodi:cy="50"
+       sodipodi:rx="45"
+       sodipodi:ry="45" />
+  </g>
+  <g
+     id="bomb_red"
+     transform="translate(0,200)">
+    <rect
+       style="font-size:12px;fill:#ffffff;fill-opacity:0;fill-rule:evenodd;stroke-width:1pt"
+       id="rect630"
+       width="100"
+       height="100"
+       x="0"
+       y="0" />
+    <path
+       style="font-size:12px;fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:#ff0000;stroke-width:5;stroke-linecap:round;stroke-linejoin:round"
+       d="M 5,5 L 95,5 L 95,95 L 5,95 L 5,5 z"
+       id="path706" />
+    <path
+       style="font-size:12px;fill:#ff0000;fill-opacity:0.4;fill-rule:evenodd;stroke:#ff0000;stroke-width:5;stroke-linecap:round;stroke-linejoin:round"
+       d="M 5,50 L 95,5 L 95,95 L 5,50 z"
+       id="path631" />
+    <path
+       style="font-size:12px;fill:#ff0000;fill-opacity:0.4;fill-rule:evenodd;stroke:#ff0000;stroke-width:5;stroke-linecap:round;stroke-linejoin:round"
+       d="M 5,5 L 95,5 L 95,95 L 5,95 L 5,5 z"
+       id="path632" />
+  </g>
+  <g
+     id="bomb_green"
+     transform="translate(200,200)">
+    <rect
+       style="font-size:12px;fill:#ffffff;fill-opacity:0;fill-rule:evenodd;stroke-width:1pt"
+       id="rect634"
+       width="100"
+       height="100"
+       x="0"
+       y="0" />
+    <path
+       style="font-size:12px;fill:#ffffff;fill-rule:evenodd;stroke:#00cc00;stroke-width:5;stroke-linecap:round;stroke-linejoin:round"
+       d="M 5,5 L 95,5 L 95,95 L 5,95 L 5,5 z"
+       id="path720" />
+    <path
+       style="font-size:12px;fill:#00ff00;fill-opacity:0.4;fill-rule:evenodd;stroke:#00cc00;stroke-width:5;stroke-linecap:round;stroke-linejoin:round"
+       d="M 5,5 L 95,5 L 95,95 L 5,95 L 5,5 z"
+       id="path636" />
+    <path
+       style="font-size:12px;fill:#00ff00;fill-opacity:0.4;fill-rule:evenodd;stroke:#00cc00;stroke-width:5;stroke-linecap:round;stroke-linejoin:round"
+       d="M 5,50 L 95,5 L 95,95 L 5,50 z"
+       id="path635" />
+  </g>
+  <g
+     id="bomb_blue"
+     transform="translate(400,200)">
+    <rect
+       style="font-size:12px;fill:#ffffff;fill-opacity:0;fill-rule:evenodd;stroke-width:1pt"
+       id="rect638"
+       width="100"
+       height="100"
+       x="0"
+       y="0" />
+    <path
+       style="font-size:12px;fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:#0000ff;stroke-width:5;stroke-linecap:round;stroke-linejoin:round"
+       d="M 5,5 L 95,5 L 95,95 L 5,95 L 5,5 z"
+       id="path736" />
+    <path
+       style="font-size:12px;fill:#0000ff;fill-opacity:0.4;fill-rule:evenodd;stroke:#0000ff;stroke-width:5;stroke-linecap:round;stroke-linejoin:round"
+       d="M 5,50 L 95,5 L 95,95 L 5,50 z"
+       id="path639" />
+    <path
+       style="font-size:12px;fill:#0000ff;fill-opacity:0.4;fill-rule:evenodd;stroke:#0000ff;stroke-width:5;stroke-linecap:round;stroke-linejoin:round"
+       d="M 5,5 L 95,5 L 95,95 L 5,95 L 5,5 z"
+       id="path640" />
+  </g>
+  <g
+     id="widget_heavy"
+     transform="translate(600,200)">
+    <rect
+       style="font-size:12px;fill:#ffffff;fill-opacity:0;fill-rule:evenodd;stroke-width:1pt"
+       id="rect665"
+       width="100"
+       height="100"
+       x="0"
+       y="0" />
+    <path
+       sodipodi:type="arc"
+       style="font-size:12px;fill:#ffffff;fill-rule:evenodd;stroke:#8000ff;stroke-width:5;stroke-linecap:round;stroke-linejoin:round"
+       id="path926"
+       d="M 95,50 A 45,45 0 1 1 5,50 A 45,45 0 1 1 95,50 z"
+       sodipodi:cx="50"
+       sodipodi:cy="50"
+       sodipodi:rx="45"
+       sodipodi:ry="45" />
+    <path
+       sodipodi:type="arc"
+       style="font-size:12px;fill:#8000ff;fill-opacity:0.4;fill-rule:evenodd;stroke:#8000ff;stroke-width:5;stroke-linecap:round;stroke-linejoin:round"
+       id="path666"
+       d="M 95,50 A 45,45 0 1 1 5,50 A 45,45 0 1 1 95,50 z"
+       sodipodi:cx="50"
+       sodipodi:cy="50"
+       sodipodi:rx="45"
+       sodipodi:ry="45" />
+    <path
+       sodipodi:type="arc"
+       style="font-size:12px;fill:#8000ff;fill-opacity:0.4;fill-rule:evenodd;stroke:#8000ff;stroke-width:5;stroke-linecap:round;stroke-linejoin:round"
+       id="path655"
+       d="M 75,50 A 25,25 0 1 1 25,50 A 25,25 0 1 1 75,50 z"
+       sodipodi:cx="50"
+       sodipodi:cy="50"
+       sodipodi:rx="25"
+       sodipodi:ry="25" />
+  </g>
+  <g
+     id="earth"
+     transform="translate(0,400)">
+    <rect
+       style="font-size:12px;fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke-width:1pt"
+       id="rect774"
+       width="100"
+       height="100"
+       x="0"
+       y="0" />
+    <path
+       sodipodi:type="arc"
+       style="font-size:12px;fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#804000;stroke-width:6.25;stroke-linecap:square;stroke-linejoin:round;stroke-opacity:0.62745098"
+       id="path775"
+       d="M 42.5,37.5 A 5,5 0 1 1 32.5,37.5 A 5,5 0 1 1 42.5,37.5 z"
+       sodipodi:cx="37.5"
+       sodipodi:cy="37.5"
+       sodipodi:rx="5"
+       sodipodi:ry="5" />
+    <path
+       sodipodi:type="arc"
+       style="font-size:12px;fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#804000;stroke-width:6.25;stroke-linecap:square;stroke-linejoin:round;stroke-opacity:0.62745098"
+       id="path776"
+       d="M 17.5,12.5 A 5,5 0 1 1 7.5,12.5 A 5,5 0 1 1 17.5,12.5 z"
+       sodipodi:cx="12.5"
+       sodipodi:cy="12.5"
+       sodipodi:rx="5"
+       sodipodi:ry="5" />
+    <path
+       sodipodi:type="arc"
+       style="font-size:12px;fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#804000;stroke-width:6.25;stroke-linecap:square;stroke-linejoin:round;stroke-opacity:0.62745098"
+       id="path777"
+       d="M 67.5,12.5 A 5,5 0 1 1 57.5,12.5 A 5,5 0 1 1 67.5,12.5 z"
+       sodipodi:cx="62.5"
+       sodipodi:cy="12.5"
+       sodipodi:rx="5"
+       sodipodi:ry="5" />
+    <path
+       sodipodi:type="arc"
+       style="font-size:12px;fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#804000;stroke-width:6.25;stroke-linecap:square;stroke-linejoin:round;stroke-opacity:0.62745098"
+       id="path778"
+       d="M 92.5,37.5 A 5,5 0 1 1 82.5,37.5 A 5,5 0 1 1 92.5,37.5 z"
+       sodipodi:cx="87.5"
+       sodipodi:cy="37.5"
+       sodipodi:rx="5"
+       sodipodi:ry="5" />
+    <path
+       sodipodi:type="arc"
+       style="font-size:12px;fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#804000;stroke-width:6.25;stroke-linecap:square;stroke-linejoin:round;stroke-opacity:0.62745098"
+       id="path779"
+       d="M 17.5,62.5 A 5,5 0 1 1 7.5,62.5 A 5,5 0 1 1 17.5,62.5 z"
+       sodipodi:cx="12.5"
+       sodipodi:cy="62.5"
+       sodipodi:rx="5"
+       sodipodi:ry="5" />
+    <path
+       sodipodi:type="arc"
+       style="font-size:12px;fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#804000;stroke-width:6.25;stroke-linecap:square;stroke-linejoin:round;stroke-opacity:0.62745098"
+       id="path780"
+       d="M 67.5,62.5 A 5,5 0 1 1 57.5,62.5 A 5,5 0 1 1 67.5,62.5 z"
+       sodipodi:cx="62.5"
+       sodipodi:cy="62.5"
+       sodipodi:rx="5"
+       sodipodi:ry="5" />
+    <path
+       sodipodi:type="arc"
+       style="font-size:12px;fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#804000;stroke-width:6.25;stroke-linecap:square;stroke-linejoin:round;stroke-opacity:0.62745098"
+       id="path781"
+       d="M 42.5,87.5 A 5,5 0 1 1 32.5,87.5 A 5,5 0 1 1 42.5,87.5 z"
+       sodipodi:cx="37.5"
+       sodipodi:cy="87.5"
+       sodipodi:rx="5"
+       sodipodi:ry="5" />
+    <path
+       sodipodi:type="arc"
+       style="font-size:12px;fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#804000;stroke-width:6.25;stroke-linecap:square;stroke-linejoin:round;stroke-opacity:0.62745098"
+       id="path782"
+       d="M 92.5,87.5 A 5,5 0 1 1 82.5,87.5 A 5,5 0 1 1 92.5,87.5 z"
+       sodipodi:cx="87.5"
+       sodipodi:cy="87.5"
+       sodipodi:rx="5"
+       sodipodi:ry="5" />
+  </g>
+  <g
+     id="earth_double"
+     transform="translate(200,400)">
+    <rect
+       style="font-size:12px;fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke-width:1pt"
+       id="rect819"
+       width="100"
+       height="100"
+       x="0"
+       y="0" />
+    <path
+       sodipodi:type="arc"
+       style="font-size:12px;fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#804000;stroke-width:6.25;stroke-linecap:square;stroke-linejoin:round;stroke-opacity:0.62745098"
+       id="path820"
+       d="M 42.5,37.5 A 5,5 0 1 1 32.5,37.5 A 5,5 0 1 1 42.5,37.5 z"
+       sodipodi:cx="37.5"
+       sodipodi:cy="37.5"
+       sodipodi:rx="5"
+       sodipodi:ry="5" />
+    <path
+       sodipodi:type="arc"
+       style="font-size:12px;fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#804000;stroke-width:6.25;stroke-linecap:square;stroke-linejoin:round;stroke-opacity:0.62745098"
+       id="path821"
+       d="M 17.5,12.5 A 5,5 0 1 1 7.5,12.5 A 5,5 0 1 1 17.5,12.5 z"
+       sodipodi:cx="12.5"
+       sodipodi:cy="12.5"
+       sodipodi:rx="5"
+       sodipodi:ry="5" />
+    <path
+       sodipodi:type="arc"
+       style="font-size:12px;fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#804000;stroke-width:6.25;stroke-linecap:square;stroke-linejoin:round;stroke-opacity:0.62745098"
+       id="path822"
+       d="M 67.5,12.5 A 5,5 0 1 1 57.5,12.5 A 5,5 0 1 1 67.5,12.5 z"
+       sodipodi:cx="62.5"
+       sodipodi:cy="12.5"
+       sodipodi:rx="5"
+       sodipodi:ry="5" />
+    <path
+       sodipodi:type="arc"
+       style="font-size:12px;fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#804000;stroke-width:6.25;stroke-linecap:square;stroke-linejoin:round;stroke-opacity:0.62745098"
+       id="path823"
+       d="M 92.5,37.5 A 5,5 0 1 1 82.5,37.5 A 5,5 0 1 1 92.5,37.5 z"
+       sodipodi:cx="87.5"
+       sodipodi:cy="37.5"
+       sodipodi:rx="5"
+       sodipodi:ry="5" />
+    <path
+       sodipodi:type="arc"
+       style="font-size:12px;fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#804000;stroke-width:6.25;stroke-linecap:square;stroke-linejoin:round;stroke-opacity:0.62745098"
+       id="path824"
+       d="M 17.5,62.5 A 5,5 0 1 1 7.5,62.5 A 5,5 0 1 1 17.5,62.5 z"
+       sodipodi:cx="12.5"
+       sodipodi:cy="62.5"
+       sodipodi:rx="5"
+       sodipodi:ry="5" />
+    <path
+       sodipodi:type="arc"
+       style="font-size:12px;fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#804000;stroke-width:6.25;stroke-linecap:square;stroke-linejoin:round;stroke-opacity:0.62745098"
+       id="path825"
+       d="M 67.5,62.5 A 5,5 0 1 1 57.5,62.5 A 5,5 0 1 1 67.5,62.5 z"
+       sodipodi:cx="62.5"
+       sodipodi:cy="62.5"
+       sodipodi:rx="5"
+       sodipodi:ry="5" />
+    <path
+       sodipodi:type="arc"
+       style="font-size:12px;fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#804000;stroke-width:6.25;stroke-linecap:square;stroke-linejoin:round;stroke-opacity:0.62745098"
+       id="path826"
+       d="M 42.5,87.5 A 5,5 0 1 1 32.5,87.5 A 5,5 0 1 1 42.5,87.5 z"
+       sodipodi:cx="37.5"
+       sodipodi:cy="87.5"
+       sodipodi:rx="5"
+       sodipodi:ry="5" />
+    <path
+       sodipodi:type="arc"
+       style="font-size:12px;fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#804000;stroke-width:6.25;stroke-linecap:square;stroke-linejoin:round;stroke-opacity:0.62745098"
+       id="path827"
+       d="M 92.5,87.5 A 5,5 0 1 1 82.5,87.5 A 5,5 0 1 1 92.5,87.5 z"
+       sodipodi:cx="87.5"
+       sodipodi:cy="87.5"
+       sodipodi:rx="5"
+       sodipodi:ry="5" />
+    <path
+       sodipodi:type="arc"
+       style="font-size:12px;fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#804000;stroke-width:6.25;stroke-linecap:square;stroke-linejoin:round;stroke-opacity:0.8"
+       id="path828"
+       d="M 44.5,12.5 A 7,7.5 0 1 1 30.5,12.5 A 7,7.5 0 1 1 44.5,12.5 z"
+       sodipodi:cx="37.5"
+       sodipodi:cy="12.5"
+       sodipodi:rx="7"
+       sodipodi:ry="7.5" />
+    <path
+       sodipodi:type="arc"
+       style="font-size:12px;fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#804000;stroke-width:6.25;stroke-linecap:square;stroke-linejoin:round;stroke-opacity:0.8"
+       id="path829"
+       d="M 94.5,12.5 A 7,7.5 0 1 1 80.5,12.5 A 7,7.5 0 1 1 94.5,12.5 z"
+       sodipodi:cx="87.5"
+       sodipodi:cy="12.5"
+       sodipodi:rx="7"
+       sodipodi:ry="7.5" />
+    <path
+       sodipodi:type="arc"
+       style="font-size:12px;fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#804000;stroke-width:6.25;stroke-linecap:square;stroke-linejoin:round;stroke-opacity:0.8"
+       id="path830"
+       d="M 94.5,62.5 A 7,7.5 0 1 1 80.5,62.5 A 7,7.5 0 1 1 94.5,62.5 z"
+       sodipodi:cx="87.5"
+       sodipodi:cy="62.5"
+       sodipodi:rx="7"
+       sodipodi:ry="7.5" />
+    <path
+       sodipodi:type="arc"
+       style="font-size:12px;fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#804000;stroke-width:6.25;stroke-linecap:square;stroke-linejoin:round;stroke-opacity:0.8"
+       id="path831"
+       d="M 44.5,62.5 A 7,7.5 0 1 1 30.5,62.5 A 7,7.5 0 1 1 44.5,62.5 z"
+       sodipodi:cx="37.5"
+       sodipodi:cy="62.5"
+       sodipodi:rx="7"
+       sodipodi:ry="7.5" />
+    <path
+       sodipodi:type="arc"
+       style="font-size:12px;fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#804000;stroke-width:6.25;stroke-linecap:square;stroke-linejoin:round;stroke-opacity:0.8"
+       id="path832"
+       d="M 19.5,37.5 A 7,7.5 0 1 1 5.5,37.5 A 7,7.5 0 1 1 19.5,37.5 z"
+       sodipodi:cx="12.5"
+       sodipodi:cy="37.5"
+       sodipodi:rx="7"
+       sodipodi:ry="7.5" />
+    <path
+       sodipodi:type="arc"
+       style="font-size:12px;fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#804000;stroke-width:6.25;stroke-linecap:square;stroke-linejoin:round;stroke-opacity:0.8"
+       id="path833"
+       d="M 69.5,37.5 A 7,7.5 0 1 1 55.5,37.5 A 7,7.5 0 1 1 69.5,37.5 z"
+       sodipodi:cx="62.5"
+       sodipodi:cy="37.5"
+       sodipodi:rx="7"
+       sodipodi:ry="7.5" />
+    <path
+       sodipodi:type="arc"
+       style="font-size:12px;fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#804000;stroke-width:6.25;stroke-linecap:square;stroke-linejoin:round;stroke-opacity:0.8"
+       id="path834"
+       d="M 69.5,87.5 A 7,7.5 0 1 1 55.5,87.5 A 7,7.5 0 1 1 69.5,87.5 z"
+       sodipodi:cx="62.5"
+       sodipodi:cy="87.5"
+       sodipodi:rx="7"
+       sodipodi:ry="7.5" />
+    <path
+       sodipodi:type="arc"
+       style="font-size:12px;fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#804000;stroke-width:6.25;stroke-linecap:square;stroke-linejoin:round;stroke-opacity:0.8"
+       id="path835"
+       d="M 19.5,87.5 A 7,7.5 0 1 1 5.5,87.5 A 7,7.5 0 1 1 19.5,87.5 z"
+       sodipodi:cx="12.5"
+       sodipodi:cy="87.5"
+       sodipodi:rx="7"
+       sodipodi:ry="7.5" />
+  </g>
+  <g
+     id="earth_directional"
+     transform="translate(400,400)">
+    <rect
+       style="font-size:12px;fill:#ffffff;fill-opacity:0;fill-rule:evenodd;stroke-width:1pt"
+       id="rect682"
+       width="100"
+       height="100"
+       x="0"
+       y="0" />
+    <path
+       style="font-size:12px;fill:none;fill-rule:evenodd;stroke:#804000;stroke-width:6.25;stroke-linecap:square;stroke-linejoin:round;stroke-opacity:0.62745098"
+       d="M 0,0 C 12.5,10 37.5,10 50,0 C 62.5,-10 87.5,-10 100,0"
+       id="path683"
+       sodipodi:nodetypes="ccc"
+       transform="translate(0,12.5)" />
+    <path
+       style="font-size:12px;fill:none;fill-rule:evenodd;stroke:#804000;stroke-width:6.25;stroke-linecap:square;stroke-linejoin:round;stroke-opacity:0.62745098"
+       d="M 0,0 C 12.5,10 37.5,10 50,0 C 62.5,-10 87.5,-10 100,0"
+       id="path684"
+       sodipodi:nodetypes="ccc"
+       transform="translate(0,37.5)" />
+    <path
+       style="font-size:12px;fill:none;fill-rule:evenodd;stroke:#804000;stroke-width:6.25;stroke-linecap:square;stroke-linejoin:round;stroke-opacity:0.62745098"
+       d="M 0,0 C 12.5,10 37.5,10 50,0 C 62.5,-10 87.5,-10 100,0"
+       id="path685"
+       sodipodi:nodetypes="ccc"
+       transform="translate(0,62.5)" />
+    <path
+       style="font-size:12px;fill:none;fill-rule:evenodd;stroke:#804000;stroke-width:6.25;stroke-linecap:square;stroke-linejoin:round;stroke-opacity:0.62745098"
+       d="M 0,0 C 12.5,10 37.5,10 50,0 C 62.5,-10 87.5,-10 100,0"
+       id="path686"
+       sodipodi:nodetypes="ccc"
+       transform="translate(0,87.5)" />
+  </g>
+  <g
+     id="star"
+     transform="translate(600,400)">
+    <rect
+       style="font-size:12px;fill:#ffffff;fill-opacity:0;fill-rule:evenodd;stroke-width:1pt"
+       id="rect703"
+       width="100"
+       height="100"
+       x="0"
+       y="0" />
+    <polygon
+       style="font-size:12px;fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:#ffa000;stroke-width:5;stroke-linecap:round;stroke-linejoin:round"
+       id="polygon746"
+       points="50,6.5 64.106846,35.083592 95.650713,39.667184 72.825356,61.916408 78.213692,93.332816 50,78.5 21.786308,93.332816 27.174644,61.916408 4.3492871,39.667185 35.893154,35.083592 50,6.5 " />
+    <polygon
+       style="font-size:12px;fill:#ffff00;fill-opacity:0.8;fill-rule:evenodd;stroke:#ffa000;stroke-width:5;stroke-linecap:round;stroke-linejoin:round"
+       id="polygon704"
+       points="50,6.5 64.106846,35.083592 95.650713,39.667184 72.825356,61.916408 78.213692,93.332816 50,78.5 21.786308,93.332816 27.174644,61.916408 4.3492871,39.667185 35.893154,35.083592 50,6.5 " />
+  </g>
+  <g
+     id="wall"
+     transform="translate(0,600)">
+    <rect
+       style="font-size:12px;fill:#ffffff;fill-rule:evenodd;stroke-width:1pt"
+       id="rect720"
+       width="100"
+       height="100"
+       x="0"
+       y="0" />
+    <path
+       style="font-size:12px;fill:#808080;fill-opacity:1;fill-rule:evenodd;stroke-width:5;stroke-linecap:round;stroke-linejoin:round"
+       d="M 2.5,2.5 L 97.5,2.5 L 97.5,97.5 L 2.5,97.5 L 2.5,2.5 z"
+       id="path721" />
+  </g>
+  <g
+     id="teleport"
+     transform="translate(200,600)">
+    <rect
+       style="font-size:12px;fill:#ffffff;fill-opacity:0;fill-rule:evenodd;stroke-width:1pt"
+       id="rect679"
+       width="100"
+       height="100"
+       x="0"
+       y="0" />
+    <path
+       style="font-size:12px;fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:#808080;stroke-width:5;stroke-linecap:round;stroke-linejoin:round"
+       d="M 5,5 L 95,5 L 95,95 L 5,95 L 5,5 z"
+       id="path770" />
+    <path
+       style="font-size:12px;fill:#808080;fill-opacity:0.4;fill-rule:evenodd;stroke:#808080;stroke-width:5;stroke-linecap:round;stroke-linejoin:round"
+       d="M 5,5 L 95,5 L 95,95 L 5,95 L 5,5 z"
+       id="path680" />
+    <path
+       style="font-size:12px;fill:#808080;fill-opacity:0.4;fill-rule:evenodd;stroke:#808080;stroke-width:5;stroke-linecap:round;stroke-linejoin:round"
+       d="M 15,15 L 85,15 L 85,85 L 15,85 L 15,15 z"
+       id="path681" />
+    <path
+       style="font-size:12px;fill:#808080;fill-opacity:0.4;fill-rule:evenodd;stroke:#808080;stroke-width:5;stroke-linecap:round;stroke-linejoin:round"
+       d="M 25,25 L 75,25 L 75,75 L 25,75 L 25,25 z"
+       id="path682" />
+    <path
+       style="font-size:12px;fill:#808080;fill-opacity:0.4;fill-rule:evenodd;stroke:#808080;stroke-width:5;stroke-linecap:round;stroke-linejoin:round"
+       d="M 35,35 L 65,35 L 65,65 L 35,65 L 35,35 z"
+       id="path687" />
+    <path
+       style="font-size:12px;fill:#808080;fill-opacity:0.4;fill-rule:evenodd;stroke:#808080;stroke-width:5;stroke-linecap:round;stroke-linejoin:round"
+       d="M 45,45 L 55,45 L 55,55 L 45,55 L 45,45 z"
+       id="path688" />
+  </g>
+  <g
+     id="switch"
+     transform="translate(400,600)">
+    <rect
+       style="font-size:12px;fill:#ffffff;fill-opacity:0;fill-rule:evenodd;stroke-width:1pt"
+       id="rect623"
+       width="100"
+       height="100"
+       x="0"
+       y="0" />
+    <path
+       style="font-size:12px;fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:#808080;stroke-width:5;stroke-linecap:round;stroke-linejoin:round"
+       d="M 5,5 L 95,5 L 95,95 L 5,95 L 5,5 z"
+       id="path756" />
+    <path
+       style="font-size:12px;fill:#808080;fill-opacity:0.4;fill-rule:evenodd;stroke:#808080;stroke-width:5;stroke-linecap:round;stroke-linejoin:round"
+       d="M 5,5 L 95,5 L 95,95 L 5,95 L 5,5 z"
+       id="path624" />
+    <path
+       style="font-size:12px;fill:#808080;fill-opacity:0.4;fill-rule:evenodd;stroke:#808080;stroke-width:5;stroke-linecap:round;stroke-linejoin:round"
+       d="M 40,30 L 60,30 L 60,70 L 40,70 L 40,30 z"
+       id="path625" />
+    <path
+       sodipodi:type="arc"
+       style="font-size:12px;fill:#808080;fill-rule:evenodd;stroke-width:1pt"
+       id="path626"
+       d="M 85,50 A 5,5 0 1 1 75,50 A 5,5 0 1 1 85,50 z"
+       sodipodi:cx="80"
+       sodipodi:cy="50"
+       sodipodi:rx="5"
+       sodipodi:ry="5" />
+    <path
+       sodipodi:type="arc"
+       style="font-size:12px;fill:#808080;fill-rule:evenodd;stroke-width:1pt"
+       id="path627"
+       d="M 25,50 A 5,5 0 1 1 15,50 A 5,5 0 1 1 25,50 z"
+       sodipodi:cx="20"
+       sodipodi:cy="50"
+       sodipodi:rx="5"
+       sodipodi:ry="5" />
+  </g>
+  <g
+     id="door"
+     transform="translate(600,600)">
+    <rect
+       style="font-size:12px;fill:#ffffff;fill-opacity:0;fill-rule:evenodd;stroke-width:1pt"
+       id="rect702"
+       width="100"
+       height="100"
+       x="0"
+       y="0" />
+    <path
+       style="font-size:12px;fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:#808080;stroke-width:5;stroke-linecap:round;stroke-linejoin:round"
+       d="M 5,5 L 95,5 L 95,95 L 5,95 L 5,5 z"
+       id="path783" />
+    <path
+       style="font-size:12px;fill:#808080;fill-opacity:0.4;fill-rule:evenodd;stroke:#808080;stroke-width:5;stroke-linecap:round;stroke-linejoin:round"
+       d="M 5,5 L 95,5 L 95,95 L 5,95 L 5,5 z"
+       id="path703" />
+    <path
+       style="font-size:12px;fill:#808080;fill-opacity:0.4;fill-rule:evenodd;stroke:#808080;stroke-width:5;stroke-linecap:round;stroke-linejoin:round"
+       d="M 15,15 L 85,15 L 85,95 L 15,95 L 15,15 z"
+       id="path704" />
+    <path
+       sodipodi:type="arc"
+       style="font-size:12px;fill:#808080;fill-rule:evenodd;stroke-width:1pt"
+       id="path705"
+       d="M 80,55 A 5,5 0 1 1 70,55 A 5,5 0 1 1 80,55 z"
+       sodipodi:cx="75"
+       sodipodi:cy="55"
+       sodipodi:rx="5"
+       sodipodi:ry="5" />
+  </g>
+  <g
+     id="map_top_left"
+     transform="translate(0,800)">
+    <rect
+       style="font-size:12px;fill:#ffffff;fill-opacity:0;fill-rule:evenodd;stroke-width:1pt"
+       id="rect712"
+       width="100"
+       height="100"
+       x="0"
+       y="0" />
+    <path
+       style="font-size:12px;fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:#800000;stroke-width:5;stroke-linecap:round;stroke-linejoin:round"
+       d="M 5,5 L 95,5 L 95,95 L 5,95 L 5,5 z"
+       id="path796" />
+    <path
+       style="font-size:12px;fill:#800000;fill-opacity:0.4;fill-rule:evenodd;stroke:#800000;stroke-width:5;stroke-linecap:round;stroke-linejoin:round"
+       d="M 5,5 L 95,5 L 95,95 L 5,95 L 5,5 z"
+       id="path713" />
+    <path
+       style="font-size:12px;fill:#ffffff;fill-rule:evenodd;stroke:#800000;stroke-width:0;stroke-linecap:round;stroke-linejoin:round"
+       d="M 5,5 L 55,5 L 55,55 L 5,55 L 5,5 z"
+       id="path714" />
+    <path
+       style="font-size:12px;fill:#800000;fill-opacity:0.4;fill-rule:evenodd;stroke:#800000;stroke-width:5;stroke-linecap:round;stroke-linejoin:round"
+       d="M 15,15 L 25,15 M 35,15 L 45,15 M 65,15 L 85,15 M 5,25 L 25,25 M 35,25 L 45,25 M 55,25 L 75,25 M 85,25 L 95,25 M 15,35 L 35,35 M 45,35 L 65,35 M 75,35 L 85,35 M 35,45 L 45,45 M 55,45 L 65,45 M 85,45 L 95,45 M 45,55 L 55,55 M 5,65 L 25,65 M 35,65 L 45,65 M 55,65 L 65,65 M 25,75 L 75,75 M 15,85 L 25,85 M 35,85 L 45,85 M 65,85 L 85,85"
+       id="path717" />
+    <path
+       style="font-size:12px;fill:#800000;fill-opacity:0.4;fill-rule:evenodd;stroke:#800000;stroke-width:5;stroke-linecap:round;stroke-linejoin:round"
+       d="M 15,35 L 15,55 M 15,75 L 15,85 M 25,15 L 25,25 M 25,45 L 25,65 M 25,85 L 25,95 M 35,15 L 35,25 M 35,55 L 35,65 M 35,75 L 35,85 M 45,25 L 45,65 M 55,5 L 55,15 M 55,25 L 55,35 M 55,75 L 55,95 M 65,15 L 65,25 M 65,35 L 65,65 M 75,25 L 75,45 M 75,55 L 75,75 M 85,45 L 85,85"
+       id="path718" />
+    <path
+       style="font-size:12px;fill:#800000;fill-opacity:0;fill-rule:evenodd;stroke:#800000;stroke-width:5;stroke-linecap:round;stroke-linejoin:round"
+       d="M 5,5 L 95,5 L 95,95 L 5,95 L 5,5 z"
+       id="path719" />
+  </g>
+  <g
+     id="map_top_right"
+     transform="translate(200,800)">
+    <rect
+       style="font-size:12px;fill:#ffffff;fill-opacity:0;fill-rule:evenodd;stroke-width:1pt"
+       id="rect721"
+       width="100"
+       height="100"
+       x="0"
+       y="0" />
+    <path
+       style="font-size:12px;fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:#800000;stroke-width:5;stroke-linecap:round;stroke-linejoin:round"
+       d="M 5,5 L 95,5 L 95,95 L 5,95 L 5,5 z"
+       id="path811" />
+    <path
+       style="font-size:12px;fill:#800000;fill-opacity:0.4;fill-rule:evenodd;stroke:#800000;stroke-width:5;stroke-linecap:round;stroke-linejoin:round"
+       d="M 5,5 L 95,5 L 95,95 L 5,95 L 5,5 z"
+       id="path722" />
+    <path
+       style="font-size:12px;fill:#ffffff;fill-rule:evenodd;stroke:#800000;stroke-width:0;stroke-linecap:round;stroke-linejoin:round"
+       d="M 45,5 L 95,5 L 95,55 L 45,55 L 45,5 z"
+       id="path723" />
+    <path
+       style="font-size:12px;fill:#800000;fill-opacity:0.4;fill-rule:evenodd;stroke:#800000;stroke-width:5;stroke-linecap:round;stroke-linejoin:round"
+       d="M 15,15 L 25,15 M 35,15 L 45,15 M 65,15 L 85,15 M 5,25 L 25,25 M 35,25 L 45,25 M 55,25 L 75,25 M 85,25 L 95,25 M 15,35 L 35,35 M 45,35 L 65,35 M 75,35 L 85,35 M 35,45 L 45,45 M 55,45 L 65,45 M 85,45 L 95,45 M 45,55 L 55,55 M 5,65 L 25,65 M 35,65 L 45,65 M 55,65 L 65,65 M 25,75 L 75,75 M 15,85 L 25,85 M 35,85 L 45,85 M 65,85 L 85,85"
+       id="path724" />
+    <path
+       style="font-size:12px;fill:#800000;fill-opacity:0.4;fill-rule:evenodd;stroke:#800000;stroke-width:5;stroke-linecap:round;stroke-linejoin:round"
+       d="M 15,35 L 15,55 M 15,75 L 15,85 M 25,15 L 25,25 M 25,45 L 25,65 M 25,85 L 25,95 M 35,15 L 35,25 M 35,55 L 35,65 M 35,75 L 35,85 M 45,25 L 45,65 M 55,5 L 55,15 M 55,25 L 55,35 M 55,75 L 55,95 M 65,15 L 65,25 M 65,35 L 65,65 M 75,25 L 75,45 M 75,55 L 75,75 M 85,45 L 85,85"
+       id="path725" />
+    <path
+       style="font-size:12px;fill:#800000;fill-opacity:0;fill-rule:evenodd;stroke:#800000;stroke-width:5;stroke-linecap:round;stroke-linejoin:round"
+       d="M 5,5 L 95,5 L 95,95 L 5,95 L 5,5 z"
+       id="path726" />
+  </g>
+  <g
+     id="map_bottom_left"
+     transform="translate(400,800)">
+    <rect
+       style="font-size:12px;fill:#ffffff;fill-opacity:0;fill-rule:evenodd;stroke-width:1pt"
+       id="rect728"
+       width="100"
+       height="100"
+       x="0"
+       y="0" />
+    <path
+       style="font-size:12px;fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:#800000;stroke-width:5;stroke-linecap:round;stroke-linejoin:round"
+       d="M 5,5 L 95,5 L 95,95 L 5,95 L 5,5 z"
+       id="path836" />
+    <path
+       style="font-size:12px;fill:#800000;fill-opacity:0.4;fill-rule:evenodd;stroke:#800000;stroke-width:5;stroke-linecap:round;stroke-linejoin:round"
+       d="M 5,5 L 95,5 L 95,95 L 5,95 L 5,5 z"
+       id="path729" />
+    <path
+       style="font-size:12px;fill:#ffffff;fill-rule:evenodd;stroke:#800000;stroke-width:0;stroke-linecap:round;stroke-linejoin:round"
+       d="M 5,45 L 55,45 L 55,95 L 5,95 L 5,45 z"
+       id="path732" />
+    <path
+       style="font-size:12px;fill:#800000;fill-opacity:0.4;fill-rule:evenodd;stroke:#800000;stroke-width:5;stroke-linecap:round;stroke-linejoin:round"
+       d="M 15,15 L 25,15 M 35,15 L 45,15 M 65,15 L 85,15 M 5,25 L 25,25 M 35,25 L 45,25 M 55,25 L 75,25 M 85,25 L 95,25 M 15,35 L 35,35 M 45,35 L 65,35 M 75,35 L 85,35 M 35,45 L 45,45 M 55,45 L 65,45 M 85,45 L 95,45 M 45,55 L 55,55 M 5,65 L 25,65 M 35,65 L 45,65 M 55,65 L 65,65 M 25,75 L 75,75 M 15,85 L 25,85 M 35,85 L 45,85 M 65,85 L 85,85"
+       id="path733" />
+    <path
+       style="font-size:12px;fill:#800000;fill-opacity:0.4;fill-rule:evenodd;stroke:#800000;stroke-width:5;stroke-linecap:round;stroke-linejoin:round"
+       d="M 15,35 L 15,55 M 15,75 L 15,85 M 25,15 L 25,25 M 25,45 L 25,65 M 25,85 L 25,95 M 35,15 L 35,25 M 35,55 L 35,65 M 35,75 L 35,85 M 45,25 L 45,65 M 55,5 L 55,15 M 55,25 L 55,35 M 55,75 L 55,95 M 65,15 L 65,25 M 65,35 L 65,65 M 75,25 L 75,45 M 75,55 L 75,75 M 85,45 L 85,85"
+       id="path734" />
+    <path
+       style="font-size:12px;fill:#800000;fill-opacity:0;fill-rule:evenodd;stroke:#800000;stroke-width:5;stroke-linecap:round;stroke-linejoin:round"
+       d="M 5,5 L 95,5 L 95,95 L 5,95 L 5,5 z"
+       id="path735" />
+  </g>
+  <g
+     id="map_bottom_right"
+     transform="translate(600,800)">
+    <rect
+       style="font-size:12px;fill:#ffffff;fill-opacity:0;fill-rule:evenodd;stroke-width:1pt"
+       id="rect737"
+       width="100"
+       height="100"
+       x="0"
+       y="0" />
+    <path
+       style="font-size:12px;fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:#800000;stroke-width:5;stroke-linecap:round;stroke-linejoin:round"
+       d="M 5,5 L 95,5 L 95,95 L 5,95 L 5,5 z"
+       id="path851" />
+    <path
+       style="font-size:12px;fill:#800000;fill-opacity:0.4;fill-rule:evenodd;stroke:#800000;stroke-width:5;stroke-linecap:round;stroke-linejoin:round"
+       d="M 5,5 L 95,5 L 95,95 L 5,95 L 5,5 z"
+       id="path738" />
+    <path
+       style="font-size:12px;fill:#ffffff;fill-rule:evenodd;stroke:#800000;stroke-width:0;stroke-linecap:round;stroke-linejoin:round"
+       d="M 45,45 L 95,45 L 95,95 L 45,95 L 45,45 z"
+       id="path739" />
+    <path
+       style="font-size:12px;fill:#800000;fill-opacity:0.4;fill-rule:evenodd;stroke:#800000;stroke-width:5;stroke-linecap:round;stroke-linejoin:round"
+       d="M 15,15 L 25,15 M 35,15 L 45,15 M 65,15 L 85,15 M 5,25 L 25,25 M 35,25 L 45,25 M 55,25 L 75,25 M 85,25 L 95,25 M 15,35 L 35,35 M 45,35 L 65,35 M 75,35 L 85,35 M 35,45 L 45,45 M 55,45 L 65,45 M 85,45 L 95,45 M 45,55 L 55,55 M 5,65 L 25,65 M 35,65 L 45,65 M 55,65 L 65,65 M 25,75 L 75,75 M 15,85 L 25,85 M 35,85 L 45,85 M 65,85 L 85,85"
+       id="path740" />
+    <path
+       style="font-size:12px;fill:#800000;fill-opacity:0.4;fill-rule:evenodd;stroke:#800000;stroke-width:5;stroke-linecap:round;stroke-linejoin:round"
+       d="M 15,35 L 15,55 M 15,75 L 15,85 M 25,15 L 25,25 M 25,45 L 25,65 M 25,85 L 25,95 M 35,15 L 35,25 M 35,55 L 35,65 M 35,75 L 35,85 M 45,25 L 45,65 M 55,5 L 55,15 M 55,25 L 55,35 M 55,75 L 55,95 M 65,15 L 65,25 M 65,35 L 65,65 M 75,25 L 75,45 M 75,55 L 75,75 M 85,45 L 85,85"
+       id="path741" />
+    <path
+       style="font-size:12px;fill:#800000;fill-opacity:0;fill-rule:evenodd;stroke:#800000;stroke-width:5;stroke-linecap:round;stroke-linejoin:round"
+       d="M 5,5 L 95,5 L 95,95 L 5,95 L 5,5 z"
+       id="path742" />
+  </g>
+  <g
+     id="player_one"
+     transform="translate(200,1000)">
+    <rect
+       style="font-size:12px;fill:#ffffff;fill-opacity:0;fill-rule:evenodd;stroke-width:1pt"
+       id="rect1499"
+       width="100"
+       height="100"
+       x="0"
+       y="0" />
+    <path
+       id="path1503"
+       d="M 5,35 L 35,5 L 65,5 L 95,35 L 95,65 L 65,95 L 35,95 L 5,65 L 5,35 z"
+       style="font-size:12px;fill:#ffffff;fill-rule:evenodd;stroke:#7f7f7f;stroke-width:5;stroke-linecap:round;stroke-linejoin:round" />
+    <path
+       style="font-size:12px;fill:#0080ff;fill-opacity:0.6;fill-rule:evenodd;stroke:#0080ff;stroke-width:5;stroke-linecap:round;stroke-linejoin:round"
+       d="M 5,35 L 35,5 L 65,5 L 95,35 L 95,65 L 65,95 L 35,95 L 5,65 L 5,35 z"
+       id="path1544" />
+    <path
+       style="font-size:12px;fill:#0080ff;fill-opacity:0.6;fill-rule:evenodd;stroke:#0080ff;stroke-width:5;stroke-linecap:round;stroke-linejoin:round"
+       d="M 5,35 L 35,35 L 35,5 L 65,5 L 65,35 L 95,35 L 95,65 L 65,65 L 65,95 L 35,95 L 35,65 L 5,65 L 5,35 z"
+       id="path1505" />
+  </g>
+  <g
+     id="player_two"
+     transform="translate(0,1000)">
+    <rect
+       style="font-size:12px;fill:#ffffff;fill-opacity:0;fill-rule:evenodd;stroke-width:1pt"
+       id="rect1531"
+       width="100"
+       height="100"
+       x="0"
+       y="0" />
+    <path
+       id="path1533"
+       d="M 5,35 L 35,5 L 65,5 L 95,35 L 95,65 L 65,95 L 35,95 L 5,65 L 5,35 z"
+       style="font-size:12px;fill:#ffffff;fill-rule:evenodd;stroke:#7f7f7f;stroke-width:5;stroke-linecap:round;stroke-linejoin:round" />
+    <path
+       style="font-size:12px;fill:#0080ff;fill-opacity:0.6;fill-rule:evenodd;stroke:#0080ff;stroke-width:5;stroke-linecap:round;stroke-linejoin:round"
+       d="M 5,35 L 35,5 L 65,5 L 95,35 L 95,65 L 65,95 L 35,95 L 5,65 L 5,35 z"
+       id="path1546" />
+    <path
+       id="path1537"
+       d="M 9.3413601,69.445436 L 28.78681,50 L 9.3413601,30.554564 L 30.554564,9.3413601 L 50.00002,28.78679 L 69.445436,9.3413601 L 90.65864,30.554564 L 71.21323,50 L 90.65864,69.445436 L 69.445436,90.701439 L 50.00002,71.21321 L 30.554564,90.65864 L 9.3413601,69.371145 L 9.3413601,69.445436 z"
+       style="font-size:12px;fill:#0080ff;fill-opacity:0.6;fill-rule:evenodd;stroke:#0080ff;stroke-width:5;stroke-linecap:round;stroke-linejoin:round"
+       sodipodi:nodetypes="ccccccccccccc" />
+  </g>
+  <g
+     id="player_one_swapped"
+     transform="translate(600,1000)">
+    <rect
+       style="font-size:12px;fill:#ffffff;fill-opacity:0;fill-rule:evenodd;stroke-width:1pt"
+       id="rect1552"
+       width="100"
+       height="100"
+       x="0"
+       y="0" />
+    <path
+       id="path1554"
+       d="M 5,35 L 35,5 L 65,5 L 95,35 L 95,65 L 65,95 L 35,95 L 5,65 L 5,35 z"
+       style="font-size:12px;fill:#ffffff;fill-rule:evenodd;stroke:#7f7f7f;stroke-width:5;stroke-linecap:round;stroke-linejoin:round" />
+    <path
+       style="font-size:12px;fill:#7f7f7f;fill-opacity:0.6;fill-rule:evenodd;stroke:#7f7f7f;stroke-width:5;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1"
+       d="M 5,35 L 35,5 L 65,5 L 95,35 L 95,65 L 65,95 L 35,95 L 5,65 L 5,35 z"
+       id="path1556" />
+    <path
+       style="font-size:12px;fill:#7f7f7f;fill-opacity:0.6;fill-rule:evenodd;stroke:#7f7f7f;stroke-width:5;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1"
+       d="M 5,35 L 35,35 L 35,5 L 65,5 L 65,35 L 95,35 L 95,65 L 65,65 L 65,95 L 35,95 L 35,65 L 5,65 L 5,35 z"
+       id="path1558" />
+  </g>
+  <g
+     id="player_two_swapped"
+     transform="translate(400,1000)">
+    <rect
+       style="font-size:12px;fill:#ffffff;fill-opacity:0;fill-rule:evenodd;stroke-width:1pt"
+       id="rect1562"
+       width="100"
+       height="100"
+       x="0"
+       y="0" />
+    <path
+       id="path1564"
+       d="M 5,35 L 35,5 L 65,5 L 95,35 L 95,65 L 65,95 L 35,95 L 5,65 L 5,35 z"
+       style="font-size:12px;fill:#ffffff;fill-rule:evenodd;stroke:#7f7f7f;stroke-width:5;stroke-linecap:round;stroke-linejoin:round" />
+    <path
+       style="font-size:12px;fill:#7f7f7f;fill-opacity:0.6;fill-rule:evenodd;stroke:#7f7f7f;stroke-width:5;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1"
+       d="M 5,35 L 35,5 L 65,5 L 95,35 L 95,65 L 65,95 L 35,95 L 5,65 L 5,35 z"
+       id="path1566" />
+    <path
+       id="path1568"
+       d="M 9.3413601,69.445436 L 28.78681,50 L 9.3413601,30.554564 L 30.554564,9.3413601 L 50.00002,28.78679 L 69.445436,9.3413601 L 90.65864,30.554564 L 71.21323,50 L 90.65864,69.445436 L 69.445436,90.701439 L 50.00002,71.21321 L 30.554564,90.65864 L 9.3413601,69.371145 L 9.3413601,69.445436 z"
+       style="font-size:12px;fill:#7f7f7f;fill-opacity:0.6;fill-rule:evenodd;stroke:#7f7f7f;stroke-width:5;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1"
+       sodipodi:nodetypes="ccccccccccccc" />
+  </g>
+  <g
+     id="bevel_vertical"
+     transform="translate(0,1200)">
+    <rect
+       style="font-size:12px;fill:#7f7f7f;fill-opacity:0;fill-rule:evenodd;stroke-width:1pt"
+       id="rect718"
+       width="100"
+       height="100"
+       x="0"
+       y="0" />
+    <path
+       style="fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:6.25;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1"
+       d="M 2.5,0 L 2.5,100 M 97.5,0 L 97.5,100"
+       id="path728" />
+  </g>
+  <g
+     id="bevel_horizontal"
+     transform="translate(200,1200)">
+    <rect
+       style="font-size:12px;fill:#7f7f7f;fill-opacity:0;fill-rule:evenodd;stroke-width:1pt"
+       id="rect742"
+       width="100"
+       height="100"
+       x="0"
+       y="0" />
+    <path
+       style="font-size:12px;fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:6.25;stroke-linecap:round;stroke-linejoin:round"
+       d="M 0,2.5 L 100,2.5 M 0,97.5 L 100,97.5"
+       id="path743" />
+  </g>
+  <g
+     id="bevel_external"
+     transform="translate(400,1200)">
+    <rect
+       style="font-size:12px;fill:#7f7f7f;fill-opacity:0;fill-rule:evenodd;stroke-width:1pt"
+       id="rect753"
+       width="100"
+       height="100"
+       x="0"
+       y="0" />
+    <path
+       style="font-size:12px;fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:6.25;stroke-linecap:round;stroke-linejoin:round"
+       d="M 2.5,2.5 L 97.5,2.5 L 97.5,97.5 L 2.5,97.5 L 2.5,2.5 z"
+       id="path754" />
+  </g>
+  <g
+     id="bevel_internal"
+     transform="translate(600,1200)">
+    <rect
+       style="font-size:12px;fill:#7f7f7f;fill-opacity:0;fill-rule:evenodd;stroke-width:1pt"
+       id="rect763"
+       width="100"
+       height="100"
+       x="0"
+       y="0" />
+    <path
+       d="M 0,2.5 L 2.5,2.5 L 2.5,0 M 100,2.5 L 97.5,2.5 L 97.5,0 M 0,97.5 L 2.5,97.5 L 2.5,100 M 100,97.5 L 97.5,97.5 L 97.5,100"
+       id="path764"
+       style="font-size:12px;fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:6.25;stroke-linecap:round;stroke-linejoin:round" />
+  </g>
+</svg>

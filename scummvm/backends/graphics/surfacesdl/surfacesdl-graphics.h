@@ -98,6 +98,12 @@ public:
 	virtual const OSystem::GraphicsMode *getSupportedShaders() const override;
 	virtual int getShader() const override;
 	virtual bool setShader(int id) override;
+#if SDL_VERSION_ATLEAST(2, 0, 0)
+	virtual const OSystem::GraphicsMode *getSupportedStretchModes() const override;
+	virtual int getDefaultStretchMode() const override;
+	virtual bool setStretchMode(int mode) override;
+	virtual int getStretchMode() const override;
+#endif
 	virtual void initSize(uint w, uint h, const Graphics::PixelFormat *format = NULL) override;
 	virtual int getScreenChangeID() const override { return _screenChangeCount; }
 
@@ -174,6 +180,9 @@ protected:
 	virtual bool gameNeedsAspectRatioCorrection() const override {
 		return _videoMode.aspectRatioCorrection;
 	}
+	virtual int getGameRenderScale() const override {
+		return _videoMode.scaleFactor;
+	}
 
 	virtual void handleResizeImpl(const int width, const int height) override;
 
@@ -188,7 +197,7 @@ protected:
 	void recreateScreenTexture();
 
 	virtual SDL_Surface *SDL_SetVideoMode(int width, int height, int bpp, Uint32 flags);
-	void SDL_UpdateRects(SDL_Surface *screen, int numrects, SDL_Rect *rects);
+	virtual void SDL_UpdateRects(SDL_Surface *screen, int numrects, SDL_Rect *rects);
 #endif
 
 	/** Unseen game screen */
@@ -225,6 +234,7 @@ protected:
 		bool needUpdatescreen;
 #if SDL_VERSION_ATLEAST(2, 0, 0)
 		bool needTextureUpdate;
+		bool needDisplayResize;
 #endif
 #ifdef USE_RGB_COLOR
 		bool formatChanged;
@@ -241,6 +251,7 @@ protected:
 
 #if SDL_VERSION_ATLEAST(2, 0, 0)
 		bool filtering;
+		int stretchMode;
 #endif
 
 		int mode;

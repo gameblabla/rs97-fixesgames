@@ -1,0 +1,4 @@
+#!/bin/sh
+./spartak-chess 2> errlog
+cd /usr/gp2x
+./gp2xmenu

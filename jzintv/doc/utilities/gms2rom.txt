@@ -1,0 +1,20 @@
+==============================================================================
+  GMS2ROM  -- Convert INTVPC Game Save state to an Intellicart .ROM image
+==============================================================================
+
+This utility takes an INTVPC .GMS Game Save state file and attempts to
+convert it to a .ROM file.  
+
+It performs this feat by scanning the .GMS file and recovering the state
+of the Inty.  It then inserts a small shim into the address space.  This
+shim is responsible for loading these state information into the Inty
+and then resuming the game.
+
+Usage:
+
+    gms2rom foo.gms [bar.rom]
+
+If you omit the output filename, gms2rom will generate a new file name
+which is the same as the Game Save file, except the .gms is replaced with
+.ROM.  To get BIN+CFG format output, run the resulting ROM through rom2bin.
+

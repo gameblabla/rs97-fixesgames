@@ -676,6 +676,7 @@ int GambatteSdl::exec() {
 						//case SDLK_SPACE:
 						//case SDLK_LSHIFT:
 						case SDLK_END:
+						case SDLK_3:
 						case SDLK_ESCAPE:
 							main_menu(&gambatte, &blitter);
 							

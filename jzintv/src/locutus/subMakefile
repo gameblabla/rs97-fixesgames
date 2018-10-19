@@ -1,0 +1,48 @@
+##############################################################################
+## subMakefile for LOCUTUS
+##############################################################################
+
+locutus/locutus_adapt.o: locutus/locutus.hpp locutus/luigi.hpp
+locutus/locutus_adapt.o: locutus/locutus_types.hpp
+locutus/locutus_adapt.o: locutus/locutus_adapt.h
+locutus/locutus_adapt.o: periph/periph.h config.h 
+locutus/locutus_adapt.o: cp1600/cp1600.h cp1600/req_bus.h
+locutus/locutus_adapt.o: locutus/subMakefile
+
+locutus/locutus.o: locutus/locutus.hpp 
+locutus/locutus.o: locutus/locutus_types.hpp
+locutus/locutus.o: locutus/subMakefile 
+
+locutus/luigi.o: locutus/locutus.hpp locutus/luigi.hpp
+locutus/luigi.o: locutus/locutus_types.hpp
+locutus/luigi.o: locutus/subMakefile 
+
+locutus/loc_to_bin.o: locutus/locutus.hpp 
+locutus/loc_to_bin.o: locutus/locutus_types.hpp 
+locutus/loc_to_bin.o: locutus/luigi.hpp 
+locutus/loc_to_bin.o: locutus/subMakefile
+locutus/loc_to_bin.o: config.h
+
+locutus/bin_to_loc.o: locutus/locutus.hpp 
+locutus/bin_to_loc.o: locutus/locutus_types.hpp 
+locutus/bin_to_loc.o: locutus/luigi.hpp 
+locutus/bin_to_loc.o: locutus/subMakefile
+locutus/bin_to_loc.o: config.h lzoe/lzoe.h bincfg/bincfg.h
+
+locutus/rom_to_loc.o: locutus/locutus.hpp 
+locutus/rom_to_loc.o: locutus/locutus_types.hpp 
+locutus/rom_to_loc.o: locutus/luigi.hpp 
+locutus/rom_to_loc.o: locutus/subMakefile
+locutus/rom_to_loc.o: config.h icart/icartrom.h
+
+OBJS += locutus/locutus.o
+OBJS += locutus/luigi.o
+OBJS += locutus/locutus_adapt.o
+OBJS += locutus/loc_to_bin.o
+
+PROGS   += $(B)/try_loc_to_bin$(X)
+TOCLEAN += locutus/try_loc_to_bin.o
+
+$(B)/try_loc_to_bin$(X): locutus/try_loc_to_bin.o locutus/loc_to_bin.o locutus/locutus.o locutus/luigi.o 
+	$(CXX) -o $(B)/try_loc_to_bin$(X) $(CXXFLAGS) locutus/try_loc_to_bin.o locutus/loc_to_bin.o locutus/locutus.o locutus/luigi.o $(LFLAGS)
+

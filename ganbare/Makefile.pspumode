@@ -1,0 +1,28 @@
+TARGET = GannatsuPortable
+OBJS = ram.o util_snd.o function.o dconv.o scene.o title.o init.o act.o option.o ending.o logo.o
+
+BUILD_PRX = 1
+PSP_FW_VERSION = 390
+
+CFLAGS = -O2 -G0 -Wall -w -g -Wextra -DPSPUMODE
+CXXFLAGS = $(CFLAGS) -fno-exceptions -fno-rtti -fno-builtin-printf
+ASFLAGS = $(CFLAGS)
+
+LIBDIR =
+LIBS = -L/usr/local/pspsdk/lib
+LDFLAGS =
+
+EXTRA_TARGETS = EBOOT.PBP
+PSP_EBOOT_TITLE = Gannatsu Portable PSP
+PSP_EBOOT_ICON = ICON0.png
+
+PSPSDK=$(shell psp-config --pspsdk-path)
+PSPBIN = $(PSPSDK)/../bin
+CFLAGS += -I/usr/local/pspdev/psp/include/SDL
+LIBS += $(shell $(PSPBIN)/freetype-config --libs)
+LIBS += -lSDL_mixer
+LIBS += /usr/local/pspdev/psp/lib/libvorbisidec.a /usr/local/pspdev/psp/lib/libvorbis.a /usr/local/pspdev/psp/lib/libogg.a
+LIBS += -L/usr/local/pspdev/psp/lib -lSDL -lSDL_gfx -lm -L/usr/local/pspdev/psp/sdk/lib -lpspdebug -lpspgu -lpspctrl -lpspge -lpspdisplay -lpsphprm -lpspsdk -lpsprtc -lpspaudio -lc -lpspuser -lpsputility -lpspkernel -lpspnet_inet
+LIBS += -lSDL_ttf -lfreetype
+LIBS += -lpng -ljpeg -lz -lm -lpsppower -lmad -lpspaudio -lpspaudiolib
+include $(PSPSDK)/lib/build.mak

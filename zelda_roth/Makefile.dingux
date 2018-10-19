@@ -1,0 +1,16 @@
+PROG = ZeldaROTH_US.dge
+SRCS = $(wildcard *.cpp)
+OBJS = $(SRCS:.cpp=.o)
+CXX  = mipsel-linux-g++
+SDL-CONFIG = /opt/mipsel-linux-uclibc/usr/bin/sdl-config
+
+CXXFLAGS = -Wall -O2 `$(SDL-CONFIG) --cflags` -DDINGUX -I/opt/mipsel-linux-uclibc/usr/include
+LDFLAGS = `$(SDL-CONFIG) --libs` -lSDL_mixer -lSDL_image -lSDL_gfx  -L/opt/mipsel-linux-uclibc/usr/lib
+
+$(PROG): $(OBJS)
+	$(CXX) $(OBJS) $(LDFLAGS) -o $(PROG)
+
+clean:
+	rm -f $(PROG) *.o
+
+.PHONY: clean

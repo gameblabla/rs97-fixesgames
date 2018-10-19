@@ -1,0 +1,62 @@
+;; ======================================================================== ;;
+;;  PRINT.MAC                                           Default Macro Set   ;;
+;;  Macros that simplify printing.                                          ;;
+;;  Joseph Zbiciak <intvnut AT gmail.com>                                   ;;
+;;  These macros are hereby released into the Public Domain.                ;;
+;; ======================================================================== ;; 
+
+    IF (DEFINED _PRINT_MAC) = 0
+
+_PRINT_MAC QEQU 1
+
+;; ======================================================================== ;;
+;;  PRINT_CSTK r, c, fg, s                                                  ;;
+;;  Prints a string at r, c, in foreground color 'fg', using SDK-1600's     ;;
+;;  PRINT.FLS.  This macro is intended for use in color-stack mode.         ;;
+;;  This macro adds terminating NUL to the string for you.                  ;;
+;;                                                                          ;;
+;;  ARGUMENTS                                                               ;;
+;;      r   Row to print string at                                          ;;
+;;      c   Column to print string at                                       ;;
+;;      fg  Color to print string in                                        ;;
+;;      s   String to print.                                                ;;
+;;                                                                          ;;
+;;  EXAMPLE                                                                 ;;
+;;      PRINT_CSTK 10, 5, Yellow, "Hello World!"                            ;;
+;; ======================================================================== ;;
+MACRO   PRINT_CSTK r, c, fg, s
+        CALL    PRINT.FLS
+        DECLE   gen_cstk_card(0, GROM, %fg%, NoAdvance)
+        DECLE   disp_ptr(%r%, %c%)
+        STRING  %s%, 0
+ENDM
+
+;; ======================================================================== ;;
+;;  PRINT_FGBG r, c, fg, bg, s                                              ;;
+;;  Prints a string at r, c, in foreground color 'fg' and background color  ;;
+;;  'bg', using SDK-1600's PRINT.FLS.  This macro is intended for use in    ;;
+;;  Foreground/Background mode.  This macro adds terminating NUL to the     ;;
+;;  string for you.                                                         ;;
+;;                                                                          ;;
+;;  ARGUMENTS                                                               ;;
+;;      r   Row to print string at                                          ;;
+;;      c   Column to print string at                                       ;;
+;;      fg  Foreground color for string                                     ;;
+;;      bg  Background color for string                                     ;;
+;;      s   String to print.                                                ;;
+;;                                                                          ;;
+;;  EXAMPLE                                                                 ;;
+;;      PRINT_FGBG 10, 5, Yellow, Blue, "Hello World!"                      ;;
+;; ======================================================================== ;;
+MACRO   PRINT_FGBG r, c, fg, bg, s
+        CALL    PRINT.FLS
+        DECLE   gen_fgbg_card(0, GROM, %fg%, %bg%)
+        DECLE   disp_ptr(%r%, %c%)
+        STRING  %s%, 0
+ENDM
+
+    ENDI
+
+;; ======================================================================== ;;
+;;  End of File:  print.mac                                                 ;;
+;; ======================================================================== ;;

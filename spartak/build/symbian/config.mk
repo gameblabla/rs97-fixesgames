@@ -1,0 +1,22 @@
+PROJECT_NAME = spartak-chess
+TARGET_TYPE = exe
+UID2 = 100039CE
+UID3 = A89FB850
+SECUREID = A89FB850
+EPOCSTACKSIZE = 0x10000
+EPOCHEAPSIZE = 0x400000,0x800000
+CAPABILITY = NONE
+SYSINCLUDE = $(EPOCROOT)/epoc32/include $(EPOCROOT)/epoc32/include/mmf/plugin $(EPOCROOT)/epoc32/include/libc $(EPOCROOT)/epoc32/include/stlport lib/libpng
+USERINCLUDE = 
+SRCFOLDERS = . stockfish ui platform build/symbian/lib/libpng
+CXXSRCS = $(foreach dir, $(SRCFOLDERS), $(wildcard $(SRC_PATH)/$(dir)/*.cpp))
+CSRCS = $(foreach dir, $(SRCFOLDERS), $(wildcard $(SRC_PATH)/$(dir)/*.c))
+ICON_SRC = $(PROJECT_NAME)
+ICON_TARGET = $(DIST_PATH)/$(PROJECT_NAME).mbm
+IMG_ARGS = /c24
+RSS_TARGETS = $(DIST_PATH)/$(PROJECT_NAME).rsc $(DIST_PATH)/$(PROJECT_NAME)_reg.rsc
+LANG_MACRO = LANGUAGE_SC
+SYSLIBRARY = euser.lib estlib.lib avkon.lib libGLES_CM.lib eikcore.lib cone.lib apparc.lib ws32.lib fbscli.lib efsrv.lib commondialogs.lib eikcoctl.lib mediaclientaudiostream.lib remconcoreapi.lib remconinterfacebase.lib platformenv.lib charconv.lib ezlib.lib
+
+#CERT = /c/cert/selfsigned.cer
+#KEY = /c/cert/selfsigned.key

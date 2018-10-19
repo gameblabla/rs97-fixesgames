@@ -1,0 +1,23 @@
+<HTML>
+<HEAD>
+<TITLE>
+CPU State Flow Diagram
+</TITLE>
+</HEAD>
+<BODY BGCOLOR=#BBCCDD>
+<H1>CP-1600 State Flow Diagram</H1>
+<P>
+    This diagram is adapted from the diagram that GI published in
+    its CP-1600 data sheet.  Many details have been added to this
+    diagram that were omitted in the GI version of the diagram
+    (notable, with respect to Direct-Addressing Mode instructions
+    and their use of <TT>ADAR</TT>).
+</P>
+<P>
+    Not shown are the states for the various <TT>NACT</TT> spacing
+    cycles that the CP-1600 introduces, other than those introduced
+    for wait states due to <TT>BDRDY</TT>.  Also not shown are the
+    state transitions for reading Double-Byte Data using <TT>SDBD</TT>.
+</P>
+<IMG SRC="images/state_flow_diag.gif">
+

@@ -22,8 +22,6 @@
 
 #include "common/scummsys.h"
 
-
-
 #if defined(SDL_BACKEND)
 #include "backends/graphics/surfacesdl/surfacesdl-graphics.h"
 #include "backends/events/sdl/sdl-events.h"
@@ -48,8 +46,7 @@
 #include "image/png.h"
 #endif
 
-
-SDL_Surface *ScreenSurface=NULL;
+SDL_Surface* real_screen;
 
 static const OSystem::GraphicsMode s_supportedShaders[] = {
 	{"NONE", "Normal (no shader)", 0},
@@ -75,6 +72,16 @@ static const OSystem::GraphicsMode s_supportedGraphicsModes[] = {
 #endif
 	{0, 0, 0}
 };
+
+#if SDL_VERSION_ATLEAST(2, 0, 0)
+const OSystem::GraphicsMode s_supportedStretchModes[] = {
+	{"center", _s("Center"), STRETCH_CENTER},
+	{"pixel-perfect", _s("Pixel-perfect scaling"), STRETCH_INTEGRAL},
+	{"fit", _s("Fit to window"), STRETCH_FIT},
+	{"stretch", _s("Stretch to window"), STRETCH_STRETCH},
+	{nullptr, nullptr, 0}
+};
+#endif
 
 DECLARE_TRANSLATION_ADDITIONAL_CONTEXT("Normal (no scaling)", "lowres")
 
@@ -201,6 +208,7 @@ SurfaceSdlGraphicsManager::SurfaceSdlGraphicsManager(SdlEventSource *sdlEventSou
 
 #if SDL_VERSION_ATLEAST(2, 0, 0)
 	_videoMode.filtering = ConfMan.getBool("filtering");
+	_videoMode.stretchMode = STRETCH_FIT;
 #endif
 
 	// the default backend has no shaders
@@ -250,6 +258,7 @@ bool SurfaceSdlGraphicsManager::hasFeature(OSystem::Feature f) const {
 		(f == OSystem::kFeatureAspectRatioCorrection) ||
 #if SDL_VERSION_ATLEAST(2, 0, 0)
 		(f == OSystem::kFeatureFilteringMode) ||
+		(f == OSystem::kFeatureStretchMode) ||
 #endif
 		(f == OSystem::kFeatureCursorPalette) ||
 		(f == OSystem::kFeatureIconifyWindow);
@@ -330,6 +339,7 @@ void SurfaceSdlGraphicsManager::beginGFXTransaction() {
 	_transactionDetails.needUpdatescreen = false;
 
 #if SDL_VERSION_ATLEAST(2, 0, 0)
+	_transactionDetails.needDisplayResize = false;
 	_transactionDetails.needTextureUpdate = false;
 #endif
 #ifdef USE_RGB_COLOR
@@ -359,6 +369,10 @@ OSystem::TransactionError SurfaceSdlGraphicsManager::endGFXTransaction() {
 			_videoMode.mode = _oldVideoMode.mode;
 			_videoMode.scaleFactor = _oldVideoMode.scaleFactor;
 #if SDL_VERSION_ATLEAST(2, 0, 0)
+		} else if (_videoMode.stretchMode != _oldVideoMode.stretchMode) {
+			errors |= OSystem::kTransactionStretchModeSwitchFailed;
+
+			_videoMode.stretchMode = _oldVideoMode.stretchMode;
 		} else if (_videoMode.filtering != _oldVideoMode.filtering) {
 			errors |= OSystem::kTransactionFilteringFailed;
 
@@ -436,6 +450,10 @@ OSystem::TransactionError SurfaceSdlGraphicsManager::endGFXTransaction() {
 			// To fix this issue we update the screen change count right here.
 			_screenChangeCount++;
 
+#if SDL_VERSION_ATLEAST(2, 0, 0)
+			if (_transactionDetails.needDisplayResize)
+				recalculateDisplayAreas();
+#endif
 			if (_transactionDetails.needUpdatescreen)
 				internUpdateScreen();
 		}
@@ -443,10 +461,16 @@ OSystem::TransactionError SurfaceSdlGraphicsManager::endGFXTransaction() {
 	} else if (_transactionDetails.needTextureUpdate) {
 		setGraphicsModeIntern();
 		recreateScreenTexture();
+		if (_transactionDetails.needDisplayResize)
+			recalculateDisplayAreas();
 		internUpdateScreen();
 #endif
 	} else if (_transactionDetails.needUpdatescreen) {
 		setGraphicsModeIntern();
+#if SDL_VERSION_ATLEAST(2, 0, 0)
+		if (_transactionDetails.needDisplayResize)
+			recalculateDisplayAreas();
+#endif
 		internUpdateScreen();
 	}
 
@@ -750,8 +774,55 @@ bool SurfaceSdlGraphicsManager::setShader(int id) {
 	return true;
 }
 
+#if SDL_VERSION_ATLEAST(2, 0, 0)
+const OSystem::GraphicsMode *SurfaceSdlGraphicsManager::getSupportedStretchModes() const {
+	return s_supportedStretchModes;
+}
+
+int SurfaceSdlGraphicsManager::getDefaultStretchMode() const {
+	return STRETCH_FIT;
+}
+
+bool SurfaceSdlGraphicsManager::setStretchMode(int mode) {
+	Common::StackLock lock(_graphicsMutex);
+
+	assert(_transactionMode == kTransactionActive);
+
+	if (_oldVideoMode.setup && _oldVideoMode.stretchMode == mode)
+		return true;
+
+	// Check this is a valid mode
+	const OSystem::GraphicsMode *sm = s_supportedStretchModes;
+	bool found = false;
+	while (sm->name) {
+		if (sm->id == mode) {
+			found = true;
+			break;
+		}
+		sm++;
+	}
+	if (!found) {
+		warning("unknown stretch mode %d", mode);
+		return false;
+	}
+
+	_transactionDetails.needUpdatescreen = true;
+	_transactionDetails.needDisplayResize = true;
+
+	_videoMode.stretchMode = mode;
+
+	return true;
+}
+
+int SurfaceSdlGraphicsManager::getStretchMode() const {
+	return _videoMode.stretchMode;
+}
+#endif
+
 void SurfaceSdlGraphicsManager::initSize(uint w, uint h, const Graphics::PixelFormat *format) {
 	assert(_transactionMode == kTransactionActive);
+
+	_newShakePos = 0;
 
 #ifdef USE_RGB_COLOR
 	//avoid redundant format changes
@@ -928,12 +999,11 @@ bool SurfaceSdlGraphicsManager::loadGFXMode() {
 		}
 #endif
 
-//RS97
 		/*_hwScreen = SDL_SetVideoMode(_videoMode.hardwareWidth, _videoMode.hardwareHeight, 16,
 			_videoMode.fullscreen ? (SDL_FULLSCREEN|SDL_SWSURFACE) : SDL_SWSURFACE
 			);*/
-			ScreenSurface = SDL_SetVideoMode(320, 480, 16, SDL_HWSURFACE);
-			_hwScreen = SDL_CreateRGBSurface(SDL_SWSURFACE, _videoMode.hardwareWidth, _videoMode.hardwareHeight, 16, 0, 0, 0, 0);
+		real_screen = SDL_SetVideoMode(320, 480, 16, SDL_HWSURFACE|SDL_ANYFORMAT);
+		_hwScreen = SDL_CreateRGBSurface(SDL_SWSURFACE|SDL_ANYFORMAT, _videoMode.hardwareWidth, _videoMode.hardwareHeight, 16, 0,0,0,0);
 	}
 
 #ifdef USE_RGB_COLOR
@@ -1231,12 +1301,12 @@ void SurfaceSdlGraphicsManager::internUpdateScreen() {
 		dstPitch = _hwScreen->pitch;
 
 		for (r = _dirtyRectList; r != lastRect; ++r) {
-			register int dst_y = r->y + _currentShakePos;
-			register int dst_h = 0;
+			int dst_y = r->y + _currentShakePos;
+			int dst_h = 0;
 #ifdef USE_SCALERS
-			register int orig_dst_y = 0;
+			int orig_dst_y = 0;
 #endif
-			register int rx1 = r->x * scale1;
+			int rx1 = r->x * scale1;
 
 			if (dst_y < height) {
 				dst_h = r->h;
@@ -2491,6 +2561,38 @@ bool SurfaceSdlGraphicsManager::handleScalerHotkeys(Common::KeyCode key) {
 	}
 #endif
 
+#if SDL_VERSION_ATLEAST(2, 0, 0)
+	// Ctrl+Alt+s cycles through scaling mode (0 to 3)
+	if (key == 's') {
+		int index = 0;
+		const OSystem::GraphicsMode *sm = s_supportedStretchModes;
+		while (sm->name) {
+			if (sm->id == _videoMode.stretchMode)
+				break;
+			sm++;
+			index++;
+		}
+		index++;
+		if (!s_supportedStretchModes[index].name)
+			index = 0;
+
+		beginGFXTransaction();
+		setStretchMode(s_supportedStretchModes[index].id);
+		endGFXTransaction();
+
+#ifdef USE_OSD
+		Common::String message = Common::String::format("%s: %s",
+			_("Stretch mode"),
+			_(s_supportedStretchModes[index].description)
+			);
+		displayMessageOnOSD(message.c_str());
+#endif
+		_forceRedraw = true;
+		internUpdateScreen();
+		return true;
+	}
+#endif
+
 	int newMode = -1;
 	int factor = _videoMode.scaleFactor - 1;
 	SDLKey sdlKey = (SDLKey)key;
@@ -2580,6 +2682,8 @@ bool SurfaceSdlGraphicsManager::isScalerHotkey(const Common::Event &event) {
 		}
 #if SDL_VERSION_ATLEAST(2, 0, 0)
 		if (event.kbd.keycode == 'f')
+			return true;
+		if (event.kbd.keycode == 's')
 			return true;
 #endif
 		return (isScaleKey || event.kbd.keycode == 'a');

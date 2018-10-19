@@ -1,0 +1,74 @@
+1.15  (20th April 2013)
+==========================
+  * fixed XML parser to avoid infinite loop on Raspberry Pi
+  * fixed a couple of warnings during compilation
+
+1.14  (12th December 2011)
+==========================
+  * fixed Makefile problem to allow building on Ubuntu 11.10
+
+1.13  (14th July 2010)
+======================
+  * loading a position whilst replaying another no longer continues the replay
+
+1.12  (22nd April 2010)
+=======================
+  * when a player dies in XOR, the other player is now swapped in automatically
+
+1.11  (18th March 2010)
+=======================
+  * walls no long erroneously appear when undoing explosions in XOR darkness
+
+1.10  (8th March 2010)
+======================
+  * replay and loading of positions from other levels now works as expected
+  * hopefully the final tidying of the position filtering code
+
+1.09  (2nd March 2010)
+======================
+  * in chroma, player swapping now only occurs once per keypress
+  * slightly tidier position filtering code
+
+1.08  (1st March 2010)
+======================
+  * only saved positions for the current level are shown by default
+  * invisible menu entries are now actually invisible in chroma-curses
+
+1.07  (15th February 2010)
+==========================
+  * fixed a problem with exploding movers in certain pathological conditions
+  * made it clearer that Enigma's exact engine only works with red pieces
+  * fixed a problem with undo in certain pathological conditions
+
+1.06  (8th February 2010)
+=========================
+  * fixed an annoying segfault when exporting solutions
+  * exported solutions are no longer world readable
+
+1.05  (4th February 2010)
+=========================
+  * changes to configure.ac and *display.c to allow building on NetBSD
+
+1.04  (2nd February 2010)
+=========================
+  * in chroma-curses, you can no longer swap pieces during a replay
+  * chroma-curses now gets the move counter correct when undoing
+
+1.03  (1st February 2010)
+=========================
+  * fixed regression failure in Enigma "exact" game engine
+  * Makefile.in change to allow building on FreeBSD
+
+1.02  (29th January 2010)
+=========================
+  * improved resolution handling
+  * "curses emulation" graphics scheme can now be resized like any other
+
+1.01  (22nd January 2010)
+=========================
+  * fixed a problem with the display being rotated on some systems
+
+1.00  (21st January 2010)
+=========================
+Original release.
+

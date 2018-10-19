@@ -1,0 +1,119 @@
+TARGET = dcastaway
+
+FAME_CORE = 1
+
+KOS_CFLAGS+= -I$(KOS_BASE)/addons/include/SDL -I$(KOS_BASE)/addons/include -Isrc -Isrc/m68k -Isrc/st -Isrc/menu -Isrc/vkbd -Isrc/unzip -DDREAMCAST
+
+KOS_CFLAGS+= -DDATA_PREFIX="/rd/" -DFILE_SEPARATOR="/"  -DROM_PATH_PREFIX="/cd/" -DSAVE_MEM_PREFIX="/ram/" -DSAVE_PREFIX="/vmu/a1/" -DNO_USE_TV_FILTER
+
+#KOS_CFLAGS+=-DUSE_SHORT_SLICE
+#KOS_CFLAGS+=-DDEBUG_FRAMESKIP
+#KOS_CFLAGS+=-DDEBUG_SAVESTATE
+#KOS_CFLAGS+=-DDEBUG_FILEMANAGER
+#KOS_CFLAGS+=-DDEBUG_RENDER
+#KOS_CFLAGS+=-DNO_SOUND
+KOS_CFLAGS+=-DUSE_DOUBLE_BUFFER
+KOS_CFLAGS+=-DMENU_MUSIC -DSOUND_16BIT
+
+##KOS_CFLAGS+=-DAUTOSAVESTATE
+#KOS_CFLAGS+=-DAUTOLOAD="/sd/dcastaway/shangon.zip"
+#KOS_CFLAGS+=-DDEBUG_FAME
+#KOS_CFLAGS+=-DDEBUG_FAME_FILE="/pc/tmp/salida_dc"
+#KOS_CFLAGS+=-DDEBUG_FAME_FFLUSH
+##KOS_CFLAGS+=-DDEBUG_FAME_START=180030
+##KOS_CFLAGS+=-DDEBUG_FAME_STOP=180031
+#KOS_CFLAGS+=-DDEBUG_FAME_START=280030
+#KOS_CFLAGS+=-DDEBUG_FAME_STOP=280031
+##KOS_CFLAGS+=-DFAME_SINGLE_MEMORY
+
+#KOS_CFLAGS+=-DCALCULE_CRC_FILES
+
+KOS_CPPFLAGS=-fno-operator-names -fno-exceptions $(KOS_CFLAGS)
+
+all: $(TARGET).bin
+
+include $(KOS_BASE)/Makefile.rules
+
+
+OBJS =	\
+	src/main.o \
+	src/dcastaway.o \
+	src/events.o \
+	src/render.o \
+	src/save.o \
+	src/savedisk.o \
+	src/sound/sound.o \
+	src/sound/audio.o \
+	src/disk.o \
+	src/icon.o \
+	src/st/init.o \
+	src/st/st.o \
+	src/st/mem.o \
+	src/st/ikbd.o \
+	src/st/blitter.o \
+	src/st/fdc.o \
+	src/st/tos.o \
+	src/vkbd/vkbd.o \
+	src/unzip/explode.o \
+	src/unzip/unreduce.o \
+	src/unzip/unshrink.o \
+	src/unzip/unzip.o \
+	src/menu/fade.o \
+	src/menu/menu.o \
+	src/menu/background.o \
+	src/menu/sfont.o \
+	src/menu/menu_load.o \
+	src/menu/menu_main.o \
+	src/menu/menu_save.o \
+	src/menu/db.o \
+	romdisk.o
+
+ifdef FAME_CORE
+ifdef FAME_CORE_C
+KOS_CPPFLAGS+=-DUSE_FAME_CORE_C
+KOS_CLAGS+=-DUSE_FAME_CORE_C
+OBJS += src/m68k/fame/famec.o
+else
+OBJS += src/m68k/fame/fame.o 
+endif
+KOS_CPPFLAGS+=-DUSE_FAME_CORE
+KOS_CFLAGS+=-DUSE_FAME_CORE
+OBJS += src/m68k/fame/m68k_intrf.o
+else
+OBJS += \
+	src/m68k/castaway/68000.o \
+	src/m68k/castaway/debug.o \
+	src/m68k/castaway/op68kadd.o \
+	src/m68k/castaway/op68karith.o \
+	src/m68k/castaway/op68klogop.o \
+	src/m68k/castaway/op68kmisc.o \
+	src/m68k/castaway/op68kmove.o \
+	src/m68k/castaway/op68kshift.o \
+	src/m68k/castaway/op68ksub.o
+endif
+
+clean:
+	rm -f $(OBJS) $(TARGET).elf $(TARGET).bin  romdisk.o romdisk.img example.iso
+
+$(TARGET).elf: $(OBJS)
+	$(KOS_CC) $(KOS_CFLAGS) $(KOS_LDFLAGS) -o $(TARGET).elf $(KOS_START) \
+	$(OBJS) -lSDL_mixer_126 -lSDL_image_124 -lSDL_1213 -lpng_128 -lz_123 $(OBJEXTRA) -lm $(KOS_LIBS)
+
+$(TARGET).bin: $(TARGET).elf
+	$(KOS_OBJCOPY) -R .stack -O binary $(TARGET).elf $(TARGET).bin
+
+romdisk.o: romdisk.img
+	$(KOS_BASE)/utils/bin2o/bin2o romdisk.img romdisk romdisk.o
+#	bin2odc romdisk.img romdisk.o
+
+romdisk.img:
+	$(KOS_GENROMFS) -f romdisk.img -d data -v
+
+example.iso: example
+	mkisofs -joliet-long -l -o example.iso -graft-points /=example/
+
+
+run: $(TARGET).bin example.iso
+	$(KOS_LOADER) $(TARGET).bin -i example.iso
+#	$(KOS_LOADER) $(TARGET).bin
+

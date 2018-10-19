@@ -1,0 +1,28 @@
+==============================================================================
+ STIC Documentation
+==============================================================================
+
+
+Timing for CPU Controlled mode:
+
+ -- SR1 signals start of vertical retrace, and occurs every 16.6ms.  It's
+    tied to the CPU's interrupt request line.
+
+ -- There is a ~4ms window after the falling edge of SR1 during which
+    the CPU can access STIC registers, GRAM and GROM.  If the program
+    desires display, it must write to $0020 during this window.
+
+ -- 4.1ms after the falling edge of SR1, the STIC issues a BUSRQ to the
+    CPU so that it may begin fetching cards from System RAM.  The CPU must
+    respond with a BUSAK fairly quickly (I'm guessing within ~20 cycles).
+    The first BUSRQ/BUSAK period lasts 0.05 ms and is followed by 15
+    additional BUSRQ/BUSAK cycles that are issued at 1ms intervals,
+    with each lasting 0.11ms apiece.  The time from the initial BUSRQ
+    cycle to the 13 that follow it depend on the setting of the vertical
+    delay register.
+
+A picture of SR1/BUSAK signals, measured from SKIING while sitting at
+title screen and options screen is in sr1_busak.png / sr1_busak.fig.
+
+
+

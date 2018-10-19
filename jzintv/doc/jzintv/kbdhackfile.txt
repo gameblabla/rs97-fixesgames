@@ -1,0 +1,278 @@
+==============================================================================
+ jzIntv Keyboard Hack Files
+==============================================================================
+
+Why "Keyboard Hack File"?  Because this is a quick-and-dirty mechanism
+that I'm not particularly happy with.  It is, however, necessary and
+functional, so here it is.
+
+The syntax is simple.  The format is line-oriented, with each line
+containing one of three things:  A comment, a MAP directive, or a
+keybinding.
+
+Comments start with a semicolon and terminate at the end of the line.
+Comments may be on a line by themselves or may follow a key binding
+or directive.
+
+The MAP directive tells jzIntv what keyboard map to place the subsequent
+bindings into.  This map remains in effect until a subsequent MAP
+directive.  See jzintv/doc/jzintv/jzintv.txt for the default key bindings
+in each map.  jzIntv supports four input maps.
+
+Key bindings consist of a pair of identifiers on a line.  The first
+identifier is the event input.  The second identifier is the event
+action.  For example, to bind joystick 0's button #1 to the left
+controller's top action button, you would write:
+
+JS0_BTN_01 PD0L_A_T
+
+
+jzIntv defines a very large number of event input names and event
+actions that those inputs can be bound to.  For certain classes
+of inputs and actions, jzIntv uses a regular scheme to name events.
+
+--------------
+ Event Inputs
+--------------
+
+Below is a table of event inputs that jzIntv defines.  You can also run
+the program jzintv/rom/event_diag.rom to see in real time the event
+inputs that jzIntv receives.  This can be useful for determining the
+names SDL assigns to various special keys on some keyboards, or button
+assignments on joysticks.
+
+
+Punctuation:
+
+BACKSPACE  EXCLAIM    !   RIGHTPAREN )  COLON      :  LEFTBRACKET   [
+TAB        QUOTEDBL   "   ASTERISK   *  SEMICOLON  ;  BACKSLASH     \
+CLEAR      HASH       #   PLUS       +  LESS       <  RIGHTBRACKET  ]
+RETURN     DOLLAR     $   COMMA      ,  EQUALS     =  CARET         ^
+PAUSE      AMPERSAND  &   MINUS      -  GREATER    >  UNDERSCORE    _
+ESCAPE     QUOTE      '   PERIOD     .  QUESTION   ?  BACKQUOTE     `
+SPACE      LEFTPAREN  (   SLASH      /  AT         @
+
+Alpha-numerics:
+
+0 1 2 3 4 5 6 7 8 9
+A B C D E F G H I J
+K L M N O P Q R S T
+U V W X Y Z DELETE
+
+Numeric keypad:
+
+KP0 KP1 KP2 KP3 KP4 KP5 KP6 KP7 KP8 KP9
+KP_DIVIDE KP_ENTER KP_EQUALS KP_MULTIPLY
+KP_PERIOD KP_MINUS KP_PLUS 
+
+Utility keys:
+
+F1  F2  F3  F4 
+F5  F6  F7  F8 
+F9  F10 F11 F12 
+F13 F14 F15
+
+UP DOWN RIGHT LEFT 
+INSERT HOME  END PAGEUP PAGEDOWN
+LSHIFT LCTRL LALT LMETA LSUPER
+RSHIFT RCTRL RALT RMETA RSUPER
+SYSREQ PRINT MODE BREAK POWER
+HELP   MENU  EURO UNDO  COMPOSE
+NUMLOCK CAPSLOCK SCROLLOCK
+
+Misc keys: 
+
+WORLD_0 through WORLD_95
+
+Internal events:
+
+QUIT  (triggered usually by someone trying to close the window)
+HIDE  (triggered usually by minimizing the window)
+
+
+Joystick events:
+
+JSj_ddd      j=0..3, ddd=E,ENE,NE,NNE,N,NNW,NW,WNW,W,WSW,SW,SSW,S,SSE,SE,ESE
+JSj_BTN_bb   j=0..3, bb=00..31
+JSj_HATh_dd  j=0..3, h=0..3, dd=E,NE,N,NW,W,SW,S,SE
+ 
+
+Handy aliases:
+
+LWIN RWIN    Windows only:  Corresponds to the Windows keys
+LCMD RCMD    Macintosh only:  Corresponds to the Command keys.
+
+--------------
+ Combo Events
+--------------
+
+You can combine pairs of events into "combination events."  jzIntv lets
+you define up to 32 combo events named "COMBO0" through "COMBO31".
+These events look like normal event inputs.  You can bind these to
+event actions like any other event input.
+
+To define a combo event, use the ADD_COMBO keyword:
+
+    ADD_COMBO [combo_number] [event_input] [event_input]
+
+For example:
+
+    ADD_COMBO 0 LALT Q  ; LALT + Q now generates COMBO0
+
+
+Combination events are composed of multiple event inputs arriving in
+sequence.  jzIntv does its best to minimize glitches that occur when
+events in a combo arrive separately.  You can control some of the
+filtering jzIntv does with the "COMBO_DELAY" keyword.  This keyword
+tells jzIntv how long, in milliseconds, to delay the first event of a
+potential combo to all a second event to catch up to it:
+
+    COMBO_DELAY 4.5   ; Delay potential combos by 4.5ms 
+
+The default delay is 1ms.  
+
+
+---------------
+ Event Actions
+---------------
+
+Each event input can be assigned to trigger a single action.  jzIntv
+defines the following actions:
+
+NA      Ignore keystroke
+QUIT    Quit jzIntv
+RESET   Reset the Intellivision
+PAUSE   Pause the game
+MOVIE   Toggle movie recording
+SHOT    Request a screen shot
+HIDE    Disable screen updates while pressed
+WTOG    Toggle between windowed/full-screen
+BREAK   Interrupt the currently executing program (if debugger enabled)
+KBD0    Switch to map 0
+KBD1    Switch to map 1
+KBD2    Switch to map 2
+KBD3    Switch to map 3
+KBDn    Switch to next higher keymap
+KBDp    Switch to next lower keymap
+SHF10   Shift to map 1 on press, map 0 on release
+SHF20   Shift to map 2 on press, map 0 on release
+SHF30   Shift to map 3 on press, map 0 on release
+SHF01   Shift to map 0 on press, map 1 on release
+SHF21   Shift to map 2 on press, map 1 on release
+SHF31   Shift to map 3 on press, map 1 on release
+SHF02   Shift to map 0 on press, map 2 on release
+SHF12   Shift to map 1 on press, map 2 on release
+SHF32   Shift to map 3 on press, map 2 on release
+SHF03   Shift to map 0 on press, map 3 on release
+SHF13   Shift to map 1 on press, map 3 on release
+SHF23   Shift to map 2 on press, map 3 on release
+PSH0    Push current map & shift to map 0, pop on release
+PSH1    Push current map & shift to map 1, pop on release
+PSH2    Push current map & shift to map 2, pop on release
+PSH3    Push current map & shift to map 3, pop on release
+POP     Pop to previous map on push; nothing on release
+VOLUP   Increase jzIntv's volume
+VOLDN   Decrease jzIntv's volume
+
+
+Controller inputs start with one of the following four prefixes:
+
+PD0L_   Left controller, Master Component
+PD0R_   Right controller, Master Component
+PD1L_   Left controller, ECS
+PD1R_   Right controller, ECS
+
+Those four prefixes get combined with these suffixes:
+
+KPx     Keypad key.  x=0,1,2,3,4,5,6,7,8,9,C,E
+A_x     Action key.  x=T,L,R
+D_ddd   Disc input.  ddd=E,ENE,NE,NNE,N,NNW,NW,WNW,W,WSW,SW,SSW,S,SSE,SE,ESE
+J_ddd   Disc input from joystick.  ddd same as above.
+
+
+
+ECS Keyboard inputs are pretty straight-forward:
+
+KEYB_0 KEYB_1 KEYB_2 KEYB_3 KEYB_4 KEYB_5 KEYB_6 KEYB_7 KEYB_8 KEYB_9
+KEYB_A KEYB_B KEYB_C KEYB_D KEYB_E KEYB_F KEYB_G KEYB_H KEYB_I KEYB_J
+KEYB_K KEYB_L KEYB_M KEYB_N KEYB_O KEYB_P KEYB_Q KEYB_R KEYB_S KEYB_T
+KEYB_U KEYB_V KEYB_W KEYB_X KEYB_Y KEYB_Z
+
+KEYB_CARET KEYB_COMMA KEYB_CTRL KEYB_DOLLAR KEYB_DOWN  KEYB_ENTER
+KEYB_EQUAL KEYB_ESC   KEYB_HASH KEYB_LPAREN KEYB_LEFT  KEYB_MINUS
+KEYB_QUEST KEYB_PCT   KEYB_PLUS KEYB_PERIOD KEYB_SEMI  KEYB_QUOTE
+KEYB_RIGHT KEYB_SHIFT KEYB_STAR KEYB_RPAREN KEYB_SLASH KEYB_SPACE
+KEYB_SQUOTE KEYB_UP
+
+
+---------------------------------
+ Shift/Push/Pop:  Switching maps
+---------------------------------
+
+The Shift/Push/Pop actions benefit from additional explanation.
+The intention of these actions is to allow people to use jzIntv's
+multiple key maps more creatively.  For instance, on hand-held games,
+the number of inputs available to the player may be very limited as
+compared to the PC, since there is no keyboard.
+
+The KBDx and SHFxx actions can be used a couple ways:  A momentary shift
+from the current map into a new map, or to specify switching among a
+set of maps in some sort of pattern.
+
+For instance, suppose I want F5 to cycle between maps 0, 1 and 2.
+One way to accomplish this is through these three bindings:
+
+MAP 0
+F5  KBD1
+MAP 1
+F5  KBD2
+MAP 2
+F5  KBD0
+
+
+Suppose instead I want to have a key that behaves like a "shift" key,
+momentarily placing the keyboard in another map.  The "PSHx" actions
+save the current map on a one-deep stack when the key is depressed,
+and pops the map number when it's released.  For example, to make the
+Mac's CMD keys act like a shift key, shifting into map 3:
+
+MAP 0
+LCMD PSH3
+RCMD PSH3
+MAP 1
+LCMD PSH3
+RCMD PSH3
+MAP 2
+LCMD PSH3
+RCMD PSH3
+MAP 3
+LCMD PSH3
+RCMD PSH3
+
+
+Alternately, if you want a "shift-lock" type of behavior, you can use
+the PSHx actions with the POP action to get the desired effect.  The POP
+action only operates on key-down, not key-up.   This works because each
+key-down/key-up event gets interpreted in the currently active map.
+Suppose I tweak the above binding like so:
+
+MAP 0
+LCMD PSH3
+RCMD PSH3
+MAP 1
+LCMD PSH3
+RCMD PSH3
+MAP 2
+LCMD PSH3
+RCMD PSH3
+MAP 3
+LCMD POP
+RCMD POP
+
+What will happen is that the first press of LCMD/RCMD will push jzIntv
+into map 3.  The first release will do nothing, since POP does nothing
+on release.  The second push of of LCMD/RCMD will pop the keyboard map
+stack, returning us to the previous map.  The second release will trigger
+the PSH3 release action (which is to pop), but that's ok--popping an
+empty keyboard map stack is harmless.
+

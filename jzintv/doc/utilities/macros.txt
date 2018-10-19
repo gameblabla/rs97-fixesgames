@@ -1,0 +1,306 @@
+==============================================================================
+  IMASM and AS1600 MACRO SUPPORT
+==============================================================================
+
+As of Revision 4, SDK-1600 provides support for simple macros in two 
+utilities:  IMASM and AS1600.  IMASM was written by Joe Fisher, and
+adapted for SDK-1600 by Joe Zbiciak.
+
+ -- IMASM is the "Intellivision Macro Assembly tool".  It is a standalone
+    tool which simply provides macro expansion functionality.
+
+ -- AS1600 is SDK-1600's main assembler.  The macro-expansion engine 
+    from IMASM is integrated as a preprocessing pass within AS1600.
+
+The following documentation covers both tools.
+
+------------------------------------------------------------------------------
+  Defining Macros
+------------------------------------------------------------------------------
+
+Macros are defined using the MACRO and ENDM keywords.  Both keywords must
+appear at the start of a line.  The syntax is as follows:  (Note that the
+braces indicate optional elements.)
+
+MACRO macroname {arg1{, arg2{, arg3{...argN}}}}
+     macro body
+     macro body
+     macro body
+     macro body
+ENDM
+
+An alternate syntax places parentheses around the argument list.  It
+looks like so:
+
+MACRO macroname(arg1{, arg2{, arg3{...argN}}})
+     macro body
+     macro body
+     macro body
+     macro body
+ENDM
+
+In both cases, the arguments may have whatever names the programmer
+wishes, with the following restrictions:
+
+ -- No two arguments may have the same name.
+ -- No argument may have the same name as the macro itself.
+ -- All macro and argument names are case insensitive.
+
+The body of the macro specifies where to expand the user-supplied 
+arguments.  It does this by specifying the name of the argument to
+expand between two % symbols.  For instance, arg1 above would be
+expanded within the body of the macro by writing %arg1%.
+
+As noted above, the macro preprocessor provides for two distinct
+syntaxes for macros.  The difference between the two syntaxes is slight.
+The first syntax defines a macro that takes a fixed number of arguments
+and whose arguments are /not/ parenthesized.  Such macros are invoked
+in a manner similar to instructions.  For example, consider the macro
+"COPY@" below which takes three arguments:
+
+MACRO COPY@ s, t, d
+      MVI@ %s%, %t%
+      MVO@ %t%, %d%
+ENDM
+
+The programmer invokes this macro in a manner similar to an instruction:
+
+      COPY@ R4, R0, R5
+
+The preprocessor then expands out the macro to the following sequence:
+
+      MVI@ R4, R0
+      MVO@ R0, R5
+
+When using the unparenthesized syntax, the macro preprocessor interprets
+the entire remainder of the line as macro arguments.  Thus, such a macro
+cannot easily be used as an argument to an instruction.  It is for
+this reason that the macro preprocessor supports another syntax.
+
+The second syntax takes a fixed number of arguments contained within
+parentheses.  With this syntax, the macro preprocessor knows exactly
+where the argument list begins and ends.  Thus, parenthesized macros
+can easily be used as arguments to other instructions.  
+
+Example:
+
+MACRO disp_ptr(r, c)
+      ($200 + (%r%)*20 + (%c%))
+ENDM
+      MVII #disp_ptr(5, 7), R4 ; Generate pointer to row #5, column #7
+ 
+This expands to:
+
+      MVII #($200 + (5)*20 + (7)), R4 ; Generate pointer to row #5, column #7
+      
+
+Note that in both forms of MACRO block, the body of the macro definition
+itself starts with the first non-whitespace character on the line after
+"MACRO", and ends with the last non-whitespace character on the line
+before "ENDM".  This is what allows macros to be used as arguments to
+instructions.
+
+------------------------------------------------------------------------------
+  Macro Expansion Details
+------------------------------------------------------------------------------
+
+Macro processing occurs in a line-oriented manner.  Each line is separated
+into tokens.  Each token examined to determine if it is a known macro.
+If a macro is found, the macro expander examines the remaining tokens on
+the line for arguments.  Once the macro and argument list are identified,
+the macro expander begins processing the macro.
+
+Just prior to expanding the macro, the expander sends a copy of the
+original source line to the output as a comment.  This allows the
+programmer to identify the original source code that resulted in the
+expanded macro.
+
+When expanding the macro, the expander removes the portion of the
+line corresponding to the macro and its arguments.  It then textually
+substitues the body of the macro definition in its place.  The macro's
+arguments are substituted in place of their corresponding %arg%
+references.  Note that only the exact portion of the line containing
+the macro is replaced.  All other whitespace, comments, and other text
+on the line are not touched.  If a macro expands to multiple lines of
+text, those lines are held together with line-break placeholders until
+the macro expansion pass is complete.
+
+After the macro substitution is made, the expander looks for remaining
+macros throughout the *original* line.  Each of those is expanded in
+turn in place.
+
+Once the entire line is scanned for macros and all expansions in the
+original line is complete, the macro expander scans the expanded line
+for line-break placeholders, and breaks the expanded line into multiple
+lines as required.  These new lines are then each considered for macro
+expansion.
+
+The macro expander will iterate on each line until all macros contained
+within the line are completely expanded and no more macros are found.
+Once a line is completely free of macros, it is pushed to the output.
+
+
+Note that this process supports nested macros -- that is, it supports
+macros that invoke other macros.  Recursive macros (macros that
+invoke themselves) are not supported, as there is no way to terminate
+the recursion.  One may attempt to do so using conditional-assembly
+directives.  However, since the macro expansion process does not interpret
+conditional assembly directives, such attempts are ineffectual.
+
+
+WARNING:  Passing in a argument of the form %string% to a macro may
+lead to behavior that is not well defined.  Future versions of AS1600
+and IMASM will almost certainly change that behavior.
+
+------------------------------------------------------------------------------
+  Macro Argument Details
+------------------------------------------------------------------------------
+
+Macro arguments are expanded with simple textual substitution.  By
+default, macro arguments have leading and trailing whitespace removed
+and are delimited by commas.  The sequence %arg% within the macro body
+is replaced by the text of the argument.  This makes it possible to
+"paste" an argument to other text.  Consider this example:
+
+MACRO fg_col(x)
+     DECLE COLORS.fg_%x%
+ENDM
+     fg_col(Green)
+
+This expands to:
+
+     DECLE COLORS.fg_Green
+
+Macro arguments are always expanded before rescanning for nested macro
+invokations.  Consider the following pair of nested macros:
+
+;; __shift repeats a CP-1600 shift instruction to provide a larger shift range
+MACRO __shift s, r, n
+    IF ((%n%) AND 1)
+        %s% %r%, 1
+    ENDI
+    REPEAT ((%n%) SHR 1)
+        %s% %r%, 2
+    ENDR
+ENDM
+
+;; SARCn uses __shift to expand SARC's constant shift range.
+MACRO SARCn r, n
+    __shift SARC, %r%, %n%
+ENDM
+
+The SARCn macro invokes the __shift macro.  Before __shift is invoked,
+all of SARCn's arguments are fully expanded.  A nice side effect of
+this is that there are no interactions between the two macro's argument
+names.  All instances SARCn's arguments are fully expanded before 
+reaching __shift.
+
+For special circumstances, the macro expander also supports
+bracket-enclosed arguments.  Brackets make the leading and trailing
+boundary of the argument explicit, allowing the argument to contain
+leading and trailing whitespace, as well as commas.  Consider the
+following set of nested macros, and compare SARCn to DSARCn:
+
+;; __shift repeats a CP-1600 shift instruction to provide a larger shift range
+MACRO __shift s, r, n
+    IF ((%n%) AND 1)
+        %s% %r%, 1
+    ENDI
+    REPEAT ((%n%) SHR 1)
+        %s% %r%, 2
+    ENDR
+ENDM
+
+;; SARCn uses __shift to expand SARC's constant shift range.
+MACRO SARCn r, n
+    __shift SARC, %r%, %n%
+ENDM
+
+;; DSARC provides a double-precision right-shift on a pair of registers.
+;; DSARC can only shift by 1 or 2.
+MACRO DSARC h, l, n
+      SARC %h%, %n%
+      RRC  %l%, %n%
+ENDM
+
+;; DSARCn uses __shift to expand DSARC's constant shift range.
+MACRO DSARCn h, l, n
+    __shift DSARC, [%h%, %l%], %n%
+ENDM
+
+Notice how SARCn just passes its 'r' argument straight through to __shift.
+In contrast, DSARCn lumps both %h% and %l% together into a single argument
+when invoking __shift.  When __shift in-turn expands its arguments and
+invokes DSARC, the %h% and %l% arguments that were passed to DSARCn will
+look like two arguments to DSARC, which is what we wanted.
+
+
+------------------------------------------------------------------------------
+  Using Macros Inside AS1600
+------------------------------------------------------------------------------
+
+The macro expander is integrated directly within AS1600.  It requires
+no additional switches or effort to invoke.  Assembly source is filtered
+through the macro expander before it is exposed to the assembler core.
+Assembly features such as INCLUDE files and conditional-assembly are
+directly supported.
+
+Although it largely runs as an independent 'text filtering' step, the
+macro expander has some additional hooks between it and AS1600 that allow
+the two to cooperate.  These hooks allow the assembler and macro facility
+interact correctly with AS1600's listing file generation, conditional 
+assembly directives, and repeat blocks.
+
+Macro definitions are in-principle "swallowed up" by the macro expander.
+That is, the contents of MACRO/ENDM blocks are invisible to the assembler.
+The macro expander still forwards these lines to AS1600 so that they
+appear in the listing file.  The macro assembler tells the body of
+assembler to ignore these lines, and just pass them through to the
+listing file.
+
+Macro definitions and expansions that appear within conditional assembly
+constructs (IF / ELSE / ENDI) are controlled by those constructs in
+exactly the manner one would expect.  That is, if a given block of code
+is disabled by a conditional assembly construct, then any MACRO blocks
+or macro invocations contained therein are ignored.  The same is true
+of "REPEAT 0" blocks.  REPEAT 0 blocks are ignored by the assembler.
+Any macro definitions or expansions in a REPEAT 0 block are ignored.
+
+"REPEAT n" blocks (where n > 0) are handled in a slightly different
+manner.  Macro expansion occurs before the point at which the assembler
+collects text for the REPEAT block.  Thus, the macro expander sees
+the body of the REPEAT block exactly once.  The assembler repeats the
+expanded text the requested number of times.   Since MACRO/ENDM blocks
+are ignored by the assembler, they are also not accumulated as part
+of the repeated text.  Thus, a MACRO/ENDM block that appears within a
+REPEAT block will not result in multiple macro definitions.
+
+REPEAT blocks and conditional-assembly blocks contained within a macro
+do not affect the expansion of the macro.  They are processed after
+macro expansion by the assembler.
+
+------------------------------------------------------------------------------
+  Using Standalone IMASM
+------------------------------------------------------------------------------
+
+The standalone IMASM tool is a simple tool that restricts itself to
+expanding macros in a source file, producing an output file.  It does not
+understand any assembler directives.  That includes conditional-assembly
+directives, INCLUDE directives, and so forth.
+
+IMASM is appropriate for preprocessing files that might not be assembly
+source code (or at least, not assembly source code /yet/).
+
+Invoking IMASM is simple:
+
+    imasm sourcefile outputfile
+
+That's it.
+
+On Windows systems, Joe Fisher has produced a GUI development environment
+that is built over IMASM.  This environment can be brought up by running:
+
+    imasm sourcefile
+
+
+

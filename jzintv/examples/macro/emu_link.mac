@@ -1,0 +1,150 @@
+;; ======================================================================== ;;
+;;  Emu-Link Support Macros                                                 ;;
+;;                                                                          ;;
+;;  Emu-Link is a simple mechanism that allows an Intellivision program     ;;
+;;  to interact with an Intellivision emulator to gain access to emulator   ;;
+;;  specific functionality.                                                 ;;
+;;                                                                          ;;
+;;  Currently, only jzIntv supports Emu-Link, although in principle any     ;;
+;;  emulator could.  Emu-Link provides a dedicated API for determining      ;;
+;;  what emulator (if any) it's currently running under, as well as ID      ;;
+;;  strings for them, should they ever decide to add this feature.          ;;
+;;                                                                          ;;
+;;  All APIs other than EL_EMU_DETECT adhere to the following basic         ;;
+;;  protocol:                                                               ;;
+;;                                                                          ;;
+;;   -- Program loads $4A5A into R0 as a magic signature                    ;;
+;;   -- Program loads EMU_LINK call # into R1                               ;;
+;;   -- Program puts whatever arguments in R2..R5 [1]                       ;;
+;;   -- Program sets the carry bit (C = 1) [2]                              ;;
+;;   -- Program issues SIN                                                  ;;
+;;   -- Emulator checks R0 for signature and R1 for call #                  ;;
+;;       -- If no signature, treat SIN as NOP                               ;;
+;;       -- If signature OK but call # invalid, set C=1, R0=FFFF            ;;
+;;       -- If signature OK and call # valid, set C=0 and execute call      ;;
+;;   -- Callee executes, returning pass/fail in C, result in R0..R5.        ;;
+;;                                                                          ;;
+;;  [1] Emu-Link APIs can access the Intellivision's RAM, so large          ;;
+;;      structures can be passed through memory.  Furthermore, the APIs     ;;
+;;      need not clobber all of the CPU registers.  As with native asm      ;;
+;;      calls, the set of modified registers varies with each API.          ;;
+;;                                                                          ;;
+;;  [2] Setting carry is optional if the program has already determined     ;;
+;;      that Emu-Link is present.  The SIN instruction does not modify      ;;
+;;      the carry, and so setting carry before SIN makes sure all Emu-      ;;
+;;      Link calls appear to fail.                                          ;;
+;; ======================================================================== ;;
+
+    IF (DEFINED _EMU_LINK_MAC) = 0
+_EMU_LINK_MAC   QEQU    1
+
+;; ======================================================================== ;;
+;;  EL_EMULATOR     A set of constants for the emulator IDs.                ;;
+;; ======================================================================== ;;
+EL_EMULATOR PROC
+@@jzintv    QEQU   ('J' SHL 8) OR 'Z'   ; "JZ" => jzIntv
+@@kinty     QEQU   ('K' SHL 8) OR 'I'   ; "KI" => Kinty
+@@bliss     QEQU   ('B' SHL 8) OR 'L'   ; "BL" => Bliss
+@@nost      QEQU   ('N' SHL 8) OR 'O'   ; "NO" => Nostalgia
+@@intvwin   QEQU   ('I' SHL 8) OR 'W'   ; "IW" => IntvWin
+@@intvdos   QEQU   ('I' SHL 8) OR 'D'   ; "ID" => IntvDos
+@@intvpc    QEQU   ('I' SHL 8) OR 'P'   ; "IP" => IntvPC
+            ENDP
+
+;; ======================================================================== ;;
+;;  EL_CPU_REGS     Utility symbols.                                        ;;
+;; ======================================================================== ;;
+EL_CPU_REGS PROC
+@@R0        QEQU    0
+@@R1        QEQU    1
+@@R2        QEQU    2
+@@R3        QEQU    3
+@@R4        QEQU    4
+@@R5        QEQU    5
+@@R6        QEQU    6
+@@R7        QEQU    7
+@@SP        QEQU    6
+@@PC        QEQU    7
+            ENDP
+
+MACRO       _el_2c(a,c1,c2)
+((ASC("%a%",0)='%c1%') AND ((ASC("%a%",1))='%c2%'))
+ENDM
+
+MACRO       _el_isreg(a)
+((STRLEN("%a%")=2) AND (((ASC("%a%",0)='R') AND (ASC("%a%",1) >= '0') AND (ASC("%a%",1) <= '7')) OR _el_2c(%a%,S,P) OR _el_2c(%a%,P,C)))
+ENDM
+
+
+;; ======================================================================== ;;
+;;  EL_EMU_DETECT   Detect if an emulator is present, and if so, which.     ;;
+;;                                                                          ;;
+;;  OUTPUTS                                                                 ;;
+;;      C       C=0 indicates an emulator was detected, C=1 means none.     ;;
+;;                                                                          ;;
+;;      R0      Emulator ID (one of the constants in EL_EMULATOR above),    ;;
+;;              or the constant $656D if none detected.                     ;;
+;;                                                                          ;;
+;;      R1      Emulator version (major in upper 8, minor in lower 8) or    ;;
+;;              the constant $753F if none detected.                        ;;
+;;                                                                          ;;
+;;      R2..R5  Unmodified                                                  ;;
+;; ======================================================================== ;;
+MACRO       EL_EMU_DETECT
+            MVII    #$656D, R0      ; \_ "em"
+            MVII    #$753F, R1      ; /  "u?"
+            SETC
+            SIN
+ENDM
+
+;; ======================================================================== ;;
+;;  EL_CALL         Make Emu-Link API call, w/out SETC (smaller, faster)    ;;
+;;  EL_CALL_SC      Make Emu-Link API call, with SETC (larger, safer)       ;;
+;;                                                                          ;;
+;;  INPUTS                                                                  ;;
+;;      API ID  API number being invoked.  At the time of writing:          ;;
+;;                  0       Ping:  An alternate way to test for Emu-Link.   ;;
+;;                  1..7    Reserved                                        ;;
+;;                  8       Get raw analog joystick input (el_joy.mac)      ;;
+;;                  9       Get raw events  (el_event.mac)                  ;;
+;;                  10..17  File I/O  (el_fileio.mac)                       ;;
+;;              The API number can be a constant or passed in a register.   ;;
+;;                                                                          ;;
+;;      R2..R5  Arguments to the API                                        ;;
+;;                                                                          ;;
+;;  OUTPUTS                                                                 ;;
+;;      C       0 == success, 1 == failure                                  ;;
+;;      R0..R5  Output from API.  R0 and R1 are clobbered even if Emu-      ;;
+;;              Link is not present.                                        ;;
+;;                                                                          ;;
+;; ======================================================================== ;;
+MACRO       EL_CALL api
+    IF _el_isreg(%api%)
+        IF EL_CPU_REGS.%api% <> 1
+            MOVR    %api%,  R1
+        ENDI
+    ELSE
+            MVII    #%api%, R1
+    ENDI
+            MVII    #$4A5A, R0
+            SIN            
+ENDM
+
+MACRO       EL_CALL_SC api
+            SETC
+            EL_CALL %api%
+ENDM
+
+;; ======================================================================== ;;
+;;  EL_PING         Call the Emu-Link 'ping' API                            ;;
+;;                                                                          ;;
+;;  OUTPUT                                                                  ;;
+;;      C = 0, R0 == 0:  Success                                            ;;
+;;      C = 1, R0 != 0:  Failure                                            ;;
+;;      R1 zeroed                                                           ;;
+;; ======================================================================== ;;
+MACRO       EL_PING
+            EL_CALL_SC 0
+ENDM
+
+    ENDI

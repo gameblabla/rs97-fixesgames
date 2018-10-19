@@ -1,0 +1,750 @@
+==============================================================================
+  INTELLIVISION INTERRUPTS
+==============================================================================
+
+This file describes information about the Intellivision's 60Hz (or 50Hz
+for PAL) VBLANK interrupt.  Much of the information below is adapted
+from posts I (Joe Zbiciak) made to INTVPROG or other information I have 
+posted to the web.  Many of these posts I've summarized were collected for
+me by Ryan Kinnen.  (Thanks Ryan!)
+
+This is not meant to be an exhaustive guide to Intellivision interrupts
+and all their hardware peculiarities.  It is intended to be a reliable
+guide to Intellivision interrupts for people writing new games.
+
+
+------------------------------------------------------------------------------
+  OVERVIEW:  What is an Interrupt?
+------------------------------------------------------------------------------
+
+Interrupts are external signals that are connected to a CPU.  They are
+a way of telling the CPU that some device external to them needs attention.  
+They can also provide a way for keeping time.
+
+On the CP-1600, there are two flavors of interrupt:  Maskable Interrupt
+and Non-maskable Interrupt.  This document only covers Maskable Interrupts,
+as the Non-maskable Interrupt pin is not connected to anything in the
+Intellivision.
+
+Interrupts can come from various sources, such as peripherals, timers, and
+so on.  On the PC that many of you are familiar with, you've probably seen
+the term "IRQ #" associated with various add-in devices, such as a sound
+card, mouse port, or other add-in card.  IRQ stands for "Interrupt Request", 
+and in the world of the PC, the IRQ # is a mechanism for sorting out 
+interrupt sources.
+
+The Intellivision world is much simpler.  Interrupts come from one place,
+and one place only:  The STIC.  
+
+
+------------------------------------------------------------------------------
+  INTELLIVISION INTERRUPTS:  The VBLANK Interrupt
+------------------------------------------------------------------------------
+
+The STIC chip (AY-3-8900) is the display chip at the heart of the
+Intellivision.  It provides the graphical display output.  It also is
+the sole source of interrupts in the Intellivision Master Component.
+
+The STIC generates an interrupt at the end of active display.  This means
+that it produces interrupts at a fixed rate that is tied to the refresh
+rate of the display.  For NTSC Intellivisions, this rate is approximately
+60Hz.  For PAL Intellivisions, the rate is 50Hz.  The interrupt occurs at
+the very end of active display, where the STIC "blanks" the display and
+starts displaying the solid screen border at the bottom of the screen.
+For this reason, is often called the Vertical Blanking (or VBLANK)
+interrupt.
+
+The STIC interrupts the CPU during VBLANK because the STIC needs a little
+attention every frame.  This is the primary purpose of the interrupt.
+The reason for this is that certain STIC-controlled resources are only
+available to the CPU during the VBLANK period, as long as the display
+is enabled.  Specifically, the following are only visible during VBLANK:
+
+ -- The GROM and GRAM.  These are visible for approximately 3780 cycles.
+ -- The STIC's registers.  These are visible for approximately 2000 cycles.
+
+During active display, the STIC has full control over the GROM, GRAM,
+and its registers, so CPU accesses to them will not work -- writes will
+be dropped and reads will return garbage.
+
+Because these resources available for a short period of time, the STIC
+does allow more unlimited access as long as the display is blanked.  This
+allows for quicker initialization of GRAM and the STIC.  This leads to the
+second reason for the VBLANK interrupt:  To enable the display, the
+STIC Display Enable register at location $0020 must be written to on
+EVERY frame.  If this register is not written, the display will blank.
+(VBLANK interrupts will still occur at a fixed rate, though.)
+
+For these reasons, an interrupt service routine in a typical game will
+is responsible for doing the following:
+
+ -- First, if the game wants the display to actually be displayed, the
+    routine must hit the display enable by writing to location $0020.
+    The STIC ignores the value written -- just write anything there.
+
+ -- Next, it must update any of the STIC registers -- read MOB
+    collisions, update MOB positions, slide the scrolling registers,
+    update the color stack, whatever.  Again, these are only available
+    during VBLANK, and are unavailable during active display.
+
+ -- After that, it must update any graphics cards in GRAM.  GRAM is only
+    accessible during VBLANK, but it is accessable for longer than the 
+    STIC registers are, and so you'll typically start your GRAM updates 
+    after your register updates are complete.
+    
+
+Although the VBLANK interrupt is primarily used for feeding updates to the
+STIC, it also happens to be very useful as a source of timing information.
+Its fixed clock rate makes it a useful "heartbeat" for the system.
+Therefore, once all the graphics responsibilities are taken care of,
+usually the VBLANK routine processes anything that needs a fixed
+time-base, such as:
+
+ -- Update any sounds that are playing.  You don't like music which
+    slows down or speeds up uncontrollably, do you?  Or sound effects 
+    that pause all of the action?  Didn't think so.
+
+ -- Update timers, clocks, or other sources of "timebase" information.
+
+------------------------------------------------------------------------------
+  VBLANK INTERRUPT NUMBERS
+------------------------------------------------------------------------------
+
+Below is a quick summary of the numbers given above for the VBLANK
+interrupts, plus a few others.  The NTSC numbers are fairly accurate.
+The PAL numbers are estimates.
+
+    NTSC Intellivision Timing Parameters     
+ 
+    Parameter                                   Measurement
+    NTSC STIC Clock Rate                        3579545 Hz
+    STIC Scanlines per Frame                    262 scanlines
+    Active Scanlines per Frame                  192 scanlines
+    Actual Effective Frame Rate                 59.92 Hz
+    CP-1600 Clock Rate (NTSC/4)                 894886.25 Hz
+    CPU Cycles per Frame:
+     -- Display disabled                        14934 cycles
+     -- Display enabled, vertical delay == 0   ~13518 cycles
+     -- Display enabled, vertical delay > 0    ~13572 cycles
+    CPU Cycles per Scanline                     57 cycles
+    CPU Cycles available in Bus Copy mode       3780 - 3790 cycles
+ 
+ 
+    PAL Intellivision Timing Parameters (ESTIMATES)
+ 
+    Parameter                                   Measurement
+    PAL STIC Clock Rate                         4000000 Hz
+    STIC Scanlines per Frame                 ?? 312 scanlines
+    Active Scanlines per Frame                  192 scanlines
+    Actual Effective Frame Rate                ~50.00 Hz
+    CP-1600 Clock Rate (PAL/4)                  1000000 Hz
+    CPU Cycles per Frame:
+     -- Display disabled                       ~20000 cycles
+     -- Display enabled, vertical delay == 0 ??~18584 cycles
+     -- Display enabled, vertical delay > 0  ??~18638 cycles
+    CPU Cycles per Scanline                  ?? 57 cycles
+    CPU Cycles available in Bus Copy mode    ?? 8840 - 8850 cycles
+
+
+NOTE:  The estimates marked "??" are very possibly BOGUS.  You have
+       been warned.  If you happen to measure these values, PLEASE LET
+       ME KNOW THE RIGHT NUMBERS!!!  Thanks!
+
+
+------------------------------------------------------------------------------
+  INTERRUPT DISPATCHING
+------------------------------------------------------------------------------
+
+When the CP-1600 receives an interrupt request, it first needs to
+decide whether to take the interrupt or not.  If the CPU is executing
+non-interruptible instructions (such as MVO or shifts), or if interrupts
+are masked (say with DIS, JD or JSRD), the CPU ignores the interrupt
+for as long as interrupts are blocked.  Note that the CPU only has
+a couple thousand cycles to recognize the interrupt, so keep those
+non-interruptible sequences short.
+
+Once the CPU recognizes the interrupt, it performs the following steps:
+
+ -- It issues an "INTAK" (Interrupt AcKnowledge) bus phase.  This tells
+    the System RAM and the STIC that it saw the interrupt and is beginning
+    its interrupt processing.  This enables "Bus Copy" mode in the
+    System RAM, which allows the CPU to see the STIC's registers.
+ 
+ -- It pushes the current Program Counter (R7) address onto the stack.
+
+ -- It branches to location $1004 and executes the code there.
+
+
+> NOTE:  If you want the display to remain enabled or want access to GRAM
+> and GROM, it is important that you actually allow the CPU to take
+> interrupts.  If you leave interrupts disabled for extended periods of
+> time, the CPU will not issue an "INTAK", and you will not be able to 
+> access the STIC, GRAM or GROM.  Also, it appears that STIC registers 
+> lose their state after a few frames if interrupts are not taken regularly.
+
+
+The code at $1004 is an EXEC routine which dispatches the interrupt
+and handles returning from the interrupt.  The dispatch portion of the
+EXEC code always runs.  The return code runs only at your discretion.
+When an interrupt is taken, all 6 registers are saved, along with the
+current state of the flags.  (It's not necessary to save R6 and R7.
+Think about it.)  Then, the dispatcher calls the function whose address
+is stored in locations $0100 / $0101. 
+
+If your interrupt handler behaves like a normal function call (eg.
+returns to the address in R5 when its done), the EXEC's interrupt
+dispatcher will restore all the registers and flags for you.  If it does
+not, then this responsibility falls to your code.  (You may have very
+specific reasons for doing this.)
+
+This is what the dispatcher and return code look like:
+
+L1004:  PSHR    R0          ; $1004  Save R0
+        GSWD    R0          ; $1005  \__ Save flags
+        PSHR    R0          ; $1006  /
+        PSHR    R1          ; $1007  Save R1
+        PSHR    R2          ; $1008  Save R2
+        NOP                 ; $1009  interruptible, needed for STIC
+        PSHR    R3          ; $100A  Save R3
+        PSHR    R4          ; $100B  Save R4
+        PSHR    R5          ; $100C  Save R5
+        MOVR    R7,     R5  ; $100D  \__  R5 points to $1014 
+        ADDI    #$0006, R5  ; $100E  /
+        MVII    #$0100, R4  ; $1010  \
+        SDBD                ; $1012   |-- Dispatch to user ISR at $100/$101.
+        MVI@    R4,     R7  ; $1013  /
+
+L1014:  PULR    R5          ; $1014  Restore R5
+        PULR    R4          ; $1015  Restore R4
+        PULR    R3          ; $1016  Restore R3
+        PULR    R2          ; $1017  Restore R2
+        PULR    R1          ; $1018  Restore R1
+        PULR    R0          ; $1019  \__ Restore flags
+        RSWD    R0          ; $101A  /
+        PULR    R0          ; $101B  Restore R0
+        PULR    R7          ; $101C  Return to game
+
+
+The code from $1004 through $1013 comprises the dispatcher.  The code
+from $1014 through $101C is the return code.
+
+------------------------------------------------------------------------------
+  INTERRUPT SERVICE ROUTINE (ISR) VECTOR            
+------------------------------------------------------------------------------
+
+The locations $0100 and $0101 mentioned above are sometimes referred to
+as the "Interrupt Service Routine Vector" or "ISR Vector".  ("Interrupt
+Service Routine" is usually abbreviated ISR.)   Locations $0100 and $0101 
+are the locations that you must update in order to "hook" the VBLANK 
+interrupt.
+
+To hook the interrupt, you must write the address of your ISR to these
+locations in "double-byte data" format.  Be careful:  This sequence must
+be non-interruptible.  You do not want the dispatcher to run between the
+updates to $0100 and $0101.  Here are two common, safe sequences for 
+hooking the VBLANK interrupt:
+
+    
+        ; Assume R0 has address of interrupt handler
+        MVII    #$100,  R4
+        MVO@    R0,     R4
+        SWAP    R0
+        MVO@    R0,     R4
+
+    or:
+
+        ; Assume R0 has address of interrupt handler
+        MVO     R0,     $100
+        SWAP    R0
+        MVO     R0,     $101
+
+These are safe because MVO@ and SWAP are both non-interruptible.
+This means that an interrupt cannot be serviced between the first MVO
+and last MVO instruction.
+
+
+If you're writing an EXEC based game, you need to perform an additional
+step BEFORE you hook the interrupt.  Also, your ISR must perform an 
+additional step at the end of its processing.  You must save the old 
+value of the ISR vector, and remember to branch to that address after 
+running your own ISR.  For example:
+
+
+        MVII    #$100,  R4
+        SDBD
+        MVI@    R4,     R1        ; Get address of original ISR
+        MVO     R1,     OLDISR    ; Save it somewhere in 16-bit RAM
+
+        MVII    #MYISR, R0        ;\
+        SUBI    #2,     R4        ; |
+        MVO@    R0,     R4        ; |-- Install my ISR routine.
+        SWAP    R0                ; |
+        MVO@    R0,     R4        ;/
+
+Then, in your ISR, you'd do something like this:
+
+MYISR   PROC
+        PSHR    R5                ; Save return address
+
+        ; ... do stuff
+
+        PULR    R5                ; Restore return address in R5
+        MVI     OLDISR, PC        ; Call previous interrupt handler
+        ENDP
+
+This form of ISR chaining can cause other problems, particularly if your
+ISR is fairly lengthy.  Discussion of those problems is beyond the scope
+of this document.
+
+
+------------------------------------------------------------------------------
+  PROGRAMMING IN THE PRESENCE OF INTERRUPTS
+------------------------------------------------------------------------------
+
+Because interrupts save and restore the state of the machine, most code
+typically does not have to worry about interrupts.  Interrupts are like
+TV commercials -- you fade out, have the commercial, fade in, and resume
+the show.
+
+As a result, life is mostly worry-free even with interrupts.  There are
+a few things, though, you do need to worry about:  (The list looks long,
+but it actually pretty short -- I am just a stickler for details.)
+
+ -- Make sure interrupts are enabled most of the time.  (eg. use
+    "EIS" or "JSRE" to enable them.)  This ensures they're serviced
+    in a timely fashion, so that you have plenty of time for
+    accessing the STIC, etc.
+
+ -- Make sure you don't accidentally block interrupts by having
+    too many "non-interruptible" instructions in a row.  (On the
+    CP-1600, the shift instructions, MVO/PSHR instructions, and a
+    few others are "non-interruptible.")  For other hardware reasons,
+    you should have no more than about three or four of these in
+    a row.  (About 4-5 shifts, or 3-4 MVOs -- keep it to no more than
+    about ~30 - ~40 cycles.)  Insert a NOP if you have to.  
+
+    For example, I broke this long sequence of MVO's with a DECR
+    and a NOP.  In this example, I have no more than 3 in a row,
+    since these are direct-addressing MVOs which take 11 cycles
+    each.  Having 4 direct-mode MVOs in a row may be ok, but when
+    you're not sure, erring on the side of caution doesn't hurt.
+
+STOPALLTASKS    PROC
+        MVI     TSKACT, R0
+        CLRR    R1
+        MVO     R1,     TSKACT
+        MVO     R1,     TSKQHD
+        MVO     R1,     TSKQTL
+        DECR    R1
+        MVO     R1,     TSKTBL+2        ; period == -1 for task 0
+        MVO     R1,     TSKTBL+6        ; period == -1 for task 1
+        MVO     R1,     TSKTBL+10       ; period == -1 for task 2
+        NOP                             ; (interruptible, for STIC)
+        MVO     R1,     TSKTBL+14       ; period == -1 for task 3
+        JR      R5
+
+        ENDP
+
+ -- If you have any data in memory that's accessed by both your
+    interrupt routine AND your main program, make sure you access that
+    data "atomically" from the main program.  To be really safe, guard
+    accesses to this data by disabling interrupts, accessing the data,
+    and then re-enabling interrupts.  Otherwise, if an interrupt happens
+    and mucks with this data while you're while you're accessing it,
+    bad things can happen.  In embedded programming parlance, these are
+    called "critical sections".
+
+    For example, in 4-Tris, I have a set of task structures in memory
+    that are updated from both the interrupt handler and the main program.
+    So, when I access these from the main program, I shut off interrupts
+    around the access like so:
+
+STARTTASK       PROC
+        MVI@    R5,     R0
+        SLL     R0,     2       ; R0 = R0 * 4 (four words/entry)
+        MVII    #TSKTBL,R4      ; R4 = &TSKTBL[0]
+        ADDR    R0,     R4      ; R4 = &TSKTBL[n]
+
+        DIS                     ; Entering critical section.
+        MVI@    R5,     R0      ; ! Get Function pointer
+        MVO@    R0,     R4      ; ! ... and write it
+        MVO@    R2,     R4      ; ! Write task instance data
+        MVI@    R5,     R0      ; ! Get task period
+        MVO@    R0,     R4      ; ! ... and write it
+        MVI@    R5,     R0      ; ! Get task period reinit
+        MVO@    R0,     R4      ; ! ... and write it
+        EIS                     ; Done with critical section.
+
+        JR      R5
+        ENDP
+
+    Another example is updating locations $100/$101 to point to your own
+    interrupt handler.  (That is covered in the previous section.)  You 
+    need to either disable interrupts, or use a non-interruptible sequence
+    of instructions to update these locations to point to your handler.
+    As noted previously, the following sequences work quite nicely:
+
+        ; Assume R0 has address of interrupt handler
+        MVII    #$100,  R4
+        MVO@    R0,     R4
+        SWAP    R0
+        MVO@    R0,     R4
+
+    or:
+
+        ; Assume R0 has address of interrupt handler
+        MVO     R0,     $100
+        SWAP    R0
+        MVO     R0,     $101
+
+    These work because MVO and SWAP are non-interruptible, which
+    means an interrupt cannot be taken immediately after that 
+    instruction.  For these sequences, it ends up meaning that no
+    interrupt can occur between the first MVO and the second MVO, which
+    is what we desire.
+
+ -- Keep your interrupt handler short.  If the interrupt handler
+    takes too many cycles, then the next interrupt will come before the
+    first one finishes, and you'll either lose the interrupt or you'll
+    starve the main program for cycles.
+
+ -- Make sure you have enough stack space.  The interrupt dispatcher
+    in the EXEC needs 9 or so words of stack space just to dispatch
+    to your ISR, so you need to be sure you have enough headroom on
+    the stack.  Stack overflow bugs are hard to track down.  The stack
+    normally starts at $2F1 and grows UPWARDS (towards higher-numbered
+    addresses).
+
+And one last thing:
+
+ -- If you have functions that are called by both the interrupt
+    handler and the main program, make sure these functions are REENTRANT.
+    A function is reentrant if it stores all of its local state in
+    registers and/or on the stack.  If it has fixed locations that it
+    uses for temporary storage, it's likely not reentrant.
+
+    For instance, if you look at the "DEC16" and "DEC32" functions
+    in 4-Tris (or in the SDK-1600 library), these functions are not
+    reentrant because they have fixed temporary storage.  If I call
+    this function in my main program, then it gets interrupted, and in
+    my ISR I call the same function -- *BLAM* -- I kill the temporary
+    values that were stored by the main program and Bad Things happen.
+    (I actually had a bug like this while I was debugging 4-Tris.
+    Ironically, the bug was in my debugging code which displayed some
+    status info from the interrupt handler.  ;-)
+
+    One way to handle non-reentrant code is to protect it as though it
+    were a critical-section.  For very short routines, this may be 
+    acceptable, but typically it ends up locking out interrupts for 
+    far too long.  Another solution is to save the information from the
+    fixed local storage on the stack prior to calling the function,
+    and restore it afterwards.  While it's more work, it's typically
+    much more acceptable.  
+
+    For example, DEC_16 stores two bytes worth of data in the local
+    variables "DEC_0" and "DEC_1".  We can store those in a single
+    word on the stack, and restore them later.  Note that the following
+    code relies on DEC_0 and DEC_1 being stored in 8-bit RAM.  
+
+DEC16_WRAPPER   PROC
+
+        PSHR    R5              ; Save return address
+
+        MOVR    R0,     R5      ; Save R0 temporarily
+        MVI     DEC_1,  R0      ; \
+        SWAP    R0              ;  |__ Save DEC_0 and DEC_1
+        XOR     DEC_0,  R0      ;  |
+        PSHR    R0              ; /
+        MOVR    R5,     R0      ; Restore R0
+    
+        CALL    DEC16
+
+        PULR    R0              ;
+        MVO     R0,     DEC_0   ; \
+        SWAP    R0              ;  |-- Restore DEC_0 and DEC_1
+        MVO     R0,     DEC_1   ; / 
+    
+        PULR    PC              ; Return
+        ENDP
+
+
+------------------------------------------------------------------------------
+  ISR TRICKS
+------------------------------------------------------------------------------
+
+Here are a few tricks I've developed over time related to interrupts.
+These apply to non-EXEC games only.
+
+--------------------
+ SAVING STACK SPACE
+--------------------
+
+When writing a non-EXEC game, one typically does not need to chain to
+the original interrupt handler.  This also means that one will always
+return to a fixed address from an ISR:  Location $1014 in the interrupt
+dispatcher and return code.
+
+What this means is that it is not necessary to save the return address
+in R5 inside your ISR.  Recall that a typical ISR behaves like a normal
+function call.  It therefore saves the return address in R5, and branches
+to that address when its done:
+
+
+ISR     PROC
+        PSHR    R5      ; save return address
+
+        ; do stuff
+
+        PULR    PC      ; return to saved address
+        ENDP
+
+This uses a whole word of stack space to store a value that could be
+considered constant.  How wasteful!
+
+Instead, you can safely just branch to location $1014 directly.  If
+you're using a 16-bit wide ROM, this can be accomplished with a "B"
+instruction:
+
+ISR     PROC
+
+        ; do stuff
+
+        B       $1014   ; return via ISR return code
+        ENDP
+
+Alternately, if you're in a narrower ROM (such as a 10-bit ROM), you
+can use the J instruction instead:
+
+
+ISR     PROC
+
+        ; do stuff
+
+        J       $1014   ; return via ISR return code
+        ENDP
+
+
+Either approach ends up saving a couple cycles, and more importantly,
+saves a word of stack space.
+
+
+----------------
+ INITIALIZATION
+----------------
+
+Typically, at the start of the game, you need to blast a bunch of
+information into the GRAM, and you don't care about returning into the
+EXEC or anything.  In those cases, your "ISR" really doesn't need to
+worry about restoring the state of the machine and returning to the
+interrupted code.
+
+Rather, it's convenient in an initialization routine to just take over
+the machine.  Such an "initialization interrupt handler" typically will 
+do the following:
+
+ -- Disable interrupts.
+
+ -- Reset the stack pointer, discarding whatever was on the stack.
+    In a non-EXEC game, $2F0 is a good place to reset the stack pointer
+    to.  (The EXEC usually initializes it to $2F1, because it keeps
+    a magic number at $2F0.)
+
+ -- Install the real ISR routine in the ISR vector.
+
+ -- Blast data into the GRAM and STIC registers.
+
+ -- Re-enable interrupts.
+
+ -- Branch to the start of the program.
+
+Notice that this interrupt handler does not return.  It completely
+loses the state of the code that it interrupts.  Therefore, it is
+common to set up the vector for the initialization ISR, and then
+pause the CPU with a "spin loop."
+
+4-Tris uses this particular technique.  The following example is 
+based loosely on 4-Tris' code for accomplishing this trick:
+
+
+;;==========================================================================;;
+;;  TITLE / START                                                           ;;
+;;  The title string followed by our startup code.                          ;;
+;;==========================================================================;;
+TITLE:  BYTE    102, "GAME", 0          ; Title: GAME, Copyright 2002
+START:  ; Intercept/preempt EXEC initialization and just do our own.
+
+        MVII    #INIT,  R0              ; Our initialization routine
+        MVII    #$100,  R4              ; ISR vector
+        MVO@    R0,     R4              ; Write low half
+        SWAP    R0                      ;
+        MVO@    R0,     R4              ; Write high half
+                                       
+        EIS                             ; Enable interrupts
+@@spin: DECR    PC                      ; Wait for one to happen
+
+;;==========================================================================;;
+;;  INIT                                                                    ;;
+;;  Initializes the ISR, etc.  Gets everything ready to run.                ;;
+;;  This is called via the ISR dispatcher, so it's safe to bang GRAM from   ;;
+;;  here, too.                                                              ;;
+;;                                                                          ;;
+;;   -- Zero out memory to get started                                      ;;
+;;   -- Set up variables that need to be set up here and there              ;;
+;;   -- Set up GRAM image                                                   ;;
+;;   -- Drop into the main game state-machine.                              ;;
+;;==========================================================================;;
+INIT:   PROC
+        DIS
+        MVII    #$2F0,  R6              ; Reset the stack pointer
+
+        CLRR    R4                      ; zero all system RAM, PSG0,& STIC.
+        MVII    #$20,   R1              ; $00...$1F. (The STIC)
+        CALL    FILLZERO
+
+        ADDI    #8,     R4              ; $28...$32. (The rest of the STIC)
+        MVII    #11,    R1
+        CALL    FILLZERO
+
+        MVII    #$F0,   R4              ; $F0...$35D. We spare the rand seed 
+        MVII    #$26D,  R1              ; values in $35E..$35F to add some 
+        CALL    FILLZERO                ; randomness.
+
+        MVI     COLSTK, R1              ; Force display to color-stack mode
+
+        MVII    #MAINISR, R0            ; Point ISR vector to our ISR
+        MVO     R0,     $100            ; store low half of ISR vector
+        SWAP    R0                      ;
+        MVO     R0,     $101            ; store high half of ISR vector
+
+
+        ; Default the GRAM image to be same as GROM.
+        MVII    #GROM,  R5              ; Point R5 at GROM
+        MVII    #GRAM,  R4              ; Point R4 at GRAM
+        MVII    #$200,  R0
+@@gromcopy:
+        MVI@    R5,     R1
+        MVO@    R1,     R4
+        DECR    R0
+        BNEQ    @@gromcopy
+
+        ; Copy our GRAM font into GRAM overtop of default.
+        CALL    LOADFONT
+        DECLE   FONT
+
+        ; Ok, everything's ready to roll now.
+        EIS
+
+
+        ;; TOP LEVEL GAME STATE MACHINE LIVES HERE.
+
+        ENDP
+
+
+------------------------------------------------------------------------------
+  OTHER Q & A
+------------------------------------------------------------------------------
+
+I have captured much of the useful Intellivision interrupt information 
+above.  Much of the above material is adapted from posts I've made to
+INTVPROG.  Still, it isn't exhaustive.  Below are some mostly un-edited 
+emails that fill in a few gaps.  The only edits are corrections.
+
+These emails (and the ones which sourced the material above) were collected 
+for me by Ryan Kinnen.  (Thanks again, Ryan!)
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+euphoric_cat [euphoric_cat@yahoo.com] wrote:
+| My actual problem turns out that I was trying to execute too many 
+| instructions between the time that the VBLANK interrupt occurs, 
+| and the time the $0020 handshake was occurring.  
+
+You're probably best off just punching $0020 as one of the first
+instructions in your ISR.
+
+I discovered that STIC registers are only accessible for about 2000
+cycles during and ISR, while the GRAM is accessible for longer (~3780
+cycles).
+
+The game I'm currently working on uses all of the available GRAM
+cycles, which is why I noticed.  :-)  My MOB updates weren't working
+right when I performed them after my GRAM updates, but they worked
+right when I did them before the GRAM.  I investigated further
+and worked out the 2000 vs 3780 number.  (These numbers aren't exact --
+I'm just remembering approximate figures off the top of my head.)
+
+Besides, it doesn't pay to be too exact, since there could be a
+bit of latency in dispatching to your ISR.  You're better off to
+underestimate and thus have some slack.
+
+Regards,
+
+--Joe
+
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+Not Your Average Joe wrote:
+| This is what the dispatcher looks like:
+| 
+| L1004:  PSHR    R0          ; $1004  Save R0
+|         GSWD    R0          ; $1005  \__ Save flags
+|         PSHR    R0          ; $1006  /
+|         PSHR    R1          ; $1007  Save R1
+|         PSHR    R2          ; $1008  Save R2
+|         NOP                 ; $1009  interruptible, needed for STIC
+|         PSHR    R3          ; $100A  Save R3
+|         PSHR    R4          ; $100B  Save R4
+|         PSHR    R5          ; $100C  Save R5
+|         MOVR    R7,     R5  ; $100D  \__  R5 points to $1014 
+|         ADDI    #$0006, R5  ; $100E  /
+|         MVII    #$0100, R4  ; $1010  \
+|         SDBD                ; $1012   |-- Dispatch to user ISR at $100/$101.
+|         MVI@    R4,     R7  ; $1013  /
+
+
+It occurs to me that I didn't explain why that NOP needed to be there.
+
+It has to do with how the STIC reads BACKTAB.
+
+13 to 14 times a frame, the STIC asks the CPU to halt (using the BUSRQ
+bus request line).  During these halts, the STIC twiddles the system RAM,
+fetching the next row of cards into a special buffer.  Once the cards
+are fetched, it releases the CPU.
+
+For BUSRQ to work, the CPU must be executing interruptible
+instructions.  The instructions must be of the "interruptible"
+type.  It does not matter if the global Interrupt Enable is on or
+off.  MVOs and shifts are not interruptible.  Most other instructions
+are interruptible.
+
+If the CPU is executing a long sequence of non-interruptible
+instructions, the BUSRQ will be ignored.  This causes the STIC's
+twiddling of the System RAM to fail.  The result is that the STIC
+will replay the same row of cards a second time, and the rest of
+the display will shift down by one row of cards.  To the person
+playing the game, it'll look like the screen jumped.
+
+To be safe, limit code to about 40-50 cycles of non-interruptible
+instructions.  Insert an interruptible instruction to break up the
+sequence.  (FWIW, early versions of 4-Tris had this type of bug.)
+
+That's all fine and good, you're thinking, but why do I need this
+in the ISR dispatcher?  This issue only occurs during active display,
+and it's not active here, right?
+
+Yes, you're right.  While it's possible that the interrupt dispatcher
+could get delayed until sometime during what would be active display
+(say, by a code protected w/ DIS and EIS), that's irrelevant.  The
+display will be blanked, because (a) the interrupt wasn't taken
+during the vertical blank interval, and (b) $0020 wasn't hit during
+the appropriate interval either, so the display will be blank.
+
+I don't think the APh guys who wrote the code (David Rolfe and
+company) fully understood all the foibles of the STIC at the time.
+Who can blame 'em?  Or maybe they expected a possible need to manually
+branch to $1004 sometime?  Who knows.
+
+Regards,
+
+--Joe

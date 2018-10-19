@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=STransball2
+Comment=Super Transball 2 - "Thrust" type arcade game
+Exec=run.sh
+Terminal=false
+Type=Application
+StartupNotify=true
+Icon=stransball2
+X-OD-Manual=readme.man.txt
+Categories=games;

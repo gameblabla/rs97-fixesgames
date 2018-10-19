@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=OpenBOR
+Comment=OpenBOR Engine r4077
+Exec=OpenBOR
+Terminal=false
+Type=Application
+StartupNotify=true
+Icon=openbor
+Categories=games
+X-OD-Manual=readme.gcw0.txt

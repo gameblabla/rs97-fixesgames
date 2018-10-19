@@ -1,0 +1,17 @@
+#include <appinfo.rh>
+#include <spartak-chess.rsg>
+
+UID2 KUidAppRegistrationResourceFile
+
+// Application UID
+UID3 0xA89FB850
+
+RESOURCE APP_REGISTRATION_INFO
+{
+    app_file                  = "spartak-chess";
+    localisable_resource_file = "\\resource\\apps\\spartak-chess";
+    localisable_resource_id   = R_LOCALISABLE_APP_INFO;
+
+    embeddability             = KAppNotEmbeddable;
+    newfile                   = KAppDoesNotSupportNewFile;
+}

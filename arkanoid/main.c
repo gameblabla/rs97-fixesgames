@@ -119,7 +119,7 @@ int EventHandler(u32 nInGame)
 						
 						//SDL_UpdateRect(gVar.hwscreen, 0, 0, SCR_Width, SCR_Height);
 						{
-						  if(SDL_MUSTLOCK(ScreenSurface)) SDL_LockSurface(ScreenSurface);
+						  /*if(SDL_MUSTLOCK(ScreenSurface)) SDL_LockSurface(ScreenSurface);
 						  int x, y;
 						  uint32_t *s = (uint32_t*)gVar.hwscreen->pixels;
 						  uint32_t *d = (uint32_t*)ScreenSurface->pixels;
@@ -129,7 +129,8 @@ int EventHandler(u32 nInGame)
 							}
 							d+= 160;
 						  }
-						  if(SDL_MUSTLOCK(ScreenSurface)) SDL_UnlockSurface(ScreenSurface);
+						  if(SDL_MUSTLOCK(ScreenSurface)) SDL_UnlockSurface(ScreenSurface);*/
+						  SDL_SoftStretch(gVar.hwscreen, NULL, ScreenSurface, NULL);
 						  SDL_Flip(ScreenSurface);
 						}
 						gVar.pKeys[SDLK_RETURN] = 0;
@@ -261,7 +262,7 @@ u32 Menu(void (*pFctInit)(void), u32 (*pFctMain)(void))
 		SDL_BlitSurface(gVar.pScreen, NULL, gVar.hwscreen, NULL);
 		//SDL_UpdateRect(gVar.hwscreen, 0, 0, SCR_Width, SCR_Height);
     {
-      if(SDL_MUSTLOCK(ScreenSurface)) SDL_LockSurface(ScreenSurface);
+      /*if(SDL_MUSTLOCK(ScreenSurface)) SDL_LockSurface(ScreenSurface);
       int x, y;
       uint32_t *s = (uint32_t*)gVar.hwscreen->pixels;
       uint32_t *d = (uint32_t*)ScreenSurface->pixels;
@@ -271,7 +272,8 @@ u32 Menu(void (*pFctInit)(void), u32 (*pFctMain)(void))
         }
         d+= 160;
       }
-      if(SDL_MUSTLOCK(ScreenSurface)) SDL_UnlockSurface(ScreenSurface);
+      if(SDL_MUSTLOCK(ScreenSurface)) SDL_UnlockSurface(ScreenSurface);*/
+      SDL_SoftStretch(gVar.hwscreen, NULL, ScreenSurface, NULL);
       SDL_Flip(ScreenSurface);
     }
 	}
@@ -326,7 +328,7 @@ void Game(void)
 	SDL_BlitSurface(gVar.pScreen, NULL, gVar.hwscreen, NULL);
 	//SDL_UpdateRect(gVar.hwscreen, 0, 0, SCR_Width, SCR_Height);
     {
-      if(SDL_MUSTLOCK(ScreenSurface)) SDL_LockSurface(ScreenSurface);
+      /*if(SDL_MUSTLOCK(ScreenSurface)) SDL_LockSurface(ScreenSurface);
       int x, y;
       uint32_t *s = (uint32_t*)gVar.hwscreen->pixels;
       uint32_t *d = (uint32_t*)ScreenSurface->pixels;
@@ -336,7 +338,8 @@ void Game(void)
         }
         d+= 160;
       }
-      if(SDL_MUSTLOCK(ScreenSurface)) SDL_UnlockSurface(ScreenSurface);
+      if(SDL_MUSTLOCK(ScreenSurface)) SDL_UnlockSurface(ScreenSurface);*/
+      SDL_SoftStretch(gVar.hwscreen, NULL, ScreenSurface, NULL);
       SDL_Flip(ScreenSurface);
     }
 	}

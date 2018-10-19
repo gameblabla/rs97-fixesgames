@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=OpenTyrian
+Comment=Ultimate shmup classic by Epic MegaGames
+Exec=opentyrian
+Terminal=false
+Type=Application
+StartupNotify=true
+Icon=opentyrian
+Categories=games;

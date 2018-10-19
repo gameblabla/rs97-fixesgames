@@ -1,0 +1,92 @@
+;; ======================================================================== ;;
+;;  Emu-Link Support Macros:  Joystick API                                  ;;
+;;                                                                          ;;
+;;  The Joystick API was developed mainly to aid debugging jzIntv's         ;;
+;;  analog joystick code at a low level.  It provides read-only access      ;;
+;;  to raw joystick data and internal parameters tracked by jzIntv, as      ;;
+;;  well as the resulting "cooked" data.  It also offers read-only raw      ;;
+;;  access to the buttons and hats on the controllers.                      ;;
+;;                                                                          ;;
+;;  API SUMMARY                                                             ;;
+;;                                                                          ;;
+;;  Macro:              Returns:                                            ;;
+;;  ELJ_NUM_STICKS      Number of joystics in R0.                           ;;
+;;  ELJ_GEOMETRY        # of axes, balls, hats, buttons in R0..R3           ;;
+;;  ELJ_RAW_POS         Raw X/Y position in R1, R2                          ;;
+;;  ELJ_RAW_MIN         Raw X/Y observed minimums in R1, R2                 ;;
+;;  ELJ_RAW_MAX         Raw X/Y observed maximums in R1, R2                 ;;
+;;  ELJ_RAW_CENTER      Estimated X/Y origin for raw X/Y in R1, R2          ;;
+;;  ELJ_POSITION        Normalized X/Y in R1, R2; Disc dir 0-15 in R0       ;;
+;;  ELJ_BUTTONS         Bitmap (32-bit) of pressed buttons in R1, R2        ;;
+;;  ELJ_HATS            Hats 0..3 packed in 4 4-bit fields in R0.           ;;
+;;                                                                          ;;
+;;  For ELJ_POSITION, disc directions start at 0 for 'east' and go          ;;
+;;  counter-clockwise (ENE, NE, NNE, etc.), with 15 being ESE.              ;;
+;;                                                                          ;;
+;;  For ELJ_HATS, hat directions start at 0 for 'east' and go counter-      ;;
+;;  clockwise, but with only 8 positions:  E, NE, N, NW, W, SW, S, SE       ;;
+;;                                                                          ;;
+;;  All APIs other than NUM_STICKS requires the joystick number.  It        ;;
+;;  can be a constant or passed in a register.  The APIs run slightly       ;;
+;;  faster if you pass the joystick number in R3.                           ;;
+;;                                                                          ;;
+;; ======================================================================== ;;
+
+    IF (DEFINED _EMU_LINK_MAC) = 0
+        ERR "You must include emu_link.mac before el_joy.mac"
+    ENDI
+
+    IF ((DEFINED _EL_JOY_MAC) = 0) AND ((DEFINED _EMU_LINK_MAC) <> 0)
+_EL_JOY_MAC QEQU    1
+
+MACRO       ELJ_do stick, api
+    IF  _el_isreg(%stick%)
+        IF EL_CPU_REGS.%stick% <> 3
+            MOVR        %stick%, R3
+        ENDI
+    ELSE
+            MVII        #%stick%, R3
+    ENDI
+            MVII        #%api%, R2
+            EL_CALL_SC  8
+ENDM
+
+
+MACRO       ELJ_NUM_STICKS
+            CLRR        R0
+            EL_CALL_SC  8
+ENDM       
+           
+MACRO       ELJ_GEOMETRY    stick
+            ELJ_do %stick%, 1
+ENDM
+           
+MACRO       ELJ_RAW_POS     stick
+            ELJ_do %stick%, 2
+ENDM
+           
+MACRO       ELJ_RAW_MIN     stick
+            ELJ_do %stick%, 3
+ENDM
+           
+MACRO       ELJ_RAW_MAX     stick
+            ELJ_do %stick%, 4
+ENDM
+           
+MACRO       ELJ_RAW_CENTER  stick
+            ELJ_do %stick%, 5
+ENDM
+
+MACRO       ELJ_POSITION    stick
+            ELJ_do %stick%, 6
+ENDM
+
+MACRO       ELJ_BUTTONS     stick
+            ELJ_do %stick%, 7
+ENDM
+
+MACRO       ELJ_HATS        stick
+            ELJ_do %stick%, 8
+ENDM
+
+    ENDI

@@ -1,0 +1,14 @@
+You will need original files to play, read the README for instructions.
+
+Savestates default path is now /usr/local/home/.bermudasyndrome.
+
+Controls are:
+D-Pad = Move (character and selection in bag/dialogs)
+A = Use selected weapon
+B = Action, skip dialog/video and selection option in bag/dialog
+X = Show status
+Y = Run and hide weapon
+SELECT = Quit game
+START = Show bag and select option
+L = Load game
+R = Save game

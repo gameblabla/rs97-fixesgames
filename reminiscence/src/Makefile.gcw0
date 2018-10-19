@@ -1,0 +1,56 @@
+
+APP_NAME = REminiscence
+EXESUFFIX = .dge
+
+DEFINES = -DBYPASS_PROTECTION -DUSE_ZLIB -DGCW0 -DNEW_GCW0_MAPPING
+#DEFINES = -DENABLE_PASSWORD_MENU
+
+#options
+CC  = /opt/gcw0-toolchain/usr/bin/mipsel-linux-gcc
+CPP = /opt/gcw0-toolchain/usr/bin/mipsel-linux-g++
+LD  = /opt/gcw0-toolchain/usr/bin/mipsel-linux-g++
+
+SDL_CONFIG := /opt/gcw0-toolchain/usr/mipsel-gcw0-linux-uclibc/sysroot/usr/bin/sdl-config
+SDL_CFLAGS := $(shell $(SDL_CONFIG) --cflags)
+SDL_LDLIBS := $(shell $(SDL_CONFIG) --libs)
+
+F_OPTS = -falign-functions -falign-loops -falign-labels -falign-jumps \
+	-ffast-math -fsingle-precision-constant -funsafe-math-optimizations \
+	-fomit-frame-pointer -fno-builtin -fno-common \
+	-fstrict-aliasing  -fexpensive-optimizations \
+	-finline -finline-functions -fpeel-loops -fno-exceptions -fno-rtti -fpermissive
+CC_OPTS		= -mips32 -mhard-float -O2 -G0 $(DEFINES) $(F_OPTS)
+
+CFLAGS		= -I$(SDL_CFLAGS) $(CC_OPTS)
+CXXFLAGS	= $(CFLAGS)
+LDFLAGS		= -L$(SDL_LDLIBS) $(CC_OPTS) -lSDL -lz
+
+#!options
+
+#CXX = g++
+#CXXFLAGS := -g -O -Wall -Wuninitialized -Wshadow -Wimplicit -Wundef -Wreorder -Wnon-virtual-dtor -Wno-multichar
+#CXXFLAGS += -MMD $(SDL_CFLAGS) -DUSE_ZLIB $(DEFINES)
+
+SRCS = collision.cpp cutscene.cpp file.cpp fs.cpp game.cpp graphics.cpp main.cpp menu.cpp \
+	mixer.cpp mod_player.cpp piege.cpp resource.cpp scaler.cpp seq_player.cpp sfx_player.cpp \
+	staticres.cpp systemstub_sdl.cpp unpack.cpp util.cpp video.cpp gcw0staticres.cpp config.cpp
+
+OBJS = $(SRCS:.cpp=.o)
+DEPS = $(SRCS:.cpp=.d)
+
+LIBS = $(SDL_LIBS) -lz
+
+.PHONY : all
+
+all : $(APP_NAME)$(EXESUFFIX)
+
+$(APP_NAME)$(EXESUFFIX): $(OBJS)
+	$(LD) $(LDFLAGS) -o $(APP_NAME)$(EXESUFFIX) $^
+
+$(OBJS) : %.o : %.cpp
+	$(CPP) $(CXXFLAGS) -c -o $@ $<
+
+#$(CXX) $(LDFLAGS) -o $@ $(OBJS) $(LIBS)
+
+clean:
+	rm -f *.o *.d $(APP_NAME)$(EXESUFFIX)

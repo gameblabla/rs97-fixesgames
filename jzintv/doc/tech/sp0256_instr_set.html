@@ -1,0 +1,1729 @@
+<HTML>
+<HEAD>
+<TITLE>
+    SP0256 Instruction Set
+</TITLE>
+</HEAD>
+<BODY BGCOLOR=#BBCCDD>
+<HR>
+
+<A NAME="top">
+
+<H1> SP0256 Instruction Set </H1>
+<UL>
+    <LI>    Revised:  23-Sep-2000, J. Zbiciak
+    <LI>    Reverse Engineered by Joe Zbiciak and Frank Palazzolo.
+</UL>
+
+<HR>
+<H2> Introduction </H2>
+<HR>
+<P>
+    The SP-0256 Speech Processor is an extension to the General
+    Instruments SP-0250 speech processor.  The SP-0250 Speech
+    Processor is a 12-pole IIR filter / LPC-based speech generator.
+    It is constructed from a single two-pole filter stage and some
+    control circuitry that multiplexes filter coefficients and
+    samples to achieve a 12-pole filter.  It provides a pitch and
+    noise generator for exciting the filter, thus providing all of
+    the necessary equipment for LPC-based speech synthesis.
+</P>
+<P>
+    The original SP-0250 was suitable for generating synthetic voice,
+    but it requires significant attention from the host microprocessor
+    as it consumed speech data.  Also, the speech data itself tended
+    to occupy quite a bit of space.  The SP-0256 addresses these
+    issues by adding a small microsequencer to the device which is
+    responsible for updating speech core's LPC coefficients.
+    It additionally provides a rudimentary but effective form of 
+    compression, as words and phrases could be constructed from 
+    small subroutines, and individual filter updates could be 
+    restricted to a subset of the total parameter set, encoding 
+    only the significant bits.
+</P>
+<HR>
+<H2> Architecture </H2>
+<HR>
+<P>
+    The SP-0256 consists of the following elements:
+</P>
+<UL>
+    <LI> A digital filter core, containing:
+    <UL>
+        <LI> A periodic impulse and white-noise generator,
+        <LI> A 12-pole IIR filter,
+        <LI> Twelve 8-bit filter coefficient registers,
+        <LI> One 6-bit repeat register,
+        <LI> One 8-bit pitch register,
+        <LI> One 8-bit amplitude register,
+        <LI> Two 8-bit interpolation registers, one for pitch, one for
+             amplitude, and
+        <LI> One 8-bit to 10-bit translation ROM for expanding filter
+             coefficients.  (This ROM is not accessible from the 
+             sequencer.)
+    </UL>
+    <LI> A small microsequencer, containing:
+    <UL>
+        <LI> One 16-bit program counter,
+        <LI> A single-level program stack,
+        <LI> An 8-bit "command address" register,
+        <LI> A 2-bit<TT> MODE </TT>register,
+        <LI> A 2-bit repeat prefix,
+        <LI> Control logic for interpreting an instruction stream.
+    </UL>
+</UL>
+<P>
+    This diagram gives a rough overview of the SP-0256's architecture:
+</P>
+<CENTER>
+    <IMG SRC="images/sp0256_block.png" WIDTH=512 HEIGHT=410
+     ALT="SP-0256 Block Diagram">
+</CENTER>
+<P>
+    The digital filter contains all of the pieces necessary to
+    generate the actual speech sounds.  The impulse generator and IIR
+    filter model the vocal tract by shaping the periodic impulses
+    in a similar manner to how the human vocal tract shapes sound.
+    This core operates largely independently of the microsequencer,
+    except that it relies on the microsequencer to receive parameter
+    updates, and it notifies the microsequencer when it completes
+    an utterance.
+</P>
+<P>
+    The microsequencer is a simple machine which focuses soley on
+    copying parameters from its input to the filter parameter
+    registers in the filter core.  It can zero, replace or
+    delta-update the existing values of the filter registers.
+    It is also capable of branching and jumping to subroutines.
+    The sequencer is not Turing complete, in that it is not capable
+    of conditional flow.
+</P>
+<P>
+    In order to control the filter core, the microsequencer can
+    address 17 different registers in the filter core.  Those registers
+    are:
+</P>
+<TABLE WIDTH=100% BORDER=1>
+    <TR> 
+        <TH WIDTH=10%> Register         </TH> 
+        <TH WIDTH=10%> Size             </TH>               
+        <TH WIDTH=80%> Purpose          </TH>
+    </TR>
+    <TR><TD><TT> Repeat  </TT></TD><TD>6 bits</TD>
+        <TD> Repeat counter  </TD></TR>
+    <TR><TD><TT> Pitch   </TT></TD><TD>8 bits</TD>
+        <TD> Pitch period.  A period of 0 generates white noise for
+             <I>unvoiced</I> sounds. </TD></TR>
+    <TR><TD><TT>Amplitude</TT></TD><TD>8 bits</TD>
+        <TD> Speech amplitude, in floating-point format.  
+             It is divided into two fields -- the 3 MSBs 
+             provide the <I>exponent</I> and the 5 LSBs provide 
+             the <I>mantissa.</I>  </TD></TR>
+    <TR><TD><TT> B0 </TT></TD><TD>8 bits</TD> 
+        <TD ROWSPAN=12 VALIGN=center> Filter coefficients </TD></TR>
+    <TR><TD><TT> F0 </TT></TD><TD>8 bits</TD> </TR>
+    <TR><TD><TT> B1 </TT></TD><TD>8 bits</TD> </TR>
+    <TR><TD><TT> F1 </TT></TD><TD>8 bits</TD> </TR>
+    <TR><TD><TT> B2 </TT></TD><TD>8 bits</TD> </TR>
+    <TR><TD><TT> F2 </TT></TD><TD>8 bits</TD> </TR>
+    <TR><TD><TT> B3 </TT></TD><TD>8 bits</TD> </TR>
+    <TR><TD><TT> F3 </TT></TD><TD>8 bits</TD> </TR>
+    <TR><TD><TT> B4 </TT></TD><TD>8 bits</TD> </TR>
+    <TR><TD><TT> F4 </TT></TD><TD>8 bits</TD> </TR>
+    <TR><TD><TT> B5 </TT></TD><TD>8 bits</TD> </TR>
+    <TR><TD><TT> F5 </TT></TD><TD>8 bits</TD> </TR>
+    <TR>
+        <TD> <TT> Pitch Interpolation </TT> </TD> <TD>8 bits</TD>
+        <TD>
+            Delta update value applied to pitch after each period.
+        </TD>
+    </TR>
+    <TR> 
+        <TD> <TT> Amplitude Interpolation </TT> </TD> <TD>8 bits</TD>
+        <TD>
+            Delta update value applied to amplitude after each period.
+        </TD>
+    </TR>
+</TABLE>
+<P>
+    Additionally, the microsequencer has a couple registers of its own.
+    These registers primarily control how the microsequencer behaves.
+</P>
+<TABLE WIDTH=100% BORDER=1>
+    <TR> 
+        <TH WIDTH=10%> Register         </TH> 
+        <TH WIDTH=10%> Size             </TH>               
+        <TH WIDTH=80%> Purpose          </TH>       
+    </TR>
+    <TR> 
+        <TD> <TT> MODE </TT>    </TD> 
+        <TD> 2 bits </TD>
+        <TD>
+            Controls the format of data which follows various
+            instructions.  In some cases, it also controls
+            whether certain filter coefficients are zeroed
+            or left unmodified.  The exact meaning of<TT> MODE </TT>
+            varies by instruction.<TT> MODE </TT> is <I>sticky</I>,
+            meaning that once it is set, it retains its value until
+            it is explicitly changed by Opcode <A
+            HREF="#opcode_1000">1000</A> (<TT>SETMODE</TT>)
+            or the sequencer halts.
+        </TD>
+    </TR>
+    <TR>
+        <TD> <TT> REPEAT PREFIX </TT>   </TD>
+        <TD> 2 bits </TD>
+        <TD>
+            The parameter load instructions can provide a four bit
+            repeat value to the filter core.  This register optionally
+            extends that four bit value by providing two more significant
+            bits in the 2 MSBs.  By setting the repeat
+            prefix with Opcode <A HREF="#opcode_1000">1000</A> 
+            (<TT>SETMODE</TT>), the program can specify repeat values up
+            to $3F (63).  This register is <I>not</I> sticky.
+        </TD>
+    </TR>
+    <TR>
+        <TD> <TT> PAGE </TT>    </TD>
+        <TD> 4 bits </TD>
+        <TD>
+            The<TT> PAGE </TT>register acts as a prefix, providing
+            the upper four address bits for every<TT> <A
+            HREF="#opcode_0111">JMP</A> </TT> and<TT> <A
+            HREF="#opcode_1011">JSR</A> </TT> instruction.  
+            The<TT> PAGE </TT> register can hold any binary value
+            from 0001 to 1111, and is set by the<TT> <A
+            HREF="#opcode_0000">SETPAGE</A> </TT> instruction.
+            It is not possible to load it with 0000.  It powers 
+            up to the value 0001, and it retains its value 
+            across<TT> JMP/JSR </TT>instructions as well as
+            sequencer halts.
+        </TD>
+    </TR>
+    <TR>
+        <TD> <TT> PC </TT>      </TD>
+        <TD> 16 bits </TD>
+        <TD>
+            This is the program counter.  This counter tracks the address
+            of the <I>byte</I> that is currently being processed. 
+            A copy of the program counter is kept in every Speech ROM
+            that is attached to the SP0256, so that the program counter
+            is only broadcast on <TT><A HREF="#opcode_0111">JMP</A> </TT>
+            or<TT> <A HREF="#opcode_1011">JSR</A></TT>.
+        </TD>
+    </TR>
+    <TR>
+        <TD> <TT> STACK </TT>   </TD>
+        <TD> 16 bits </TD>
+        <TD>
+            This is where the program counter is saved when performing 
+            a<TT> <A HREF="#opcode_1011">JSR</A></TT>.  The<TT> STACK </TT>
+            has room for exactly one address, so nested subroutines are
+            not possible.  It holds the address of the<I> byte </I>
+            following the<TT> JSR </TT> instruction.
+        </TD>
+    </TR>
+    <TR>
+        <TD> <TT> COMMAND </TT> </TD>
+        <TD> 8 bits </TD>
+        <TD>
+            This holds address of the most recent command from the
+            host CPU.  Addresses are loaded into this register via
+            external pins and the<TT> ALD </TT> control line.  When the
+            microsequencer is halted (or is about to halt), it watches
+            for an address in this register.  When a new command address
+            is available, it copies these bits to bits 1 through 8 of
+            the program counter.  Bits 0, 9 through 11, and 13 through
+            15 are forced to zero.  Bit 12 is forced to 1 so that code
+            executes out of page $1.
+        </TD>
+    </TR>
+</TABLE>
+<P>
+    This diagram gives a conceptual overview of how the microsequencer
+    interfaces to the rest of the machine.
+</P>
+<CENTER>
+    <IMG SRC="images/sp0256_cpu.png" WIDTH=746 HEIGHT=420
+     ALT="SP-0256 CPU Detail">
+</CENTER>
+
+<HR>
+<H2> General Notes Regarding the SP-0256 Instruction Set </H2>
+<HR>
+<P>
+    The microsequencer's instruction set can be divided into three
+    primary categories:
+</P>
+<UL>
+    <LI>
+        Speech parameter updates (replacement or delta-update), 
+    <LI> 
+        Control transfer 
+        (<TT><A HREF="#opcode_0111">JMP</A>,
+        <A HREF="#opcode_1011">JSR</A> </TT>and<TT>
+        <A HREF="#opcode_0000">RTS</A></TT>), and
+    <LI>
+        Microsequencer mode/state updates 
+        (<TT><A HREF="#opcode_1000">SETMODE</A> </TT>and<TT>
+        <A HREF="#opcode_0000">SETPAGE</A></TT>).
+</UL>
+<P>
+    Speech parameter updates are generally followed by a data
+    block whose format depends on the particular instruction issued.
+    Most of these instructions only update a subset of the total
+    speech parameter set, and often they update only the most 
+    significant bits of the registers they modify.  The data blocks
+    themselves are a variable number of bits, and are <I>not</I>
+    constrained to byte boundaries.
+</P>
+<P>
+    The instruction stream itself is processed as a sequence of bits,
+    not bytes, and so instructions and their data blocks can start on
+    any bit boundary.  Ordinarily, there are no gaps between instructions,
+    and so the machine largely behaves as a bit-aligned machine.
+    Control transfer instructions introduce <I>alignment points</I>,
+    as all addresses in the system are byte addresses, and so all branch
+    targets (including the return-branch target for<TT> <A
+    HREF="#opcode_0000">RTS</A></TT>) are on byte boundaries.  It is
+    customary to pad the data stream with 0s at alignment points
+    (eg. after<TT> <A HREF="#opcode_1011">JSR</A> </TT>instructions).
+</P>
+<P>
+    The instruction reference below shows the exact data formats that
+    each instruction requires.  Note that the data format for an
+    instruction varies according to the current<TT> MODE </TT>setting,
+    and so the machine provides  a large variety of data formats.
+</P>
+<P>
+    Other important things to note are:
+</P>    
+<UL>
+    <LI>
+    <P>
+        On instructions that accept a repeat count, a repeat count of
+        <B>zero</B> causes the instruction to <B>not execute</B>, which
+        means that <B><I>no data block follows the instruction</I></B>
+        in that case.  (My disassembler currently does <B>not</B>
+        handle this case.)
+    </P>
+    <LI>
+    <P>
+        As a matter of convention in this document, bits are packed 
+        into bytes left-to-right, with the leftmost bit going in the 
+        MSB of the first byte, and the LSB of the first byte being
+        logically adjacent to the MSB of the second byte.  This is likely
+        backwards from how the hardware looks at it, but it is the
+        most natural for a human interpreting the data, as it reads
+        from left-to-right.
+    </P>
+    <LI>
+    <P>
+        Most bit fields, except those which specify branch targets, 
+        are bit reversed, meaning the left-most bit is the LSB.
+    </P>
+    <LI>
+    <P>
+        Bit fields narrower than 8 bits are <I>MSB justified</I> unless 
+        specified otherwise, meaning that the least significant bits 
+        are the ones that are missing.  These LSBs are filled with
+        zeros.
+    </P>
+    <LI>
+    <P>
+        When updating filter coefficients with a delta-update,
+        the microsequencer performs plain 2s-complement arithmetic
+        on the 8-bit value in the coefficient register file.  No
+        attention is paid to the format of the register. 
+    </P>
+</UL>
+
+<TABLE WIDTH=100% BORDER=1 CELLPADDING=5>
+    <TR>
+        <TH COLSPAN=2>
+            Key for opcode formats below
+        </TH>
+    </TR>
+    <TR>
+        <TH>
+            Field
+        </TH>
+        <TH>
+            Description
+        </TH>
+    </TR>
+    <TR>
+        <TD><NOBR><TT> AAAAAAAA    </TT></TD>
+        <TD>
+            Amplitude bits. The 3 rightmost bits are the exponent.
+            The exponent determines what power of 2 is applied to
+            the lower 5 bits.
+        </TD>
+    </TR>
+    <TR>
+        <TD><NOBR><TT> PPPPPPPP    </TT></TD>
+        <TD>
+            Pitch period.  When set to 0, the impulse switches to
+            random noise.  For timing purposes, noise and silence
+            have an effective period equivalent to period==64.
+        </TD>
+    </TR>
+    <TR>
+
+        <TD><NOBR><TT> BBBBBBBS    </TT></TD>
+        <TD>
+            B coefficient data.  The 'S' is the sign bit, if present.  If
+            there is no 'S' on a given field, the sign is assumed to be 0.
+        </TD>
+    </TR>
+    <TR>
+
+        <TD><NOBR><TT> FFFFFFFS    </TT></TD>
+        <TD>
+            F coefficient data.
+        </TD>
+    </TR>
+    <TR>
+
+        <TD><NOBR><TT> RRRR        </TT></TD>
+        <TD>
+            Repeat bits.  On Opcode <A HREF="#opcode_1000">1000</A> 
+            (<TT>SETMODE</TT>), the repeat bits 
+            go to the two MSBs of the repeat count for the <I>next</I> 
+            instruction.  On all other instructions, the repeat bits go to 
+            the four LSBs of the repeat count for the <I>current</I> 
+            instruction.
+        </TD>
+    </TR>
+    <TR>
+
+        <TD><NOBR><TT> MM          </TT></TD>
+        <TD>
+            Mode bits.  These are set by Opcode 
+            <A HREF="#opcode_1000">1000</A> (<TT>SETMODE</TT>), and they 
+            control the data format for a number of other instructions.
+        </TD>
+    </TR>
+    <TR>
+
+        <TD><NOBR><TT> LLLLLLLL    </TT></TD>
+        <TD>
+            Byte address for a branch target.  Branch targets are 16
+            bits long.  The<TT> JMP/JSR </TT>instruction provides the lower
+            12 bits, and the<TT> PAGE </TT> register provides the upper 4 
+            bits.  The<TT> PAGE </TT>register is modified via
+            the<TT> SETPAGE </TT>instruction, Opcode 
+            <A HREF="#opcode_0000">0000</A>.
+        </TD>
+    </TR>
+    <TR>
+
+        <TD><NOBR><TT> aaaaa       </TT></TD>
+        <TD>
+            Amplitude delta.  (unsigned)
+        </TD>
+    </TR>
+    <TR>
+        <TD><NOBR><TT> ppppp       </TT></TD>
+        <TD>
+            Pitch delta.      (unsigned)
+        </TD>
+
+    </TR>
+    <TR>
+        <TD><NOBR><TT> aaas        </TT></TD>
+        <TD>
+            Amplitude delta.  (2s complement)
+        </TD>
+    </TR>
+    <TR>
+        <TD><NOBR><TT> ppps        </TT></TD>
+        <TD>
+            Pitch delta.      (2s complement)
+        </TD>
+    </TR>
+    <TR>
+
+        <TD><NOBR><TT> bbbs fffs   </TT></TD>
+        <TD>
+            Filter coefficient deltas.  (2s complement)
+    </TR>
+</TABLE>
+
+<P>
+    For reference, each 2nd order filter section looks like so.  Note
+    that "1/Z" represents a single unit delay.  Altogether, there are
+    6 such stages, yielding a 12 pole filter.  The exact ordering of the
+    stages with respect to the coefficient data formats appears to be
+    straightforward, with the lowest-numbered coefficient pair used 
+    in the earliest filter stage, etc.
+</P>
+<CENTER>
+    <IMG SRC="images/filtstage.png" WIDTH=350 HEIGHT=156 
+     ALT="Two-pole IIR filter stage">
+</CENTER>
+
+<HR>
+<H2> Instruction Set Quick Reference </H2>
+<HR>
+
+<A NAME="quick_ref">
+<TABLE BORDER=1 WIDTH=100%>
+    <TR>
+        <TH> Opcode         </TH>
+        <TH> Mnemonic       </TH>
+        <TH> Description    </TH>
+    </TR>
+    <TR>
+        <TD ALIGN=center><TT> 0 0 0 0 </TT>                             </TD> 
+        <TD><TT><A HREF="#opcode_0000"> RTS/SETPAGE            </A></TT></TD>
+        <TD>  Return OR set the PAGE register                           </TD>
+    </TR>
+    <TR>
+        <TD ALIGN=center><TT> 0 0 0 1 </TT>                             </TD> 
+        <TD><TT><A HREF="#opcode_0001"> LOADALL                </A></TT></TD>
+        <TD>  Load All Parameters                                       </TD>
+    </TR>
+    <TR>
+        <TD ALIGN=center><TT> 0 0 1 0 </TT>                             </TD> 
+        <TD><TT><A HREF="#opcode_0010"> LOAD_2                 </A></TT></TD>
+        <TD>  Load Pitch, Amplitude, Coefficient, and Interpolation
+              Regsisters                                                </TD>
+    </TR>
+    <TR>
+        <TD ALIGN=center><TT> 0 0 1 1 </TT>                             </TD> 
+        <TD><TT><A HREF="#opcode_0011"> SETMSB_3               </A></TT></TD>
+        <TD>  Load Pitch, Amplitude, MSBs of 3 Coefficients,
+              and Interpolation Registers                               </TD>
+    </TR>
+    <TR>
+        <TD ALIGN=center><TT> 0 1 0 0 </TT>                             </TD> 
+        <TD><TT><A HREF="#opcode_0100"> LOAD_4                 </A></TT></TD>
+        <TD>  Load Pitch, Amplitude, Coefficients (2 or 3 stages)       </TD>
+    </TR>
+    <TR>
+        <TD ALIGN=center><TT> 0 1 0 1 </TT>                             </TD> 
+        <TD><TT><A HREF="#opcode_0101"> SETMSB_5               </A></TT></TD>
+        <TD>  Load Pitch, Amplitude, and MSBs of 3 Coefficients         </TD>
+    </TR>
+    <TR>
+        <TD ALIGN=center><TT> 0 1 1 0 </TT>                             </TD> 
+        <TD><TT><A HREF="#opcode_0110"> SETMSB_6               </A></TT></TD>
+        <TD>  Load Amplitude and MSBs of 2 or 3 Coefficients            </TD>
+    </TR>
+    <TR>
+        <TD ALIGN=center><TT> 0 1 1 1 </TT>                             </TD> 
+        <TD><TT><A HREF="#opcode_0111"> JMP                    </A></TT></TD>
+        <TD>  Jump to 12-bit<TT> PAGE</TT>-relative Address             </TD>
+    </TR>
+    <TR>
+        <TD ALIGN=center><TT> 1 0 0 0 </TT>                             </TD> 
+        <TD><TT><A HREF="#opcode_1000"> SETMODE                </A></TT></TD>
+        <TD>  Set the Mode bits and Repeat MSBs                         </TD>
+    </TR>
+    <TR>
+        <TD ALIGN=center><TT> 1 0 0 1 </TT>                             </TD> 
+        <TD><TT><A HREF="#opcode_1001"> DELTA_9                </A></TT></TD>
+        <TD>  Delta update Amplitude, Pitch and 5 or 6 Coefficients     </TD>
+    </TR>
+    <TR>
+        <TD ALIGN=center><TT> 1 0 1 0 </TT>                             </TD> 
+        <TD><TT><A HREF="#opcode_1010"> SETMSB_A               </A></TT></TD>
+        <TD>  Load Amplitude and MSBs of 3 Coefficients                 </TD>
+    </TR>
+    <TR>
+        <TD ALIGN=center><TT> 1 0 1 1 </TT>                             </TD> 
+        <TD><TT><A HREF="#opcode_1011"> JSR                    </A></TT></TD>
+        <TD> Jump to Subroutine (12-bit <TT>PAGE</TT>-Relative Address) </TD>
+    </TR>
+    <TR>
+        <TD ALIGN=center><TT> 1 1 0 0 </TT>                             </TD> 
+        <TD><TT><A HREF="#opcode_1100"> LOAD_C                 </A></TT></TD>
+        <TD>  Load Pitch, Amplitude, Coefficients (5 or 6 stages)       </TD>
+    </TR>
+    <TR>
+        <TD ALIGN=center><TT> 1 1 0 1 </TT>                             </TD> 
+        <TD><TT><A HREF="#opcode_1101"> DELTA_D                </A></TT></TD>
+        <TD>  Delta update Amplitude, Pitch and 2 or 3 Coefficients     </TD>
+    </TR>
+    <TR>
+        <TD ALIGN=center><TT> 1 1 1 0 </TT>                             </TD> 
+        <TD><TT><A HREF="#opcode_1110"> LOAD_E                 </A></TT></TD>
+        <TD>  Load Pitch, Amplitude                                     </TD>
+    </TR>
+    <TR>
+        <TD ALIGN=center><TT> 1 1 1 1 </TT>                             </TD> 
+        <TD><TT><A HREF="#opcode_1111"> PAUSE                  </A></TT></TD>
+        <TD>  Silent pause                                              </TD>
+    </TR>
+</TABLE>
+
+<BR><BR>
+<HR>
+<H2> Individual Instruction Descriptions </H2>
+<HR>
+
+<!-- --------------------------------------------------------------------- -->
+<A NAME="opcode_0000">
+[<A HREF="#quick_ref">Ref</A>]
+[<A HREF="#top">Top</A>]
+<TABLE BORDER=1 WIDTH=100% CELLPADDING=5>
+    <TR>
+        <TH WIDTH=10%> OPCODE <TT>0000</TT>                               </TH>
+        <TH WIDTH=15%> <TT> RTS / SETPAGE </TT>                           </TH>
+        <TH WIDTH=76% ALIGN=left> Return <I>or</I> set the<TT> PAGE 
+                                  </TT>register    </TH>
+    </TR>
+    <TR>
+        <TH ALIGN=right> Format                                 </TH>
+        <TD COLSPAN=2> <TT> LLLL 0000 </TT>                     </TD>
+    </TR>
+    <TR>
+        <TH ALIGN=right> Action                                 </TH>
+        <TD COLSPAN=2> 
+            <P>
+                It slices, it dices, it juliennes!  It's a floor wax!  
+                It's a dessert topping!  It's two instructions in one!
+            </P>
+            <UL>
+                <LI> <B><TT> SETPAGE </TT></B>
+                <P>
+                    When<TT> LLLL </TT>is non-zero, this instruction
+                    sets the<TT> PAGE </TT> register to the value
+                    in<TT> LLLL</TT>.  The<TT> PAGE </TT>register
+                    determines which 4K page (eg. the upper four bits
+                    of the address for) the next<TT> JMP </TT>or<TT> JSR
+                    </TT>will jump to.  (Note that address loads 
+                    via<TT> ALD </TT>appear to ignore<TT> PAGE</TT>, and set
+                    the four MSBs to $1000.  They do not modify the<TT>
+                    PAGE </TT>register, so subsequent<TT> JMP/JSR </TT>
+                    instructions will jump relative to the current value 
+                    in<TT> PAGE</TT>.)
+                </P>
+                <P>
+                    The<TT> PAGE </TT>register retains its setting
+                    until the next<TT> SETPAGE </TT> is encountered.
+                    Valid values for<TT> PAGE </TT>are in the range
+                    $1..$F.  The<TT> RESROM </TT>starts at address $1000,
+                    and no code exists below that address.  Therefore,
+                    the microsequencer can address speech data over the
+                    address range $1000 through $FFFF, for a total of
+                    60K of speech data.  (Up to 64K may be possible
+                    by jumping to a location near $FFFF and letting the
+                    address wrap around.  At this time, the exact behavior
+                    of an address wraparound is unknown, and may be 
+                    dependent on the behavior of both the microsequencer
+                    <I>and</I> the attached speech ROMs.)
+                </P>
+                <LI> <B><TT> RTS </TT></B>
+                <P>
+                    When<TT> LLLL </TT>is zero, this opcode causes the
+                    microsequencer to pop the PC stack into the PC,
+                    and resume execution there.  The contents of the
+                    stack are replaced with $0000 (or some other flag
+                    which represents an <I>empty stack</I>).  If the
+                    address that was popped was itself $0000 (eg. an 
+                    <I>empty stack</I>), execution <B>halts</B>, pending
+                    a new address write via<TT> ALD</TT>.  (Of course,
+                    if an address was previously written via<TT> ALD
+                    </TT>and is pending, control transfers to that
+                    address immediately.)
+                </P>
+            </UL>
+        </TD>
+    </TR>
+</TABLE>
+<BR><HR><BR>
+
+<!-- --------------------------------------------------------------------- -->
+<A NAME="opcode_0001">
+[<A HREF="#quick_ref">Ref</A>]
+[<A HREF="#top">Top</A>]
+<TABLE BORDER=1 WIDTH=100% CELLPADDING=5>
+    <TR>
+        <TH WIDTH=10%> OPCODE <TT>0001</TT>                               </TH>
+        <TH WIDTH=15%> <TT> LOADALL </TT>                                 </TH>
+        <TH WIDTH=75% ALIGN=left> Load All Parameters                     </TH>
+    </TR>
+    <TR>
+        <TH ALIGN=right> Format                                 </TH>
+        <TD COLSPAN=2> <TT> RRRR 0001 </TT> <I>[data]</I>       </TD>
+    </TR>
+    <TR>
+        <TH ALIGN=right ROWSPAN=2> Data Formats,<BR>by<TT> MODE</TT> </TH>
+        <TH ALIGN=right VALIGN=center> <TT>MODE <I>x</I>0</TT>     </TH>
+        <TD>
+<PRE>
+AAAAAAAA PPPPPPPP                
+BBBBBBBS FFFFFFFS   (coeff pair 0)
+BBBBBBBS FFFFFFFS   (coeff pair 1)
+BBBBBBBS FFFFFFFS   (coeff pair 2)
+BBBBBBBS FFFFFFFS   (coeff pair 3)
+BBBBBBBS FFFFFFFS   (coeff pair 4)
+BBBBBBBS FFFFFFFS   (coeff pair 5) 
+</PRE>
+        </TD>      
+    <TR>
+        <TH ALIGN=right VALIGN=center> <TT>MODE <I>x</I>1</TT> </TH>
+        <TD>
+<PRE>
+AAAAAAAA PPPPPPPP                
+BBBBBBBS FFFFFFFS   (coeff pair 0)
+BBBBBBBS FFFFFFFS   (coeff pair 1)
+BBBBBBBS FFFFFFFS   (coeff pair 2)
+BBBBBBBS FFFFFFFS   (coeff pair 3)
+BBBBBBBS FFFFFFFS   (coeff pair 4)
+BBBBBBBS FFFFFFFS   (coeff pair 5) 
+aaaaaaas ppppppps   (pitch and amplitude interpolation) 
+</PRE>
+        </TD>
+    </TR>
+    <TR>
+        <TH ALIGN=right> Action </TH>
+        <TD COLSPAN=2>
+            Loads amplitude, pitch, and all coefficient pairs at full 
+            8-bit precision.
+        </TD>
+    </TR>
+    <TR>
+        <TH ALIGN=right> Notes </TH>
+        <TD COLSPAN=2>
+            <UL>
+                <LI>
+                   The pitch and amplitude deltas that are available in Mode
+                   01 and 11 are applied <I>every</I> pitch period, not just 
+                   once.  Wraparound may occur.  If the Pitch goes to zero,
+                   the periodic excitation switches to noise.
+            </UL>
+        </TD>
+    </TR>
+</TABLE>
+<BR><HR><BR>
+
+<!-- --------------------------------------------------------------------- -->
+<A NAME="opcode_0010">
+[<A HREF="#quick_ref">Ref</A>]
+[<A HREF="#top">Top</A>]
+<TABLE BORDER=1 WIDTH=100% CELLPADDING=5>
+    <TR>
+        <TH WIDTH=10%> OPCODE <TT>0010</TT>                               </TH>
+        <TH WIDTH=15%> <TT> LOAD_2 </TT>                                  </TH>
+        <TH WIDTH=75% ALIGN=left> 
+            Load Pitch, Amplitude, Coefficients, and Interpolation
+            registers.
+        </TH>
+    </TR>
+    <TR>
+        <TH ALIGN=right> Format                                 </TH>
+        <TD COLSPAN=2> <TT> RRRR 0010 </TT> <I>[data]</I>       </TD>
+    </TR>
+    <TR>
+        <TH ALIGN=right ROWSPAN=4> Data Formats,<BR>by<TT> MODE</TT> </TH>
+        <TH ALIGN=right VALIGN=center> <TT>MODE 00</TT>       </TH>
+        <TD>
+<PRE>
+AAAAAA   PPPPPPPP
+BBB      FFFFS      (coeff pair 0)
+BBB      FFFFS      (coeff pair 1)
+BBB      FFFFS      (coeff pair 2)
+BBBB     FFFFFS     (coeff pair 3)
+BBBBBBS  FFFFFS     (coeff pair 4)
+aaaaa    ppppp      (Interpolation register LSBs) 
+</PRE>
+        </TD>
+    </TR>
+    <TR>
+        <TH ALIGN=right VALIGN=center> <TT>MODE 01</TT>       </TH>
+        <TD>
+<PRE>
+AAAAAA   PPPPPPPP
+BBB      FFFFS      (coeff pair 0)
+BBB      FFFFS      (coeff pair 1)
+BBB      FFFFS      (coeff pair 2)
+BBBB     FFFFFS     (coeff pair 3)
+BBBBBBS  FFFFFS     (coeff pair 4)
+BBBBBBBS FFFFFFFS   (coeff pair 5)
+aaaaa    ppppp      (Interpolation register LSBs) 
+</PRE>
+        </TD>
+    </TR>
+    <TR>
+        <TH ALIGN=right VALIGN=center> <TT>MODE 10</TT>       </TH>
+        <TD>
+<PRE>
+AAAAAA   PPPPPPPP
+BBBBBB   FFFFFS     (coeff pair 0)
+BBBBBB   FFFFFS     (coeff pair 1)
+BBBBBB   FFFFFS     (coeff pair 2)
+BBBBBB   FFFFFFS    (coeff pair 3)
+BBBBBBBS FFFFFFFS   (coeff pair 4)
+aaaaa    ppppp      (Interpolation register LSBs) 
+</PRE>
+        </TD>
+    </TR>
+    <TR>
+        <TH ALIGN=right VALIGN=center> <TT>MODE 11</TT>       </TH>
+        <TD>
+<PRE>
+AAAAAA   PPPPPPPP
+BBBBBB   FFFFFS     (coeff pair 0)
+BBBBBB   FFFFFS     (coeff pair 1)
+BBBBBB   FFFFFS     (coeff pair 2)
+BBBBBB   FFFFFFS    (coeff pair 3)
+BBBBBBBS FFFFFFFS   (coeff pair 4)
+BBBBBBBS FFFFFFFS   (coeff pair 5)
+aaaaa    ppppp      (Interpolation register LSBs) 
+</PRE>
+        </TD>
+    </TR>
+    <TR>
+        <TH ALIGN=right> Action </TH>
+        <TD COLSPAN=2>
+            Loads new amplitude and pitch parameters.  Also loads a set of new
+            filter coefficients, setting the unspecified coefficients to zero.
+            The exact combination and precision of filter coefficients that are
+            loaded is determined by which prefix is used.  Opcode 
+            <A HREF="#opcode_1000">1000</A> (<TT>SETMODE</TT>) provides
+            the prefix bits.
+        </TD>
+    </TR>
+    <TR>
+        <TH ALIGN=right> Notes </TH>
+        <TD COLSPAN=2>
+            <UL>
+                <LI> For all Modes, the Sign bit for B0, B1, B2 and B3 
+                     (the B coeffs for pair 0 thru pair 3) has an 
+                     implied value of 0.
+
+                <LI> This opcode is identical to Opcode
+                     <A HREF="#opcode_1100">1100</A>
+                     (<TT>LOAD_C</TT>), except that it also loads new 
+                     values into the Amplitude and Pitch Interpolation 
+                     Registers.
+            </UL>
+        </TD>
+    </TR>
+</TABLE>
+<BR><HR><BR>
+
+
+<!-- --------------------------------------------------------------------- -->
+<A NAME="opcode_0011">
+[<A HREF="#quick_ref">Ref</A>]
+[<A HREF="#top">Top</A>]
+<TABLE BORDER=1 WIDTH=100% CELLPADDING=5>
+    <TR>
+        <TH WIDTH=10%> OPCODE <TT>0011</TT>                               </TH>
+        <TH WIDTH=15%> <TT> SETMSB_3 </TT>                                </TH>
+        <TH WIDTH=75% ALIGN=left> 
+            Load Pitch, Amplitude, MSBs of 3 Coefficients, and Interpolation
+            Registers.
+        </TH>
+    </TR>
+    <TR>
+        <TH ALIGN=right> Format                                 </TH>
+        <TD COLSPAN=2> <TT> RRRR 0011 </TT> <I>[data]</I>       </TD>
+    </TR>
+    <TR>
+        <TH ALIGN=right ROWSPAN=2> Data Formats,<BR>by<TT> MODE</TT> </TH>
+        <TH ALIGN=right VALIGN=center> <TT>MODE 0<I>x</I></TT>  </TH>
+        <TD>
+<PRE>
+AAAAAA
+FFFFS               (New F0 MSBs)
+FFFFS               (New F1 MSBs)
+FFFFS               (New F2 MSBs)
+aaaaa    ppppp      (Interpolation register LSBs)
+</PRE>
+        </TD>
+    </TR>
+    <TR>
+        <TH ALIGN=right VALIGN=center> <TT>MODE 1<I>x</I></TT>  </TH>
+        <TD>
+<PRE>
+AAAAAA
+FFFFFS              (New F0 MSBs)
+FFFFFS              (New F1 MSBs)
+FFFFFS              (New F2 MSBs)
+aaaaa    ppppp      (Interpolation register LSBs)
+</PRE>
+        </TD>
+    </TR>
+    <TR>
+        <TH ALIGN=right> Action </TH>
+        <TD COLSPAN=2> 
+            Loads new amplitude.  Also updates the MSBs of a set of new 
+            filter coefficients.  The Mode prefix bits controls the 
+            update process as noted below.  Opcode 
+            <A HREF="#opcode_1000">1000</A> (<TT>SETMODE</TT>)
+            provides the prefix bits.
+        </TD>
+    </TR>
+    <TR>
+        <TH ALIGN=right> Notes </TH>
+        <TD COLSPAN=2>
+            <UL>
+                <LI>When<TT> MODE </TT>is 00 or 10, the parameter load sets 
+                    the 5 or 6 MSBs of<TT> F0</TT>,<TT> F1</TT>, and<TT> 
+                    F2 </TT> from the data provided. <TT> F5 </TT>and<TT> 
+                    B5 </TT> are set to all 0s.  All other coefficient bits 
+                    are unaffected.
+                <LI>When<TT> MODE </TT>is 01 or 11, the parameter load sets 
+                    the 5 or 6 MSBs of<TT> F0</TT>,<TT> F1</TT>, and<TT> 
+                    F2 </TT> from the data provided. <TT> F5 </TT>and<TT> 
+                    B5 </TT>are not modified.  All other coefficient bits 
+                    are unaffected.
+                <LI>This opcode is identical to Opcodes 
+                    <A HREF="#opcode_0101">0101</A>
+                    (<TT>SETMSB_5</TT>) and 
+                    <A HREF="#opcode_1010">1010</A> (<TT>SETMSB_A</TT>), 
+                    except that is also includes the Interpolation Registers, 
+                    and like Opcode <A HREF="#opcode_1010">1010</A> 
+                    (<TT>SETMSB_A</TT>), it does not set the Pitch Registers.
+            </UL>
+        </TD>
+    </TR>
+</TABLE>
+<BR><HR><BR>
+
+
+<!-- --------------------------------------------------------------------- -->
+<A NAME="opcode_0100">
+[<A HREF="#quick_ref">Ref</A>]
+[<A HREF="#top">Top</A>]
+<TABLE BORDER=1 WIDTH=100% CELLPADDING=5>
+    <TR>
+        <TH WIDTH=10%> OPCODE <TT>0100</TT>                               </TH>
+        <TH WIDTH=15%> <TT> LOAD_4 </TT>                                  </TH>
+        <TH WIDTH=75% ALIGN=left> 
+            Load Pitch, Amplitude, Coefficients (2 or 3 stages)
+        </TH>
+    </TR>
+    <TR>
+        <TH ALIGN=right> Format                                 </TH>
+        <TD COLSPAN=2> <TT> RRRR 0100 </TT> <I>[data]</I>       </TD>
+    </TR>
+    <TR>
+        <TH ALIGN=right ROWSPAN=4> Data Formats,<BR>by<TT> MODE</TT> </TH>
+        <TH ALIGN=right VALIGN=center> <TT>MODE 00</TT></TH>
+        <TD>
+<PRE>
+AAAAAA   PPPPPPPP
+BBBB     FFFFFS     (coeff pair 3)
+BBBBBBS  FFFFFS     (coeff pair 4)
+</PRE>
+        </TD>
+    </TR>
+    <TR>
+        <TH ALIGN=right VALIGN=center> <TT>MODE 01</TT></TH>
+        <TD>
+<PRE>
+AAAAAA   PPPPPPPP
+BBBB     FFFFFS     (coeff pair 3)
+BBBBBBS  FFFFFS     (coeff pair 4)
+BBBBBBBS FFFFFFFS   (coeff pair 5)
+</PRE>
+    </TR>
+    </TR>
+    <TR>
+        <TH ALIGN=right VALIGN=center> <TT>MODE 10</TT></TH>
+        <TD>
+<PRE>
+AAAAAA   PPPPPPPP
+BBBBBB   FFFFFFS    (coeff pair 3)
+BBBBBBBS FFFFFFFS   (coeff pair 4)
+</PRE>
+    </TR>
+    </TR>
+    <TR>
+        <TH ALIGN=right VALIGN=center> <TT>MODE 11</TT></TH>
+        <TD>
+<PRE>
+AAAAAA   PPPPPPPP
+BBBBBB   FFFFFFS    (coeff pair 3)
+BBBBBBBS FFFFFFFS   (coeff pair 4)
+BBBBBBBS FFFFFFFS   (coeff pair 5)
+</PRE>
+        </TD>
+    </TR>
+    <TR>
+        <TH ALIGM=right> Action </TH>
+        <TD COLSPAN=2>
+            Loads new amplitude and pitch parameters.  Also loads a
+            set of new filter coefficients, setting the unspecified
+            coefficients to 0.  The exact combination and precision of
+            filter coefficients that are loaded is determined by which
+            prefix is used.  Opcode <A HREF="#opcode_1000">1000</A> 
+            (<TT>SETMODE</TT>) provides the prefix bits.
+        </TD>
+    </TR>
+    <TR>
+        <TH ALIGN=right> Notes </TH>
+        <TD COLSPAN=2>
+            <UL>
+                <LI>For all modes, the Sign bit for<TT> B0 </TT>(the 
+                    <TT> B </TT>coefficient for pair 0) has an implied 
+                    value of 0.  
+            </UL>
+        </TD>
+    </TR>
+</TABLE>
+<BR><HR><BR>
+
+
+<!-- --------------------------------------------------------------------- -->
+<A NAME="opcode_0101">
+[<A HREF="#quick_ref">Ref</A>]
+[<A HREF="#top">Top</A>]
+<TABLE BORDER=1 WIDTH=100% CELLPADDING=5>
+    <TR>
+        <TH WIDTH=10%> OPCODE <TT>0101</TT>                               </TH>
+        <TH WIDTH=15%> <TT> SETMSB_5 </TT>                                </TH>
+        <TH WIDTH=75% ALIGN=left> 
+            Load Pitch, Amplitude, and MSBs of 3 Coefficients
+        </TH>
+    </TR>
+    <TR>
+        <TH ALIGN=right> Format                                 </TH>
+        <TD COLSPAN=2> <TT> RRRR 0101 </TT> <I>[data]</I>       </TD>
+    </TR>
+    <TR>
+        <TH ALIGN=right ROWSPAN=2> Data Formats,<BR>by<TT> MODE</TT> </TH>
+        <TH ALIGN=right VALIGN=center> <TT>MODE 0<I>x</I></TT></TH>
+        <TD>
+<PRE>
+AAAAAA PPPPPPPP
+FFFFS               (New F0 MSBs)
+FFFFS               (New F1 MSBs)
+FFFFS               (New F2 MSBs)
+</PRE>
+        </TD>
+    </TR>
+    <TR>
+        <TH ALIGN=right VALIGN=center> <TT>MODE 1<I>x</I></TT></TH>
+        <TD>
+<PRE>
+AAAAAA PPPPPPPP
+FFFFFS              (New F0 MSBs)
+FFFFFS              (New F1 MSBs)
+FFFFFS              (New F2 MSBs)
+</PRE>
+        </TD>
+    </TR>
+    <TR>
+        <TH ALIGN=right> Action </TH>
+        <TD COLSPAN=2>
+            Loads new amplitude and pitch parameters.  Also updates
+            the MSBs of a set of new filter coefficients.  The Mode
+            prefix bits controls the update process as noted below.
+            Opcode <A HREF="#opcode_1000">1000</A> (<TT>SETMODE</TT>) 
+            provides the prefix bits.
+        </TD>
+    </TR>
+    <TR>
+        <TH ALIGN=right> Notes </TH>
+        <TD COLSPAN=2>
+            <UL>
+                <LI>When<TT> MODE </TT>is 00 or 10, the parameter load sets
+                    the 5 or 6 MSBs of<TT> F0</TT>,<TT> F1</TT>, and<TT>
+                    F2 </TT>from the data provided.<TT> F5 </TT>and<TT>
+                    B5 </TT>are set to all 0s.  All other coefficient bits
+                    are unaffected.
+
+                <LI>When<TT> MODE </TT>is 01 or 11, the parameter load sets
+                    the 5 or 6 MSBs of<TT> F0</TT>,<TT> F1</TT>, and<TT> F2
+                    </TT>from the data provided.  F5 and B5 are not modified.
+                    All other coefficient bits are unaffected.
+
+                <LI>This opcode is identical to Opcodes 
+                    <A HREF="#opcode_0011">0011</A>
+                    (<TT>SETMSB_3</TT>) and 
+                    <A HREF="#opcode_1010">1010</A> (<TT>SETMSB_A</TT>), only
+                    Pitch <I>is</I> modified, and unlike Opcode 
+                    <A HREF="#opcode_0011">0011</A>, the
+                    interpolation registers are not set.
+            </UL>
+        </TD>
+    </TR>
+</TABLE>
+<BR><HR><BR>
+
+
+<!-- --------------------------------------------------------------------- -->
+<A NAME="opcode_0110">
+[<A HREF="#quick_ref">Ref</A>]
+[<A HREF="#top">Top</A>]
+<TABLE BORDER=1 WIDTH=100% CELLPADDING=5>
+    <TR>
+        <TH WIDTH=10%> OPCODE <TT>0110</TT>                               </TH>
+        <TH WIDTH=15%> <TT> SETMSB_6 </TT>                                </TH>
+        <TH WIDTH=75% ALIGN=left> 
+            Load Amplitude and MSBs of 2 or 3 Coeffcients
+        </TH>
+    </TR>
+    <TR>
+        <TH ALIGN=right> Format                                 </TH>
+        <TD COLSPAN=2> <TT> RRRR 0110 </TT> <I>[data]</I>       </TD>
+    </TR>
+    <TR>
+        <TH ALIGN=right ROWSPAN=4> Data Formats,<BR>by<TT> MODE</TT> </TH>
+        <TH ALIGN=right VALIGN=center> <TT>MODE 00</TT></TH>
+        <TD>
+<PRE>
+AAAAAA
+FFFFFS              (New F3 6 MSBs)
+FFFFFS              (New F4 6 MSBs)
+</PRE>
+    </TR>
+    <TR>
+        <TH ALIGN=right VALIGN=center> <TT>MODE 01</TT></TH>
+        <TD>
+<PRE>
+AAAAAA
+FFFFFS              (New F3 6 MSBs)
+FFFFFS              (New F4 6 MSBs)
+FFFFFFFS            (New F5 8 MSBs)
+</PRE>
+    </TR>
+    <TR>
+        <TH ALIGN=right VALIGN=center> <TT>MODE 10</TT></TH>
+        <TD>
+<PRE>
+AAAAAA
+FFFFFFS             (New F3 7 MSBs)
+FFFFFFFS            (New F4 8 MSBs)
+</PRE>
+    </TR>
+    <TR>
+        <TH ALIGN=right VALIGN=center> <TT>MODE 11</TT></TH>
+        <TD>
+<PRE>
+AAAAAA
+FFFFFFS             (New F3 7 MSBs)
+FFFFFFFS            (New F4 8 MSBs)
+FFFFFFFS            (New F5 8 MSBs)
+</PRE>
+    </TR>
+    <TR>
+        <TH ALIGN=right> Action </TH>
+        <TD COLSPAN=2>
+            Loads new amplitude and pitch parameters.  Also updates the
+            MSBs of a set of new filter coefficients.  The<TT> MODE </TT>
+            prefix bits controls the update process as noted below.
+            Opcode <A HREF="#opcode_1000">1000</A> (<TT>SETMODE</TT>) 
+            provides the prefix bits.
+        </TD>
+    </TR>
+    <TR>
+        <TH ALIGN=right> Notes </TH>
+        <TD COLSPAN=2>
+            <UL>
+                <LI> For<TT> MODE </TT>00 and 10, coefficients<TT>
+                     B5 </TT>and<TT> F5 </TT>are set to zero.
+
+                <LI> For<TT> MODE </TT>01 and 11, coefficient<TT> F5
+                     </TT>is set from the last 8 bits of the data provided,
+                     and<TT> B5 </TT>is not modified.
+                <LI> For<TT> MODE </TT>00 and 01, the 6 MSBs of<TT>
+                     F3 </TT>and<TT> F4 </TT>are set from the first 12
+                     bits provided.  The other bits of<TT> F3 </TT>and<TT>
+                     F4 </TT>are not modified.
+                <LI> For<TT> MODE </TT>10 and 11, the 7 MSBs of<TT> F3
+                     </TT>and the 8 MSBs of<TT> F4 </TT>are set from the first
+                     12 bits provided.  The LSB of<TT> F3 </TT>is not modified.
+            </UL>
+        </TD>
+    </TR>
+</TABLE>
+<BR><HR><BR>
+
+
+<!-- --------------------------------------------------------------------- -->
+<A NAME="opcode_0111">
+[<A HREF="#quick_ref">Ref</A>]
+[<A HREF="#top">Top</A>]
+<TABLE BORDER=1 WIDTH=100% CELLPADDING=5>
+    <TR>
+        <TH WIDTH=10%> OPCODE <TT>0111</TT>                               </TH>
+        <TH WIDTH=15%> <TT> JMP </TT>                                     </TH>
+        <TH WIDTH=75% ALIGN=left> 
+            Jump to 12-bit<TT> PAGE</TT>-Relative Address
+        </TH>
+    </TR>
+    <TR>
+        <TH ALIGN=right> Format                                 </TH>
+        <TD COLSPAN=2> <TT> LLLL 0111 LLLLLLLL </TT>            </TD>
+    </TR>
+    <TR>
+        <TH ALIGN=right> Action                                 </TH>
+        <TD COLSPAN=2>
+            <P>
+                Performs a jump to the specified 12-bit address relative to
+                the 4K page number specified by the<TT> PAGE </TT>register.
+                That is, the<TT> JMP </TT>instruction jumps to the location<TT>
+                PAGE LLLL LLLLLLLL</TT>, where the upper four bits come from
+                the<TT> PAGE </TT> register and the lower 12 bits come from
+                the<TT> JMP </TT> instruction.
+            </P>
+            <P>
+                At power-up, the<TT> PAGE </TT>register defaults to the
+                value 0001 ($1).  The<TT> PAGE </TT>register may be set 
+                using the<TT> SETPAGE </TT>instruction, Opcode 
+                <A HREF="#opcode_0000">0000</A>.
+            </P>
+        </TD>
+    </TR>
+</TABLE>
+<BR><HR><BR>
+
+
+<!-- --------------------------------------------------------------------- -->
+<A NAME="opcode_1000">
+[<A HREF="#quick_ref">Ref</A>]
+[<A HREF="#top">Top</A>]
+<TABLE BORDER=1 WIDTH=100% CELLPADDING=5>
+    <TR>
+        <TH WIDTH=10%> OPCODE <TT>1000</TT>                               </TH>
+        <TH WIDTH=15%> <TT> SETMODE </TT>                                 </TH>
+        <TH WIDTH=75% ALIGN=left> 
+            Set the<TT> MODE </TT>bits and Repeat MSBs       
+        </TH>
+    </TR>
+    <TR>
+        <TH ALIGN=right> Format                                 </TH>
+        <TD COLSPAN=2> <TT> RRMM 1000 </TT>                     </TD>
+    </TR>
+    <TR>
+        <TH ALIGN=right> Action </TH>
+        <TD COLSPAN=2>
+            <P>
+                Serves as a prefix to many other instructions.  The upper
+                two bits of the immediate constant are loaded into the
+                upper two bits of the 6-bit repeat register.  These two
+                bits combine with the four LSBs that are provided by
+                most parameter-load instructions to provide longer
+                repetition periods.
+            </P>
+            <P>
+                The two<TT> MM </TT>bits select the data format /
+                coefficient count for many of the parameter load
+                instructions.
+            </P>
+            <P>
+                This opcode is known to have <I>no</I> effect
+                on<TT> JMP/JSR </TT>instructions and<TT> JMP/JSR
+                </TT>instructions have no effect on it.
+            </P>
+        </TD>
+    </TR>
+    <TR>
+        <TH ALIGN=right> Notes </TH>
+        <TD COLSPAN=2>
+            <UL>
+                <LI>The<TT> MM </TT>mode bits are <I>sticky</I>, meaning
+                    that they stay in effect until the next Opcode <A
+                    HREF="#opcode_1000">1000</A> (<TT>SETMODE</TT>) 
+                    instruction.  The<TT> RR </TT>repeat bits are not, 
+                    however.
+            </UL>
+        </TD>
+    </TR>
+</TABLE>
+<BR><HR><BR>
+
+
+<!-- --------------------------------------------------------------------- -->
+<A NAME="opcode_1001">
+[<A HREF="#quick_ref">Ref</A>]
+[<A HREF="#top">Top</A>]
+<TABLE BORDER=1 WIDTH=100% CELLPADDING=5>
+    <TR>
+        <TH WIDTH=10%> OPCODE <TT>1001</TT>                               </TH>
+        <TH WIDTH=15%> <TT> DELTA_9 </TT>                                 </TH>
+        <TH WIDTH=75% ALIGN=left> 
+            Delta update Amplitude, Pitch and 5 or 6 Coefficients
+        </TH>
+    </TR>
+    <TR>
+        <TH ALIGN=right> Format                                 </TH>
+        <TD COLSPAN=2> <TT> RRRR 1001 </TT> <I> [data] </I>     </TD>
+    </TR>
+    <TR>
+        <TH ALIGN=right ROWSPAN=4> Data Formats,<BR>by<TT> MODE</TT> </TH>
+        <TH ALIGN=right VALIGN=center> <TT>MODE 00</TT></TH>
+        <TD>
+<PRE>
+aaas     pppps      (Amplitude 6 MSBs, Pitch LSBs.)
+bbs      ffs        (B0 4 MSBs, F0 5 MSBs.)
+bbs      ffs        (B1 4 MSBs, F1 5 MSBs.)
+bbs      ffs        (B2 4 MSBs, F2 5 MSBs.)
+bbs      fffs       (B3 5 MSBs, F3 6 MSBs.)
+bbbs     fffs       (B4 6 MSBs, F4 6 MSBs.)
+</PRE>
+        </TD>
+    </TR>
+    <TR>
+        <TH ALIGN=right VALIGN=center> <TT>MODE 01</TT></TH>
+        <TD>
+<PRE>
+aaas     pppps      (Amplitude 6 MSBs, Pitch LSBs.)
+bbs      ffs        (B0 4 MSBs, F0 5 MSBs.)
+bbs      ffs        (B1 4 MSBs, F1 5 MSBs.)
+bbs      ffs        (B2 4 MSBs, F2 5 MSBs.)
+bbs      fffs       (B3 5 MSBs, F3 6 MSBs.)
+bbbs     fffs       (B4 6 MSBs, F4 6 MSBs.)
+bbbbs    ffffs      (B5 8 MSBs, F5 8 MSBs.)
+</PRE>
+        </TD>
+    </TR>
+    <TR>
+        <TH ALIGN=right VALIGN=center> <TT>MODE 10</TT></TH>
+        <TD>
+<PRE>
+aaas     pppps      (Amplitude 6 MSBs, Pitch LSBs.)
+bbbs     fffs       (B0 7 MSBs, F0 6 MSBs.)
+bbbs     fffs       (B1 7 MSBs, F1 6 MSBs.)
+bbbs     fffs       (B2 7 MSBs, F2 6 MSBs.)
+bbbs     ffffs      (B3 7 MSBs, F3 7 MSBs.)
+bbbbs    ffffs      (B4 8 MSBs, F4 8 MSBs.)
+</PRE>
+        </TD>
+    </TR>
+    <TR>
+        <TH ALIGN=right VALIGN=center> <TT>MODE 11</TT></TH>
+        <TD>
+<PRE>
+aaas     pppps      (Amplitude 6 MSBs, Pitch LSBs.)
+bbbs     fffs       (B0 7 MSBs, F0 6 MSBs.)
+bbbs     fffs       (B1 7 MSBs, F1 6 MSBs.)
+bbbs     fffs       (B2 7 MSBs, F2 6 MSBs.)
+bbbs     ffffs      (B3 7 MSBs, F3 7 MSBs.)
+bbbbs    ffffs      (B4 8 MSBs, F4 8 MSBs.)
+bbbbs    ffffs      (B5 8 MSBs, F5 8 MSBs.)
+</PRE>
+        </TD>
+    </TR>
+    <TR>
+        <TH ALIGN=right> Action </TH>
+        <TD COLSPAN=2>
+            Performs a delta update, adding small 2s complement numbers to
+            a series of coefficients.  The 2s complement updates for the
+            various filter coefficients only update some of the MSBs -- the
+            LSBs are unaffected.  The exact bits which are updated are noted
+            above.
+        </TD>
+    </TR>
+    <TR>
+        <TH ALIGN=right> Notes </TH>
+        <TD COLSPAN=2>
+            <UL>
+                <LI>The delta update is applied exactly once, as long
+                    as the repeat count is at least 1.  If the repeat
+                    count is greater than 1, the updated value is held
+                    through the repeat period, but the delta update is
+                    not reapplied.
+
+                <LI>The delta updates are applied to the 8-bit encoded
+                    forms of the coefficients, not the 10-bit decoded
+                    forms.
+
+                <LI>Normal 2s complement arithmetic is performed,
+                    and no protection is provided against overflow.
+                    Adding 1 to the largest value for a bit field wraps
+                    around to the smallest value for that bitfield.
+
+                <LI>The update to the amplitude register is a normal 2s
+                    complement update to the <I>entire</I> register.  This 
+                    means that any carry/borrow from the mantissa will change
+                    the value of the exponent.  The update doesn't know
+                    anything about the format of that register.
+            </UL>
+        </TD>
+    </TR>
+</TABLE>
+<BR><HR><BR>
+
+<!-- --------------------------------------------------------------------- -->
+<A NAME="opcode_1010">
+[<A HREF="#quick_ref">Ref</A>]
+[<A HREF="#top">Top</A>]
+<TABLE BORDER=1 WIDTH=100% CELLPADDING=5>
+    <TR>
+        <TH WIDTH=10%> OPCODE <TT>1010</TT>                               </TH>
+        <TH WIDTH=15%> <TT> SETMSB_A </TT>                                </TH>
+        <TH WIDTH=75% ALIGN=left> 
+            Load Amplitude and MSBs of 3 Coefficients
+        </TH>
+    </TR>
+    <TR>
+        <TH ALIGN=right> Format                                 </TH>
+        <TD COLSPAN=2> <TT> RRRR 1010 </TT> <I> [data] </I>     </TD>
+    </TR>
+    <TR>
+        <TH ALIGN=right ROWSPAN=2> Data Formats,<BR>by<TT> MODE</TT> </TH>
+        <TH ALIGN=right VALIGN=center> <TT>MODE 0<I>x</I></TT></TH>
+        <TD>
+<PRE>
+AAAAAA
+FFFFS               (New F0 MSBs)
+FFFFS               (New F1 MSBs)
+FFFFS               (New F2 MSBs)
+</PRE>
+    </TR>
+    <TR>
+        <TH ALIGN=right VALIGN=center> <TT>MODE 1<I>x</I></TT></TH>
+        <TD>
+<PRE>
+AAAAAA
+FFFFFS              (New F0 MSBs)
+FFFFFS              (New F1 MSBs)
+FFFFFS              (New F2 MSBs)
+</PRE>
+    </TR>
+    <TR>
+        <TH ALIGN=right> Action </TH>
+        <TD COLSPAN=2>
+            Loads new amplitude.  Also updates the MSBs of a set of
+            new filter coefficients.  The<TT> MODE </TT>prefix bits
+            controls the update process as noted below.  Opcode <A
+            HREF="#opcode_1000">1000</A> (<TT>SETMODE</TT>) provides
+            the prefix bits.
+        </TD>
+    </TR>
+    <TR>
+        <TH ALIGN=right> Notes </TH>
+        <TD COLSPAN=2>
+            <UL>
+                <LI>When<TT> MODE </TT>is 00 or 10, the parameter load
+                    sets the 5 or 6 MSBs of<TT> F0</TT>,<TT> F1</TT>,
+                    and<TT> F2 </TT>from the data provided.<TT>  F5
+                    </TT>and<TT> B5 </TT>are set to all 0s.  All other
+                    coefficient bits are unaffected.
+
+                <LI>When<TT> MODE </TT>is 01 or 11, the parameter load
+                    sets the 5 or 6 MSBs of<TT> F0</TT>,<TT> F1</TT>,
+                    and<TT> F2 </TT>from the data provided.<TT>  F5
+                    </TT>and<TT> B5 </TT>are not modified.  All other
+                    coefficient bits are unaffected.
+
+                <LI>This opcode is identical to Opcodes <A
+                    HREF="#opcode_0011">0011</A> (<TT>SETMSB_3</TT>) and
+                    <A HREF="#opcode_0101">0101</A> (<TT>SETMSB_5</TT>),
+                    except that Pitch is <I>not</I> modified, and the
+                    Interpolation Registers are <I>not</I> set.
+            </UL>
+        </TD>
+    </TR>
+</TABLE>
+<BR><HR><BR>
+
+
+<!-- --------------------------------------------------------------------- -->
+<A NAME="opcode_1011">
+[<A HREF="#quick_ref">Ref</A>]
+[<A HREF="#top">Top</A>]
+<TABLE BORDER=1 WIDTH=100% CELLPADDING=5>
+    <TR>
+        <TH WIDTH=10%> OPCODE <TT>1011</TT>                               </TH>
+        <TH WIDTH=15%> <TT> JSR </TT>                                     </TH>
+        <TH WIDTH=75% ALIGN=left> 
+            Jump to Subroutine (12-bit<TT> PAGE</TT>-Relative Address)
+        </TH>
+    </TR>
+    <TR>
+        <TH ALIGN=right> Format                                 </TH>
+        <TD COLSPAN=2> <TT> LLLL 1011 LLLLLLLL </TT>            </TD>
+    </TR>
+    <TR>
+        <TH ALIGN=right> Action                                 </TH>
+        <TD COLSPAN=2>
+            <P>
+                Performs a jump to the specified 12-bit address relative to
+                the 4K page number specified by the<TT> PAGE </TT>register.
+                That is, the<TT> JMP </TT>instruction jumps to the location<TT>
+                PAGE LLLL LLLLLLLL</TT>, where the upper four bits come from
+                the<TT> PAGE </TT> register and the lower 12 bits come from
+                the<TT> JSR </TT> instruction.
+            </P>
+            <P>
+                At power-up, the<TT> PAGE </TT>register defaults to the
+                value 0001 ($1).  The<TT> PAGE </TT>register may be set 
+                using the<TT> SETPAGE </TT>instruction, Opcode 
+                <A HREF="#opcode_0000">0000</A>.
+            </P>
+            <P>
+                This variant pushes the byte-aligned return address onto
+                the PC stack.  The previous contents of the PC stack
+                are lost, as the PC stack is only one entry deep.  To
+                return to the next instruction, use Opcode
+                <A HREF="#opcode_0000">0000</A> (<TT>RTS</TT>).
+            </P>
+        </TD>
+    </TR>
+</TABLE>
+<BR><HR><BR>
+
+<!-- --------------------------------------------------------------------- -->
+<A NAME="opcode_1100">
+[<A HREF="#quick_ref">Ref</A>]
+[<A HREF="#top">Top</A>]
+<TABLE BORDER=1 WIDTH=100% CELLPADDING=5>
+    <TR>
+        <TH WIDTH=10%> OPCODE <TT>1100</TT>                               </TH>
+        <TH WIDTH=15%> <TT> LOAD_C </TT>                                  </TH>
+        <TH WIDTH=75% ALIGN=left> 
+            Load Pitch, Amplitude, Coefficients (5 or 6 stages)
+        </TH>
+    </TR>
+    <TR>
+        <TH ALIGN=right> Format                                 </TH>
+        <TD COLSPAN=2> <TT> RRRR 1100 </TT> <I> [data] </I>     </TD>
+    </TR>
+    <TR>
+        <TH ALIGN=right ROWSPAN=4> Data Formats,<BR>by<TT> MODE</TT> </TH>
+        <TH ALIGN=right VALIGN=center> <TT>MODE 00</TT></TH>
+        <TD>
+<PRE>
+AAAAAA   PPPPPPPP
+BBB      FFFFS      (coeff pair 0)
+BBB      FFFFS      (coeff pair 1)
+BBB      FFFFS      (coeff pair 2)
+BBBB     FFFFFS     (coeff pair 3)
+BBBBBBS  FFFFFS     (coeff pair 4)
+</PRE>
+        </TD>
+    </TR>
+    <TR>
+        <TH ALIGN=right VALIGN=center> <TT>MODE 01</TT></TH>
+        <TD>
+<PRE>
+AAAAAA   PPPPPPPP
+BBB      FFFFS      (coeff pair 0)
+BBB      FFFFS      (coeff pair 1)
+BBB      FFFFS      (coeff pair 2)
+BBBB     FFFFFS     (coeff pair 3)
+BBBBBBS  FFFFFS     (coeff pair 4)
+BBBBBBBS FFFFFFFS   (coeff pair 5)
+</PRE>
+        </TD>
+    </TR>
+    <TR>
+        <TH ALIGN=right VALIGN=center> <TT>MODE 10</TT></TH>
+        <TD>
+<PRE>
+AAAAAA   PPPPPPPP
+BBBBBB   FFFFFS     (coeff pair 0)
+BBBBBB   FFFFFS     (coeff pair 1)
+BBBBBB   FFFFFS     (coeff pair 2)
+BBBBBB   FFFFFFS    (coeff pair 3)
+BBBBBBBS FFFFFFFS   (coeff pair 4)
+</PRE>
+        </TD>
+    </TR>
+    <TR>
+        <TH ALIGN=right VALIGN=center> <TT>MODE 11</TT></TH>
+        <TD>
+<PRE>
+AAAAAA   PPPPPPPP
+BBBBBB   FFFFFS     (coeff pair 0)
+BBBBBB   FFFFFS     (coeff pair 1)
+BBBBBB   FFFFFS     (coeff pair 2)
+BBBBBB   FFFFFFS    (coeff pair 3)
+BBBBBBBS FFFFFFFS   (coeff pair 4)
+BBBBBBBS FFFFFFFS   (coeff pair 5)
+</PRE>
+        </TD>
+    </TR>
+    <TR>
+        <TH ALIGN=right> Action </TH>
+        <TD COLSPAN=2>
+            Loads new amplitude and pitch parameters.  Also loads a
+            set of new filter coefficients, setting the unspecified
+            coefficients to zero.  The exact combination and precision of
+            filter coefficients that are loaded is determined by which
+            prefix is used.  Opcode <A HREF="#opcode_1000">1000</A>
+            (<TT>SETMODE</TT>) provides the prefix bits.
+        </TD>
+    </TR>
+    <TR>
+        <TH ALIGN=right> Notes </TH>
+        <TD COLSPAN=2>
+            <UL>
+                <LI>For all values of<TT> MODE</TT>, the Sign bit
+                    for<TT> B0</TT>,<TT> B1</TT>,<TT> B2 </TT>and<TT>
+                    B3 </TT>(the B coefficients for pair 0 thru pair 3)
+                    has an implied value of 0.
+            </UL>
+        </TD>
+    </TR>
+</TABLE>
+<BR><HR><BR>
+
+<!-- --------------------------------------------------------------------- -->
+<A NAME="opcode_1101">
+[<A HREF="#quick_ref">Ref</A>]
+[<A HREF="#top">Top</A>]
+<TABLE BORDER=1 WIDTH=100% CELLPADDING=5>
+    <TR>
+        <TH WIDTH=10%> OPCODE <TT>1101</TT>                               </TH>
+        <TH WIDTH=15%> <TT> DELTA_D </TT>                                 </TH>
+        <TH WIDTH=75% ALIGN=left> 
+            Delta update Amplitude, Pitch and 2 or 3 Coefficients
+        </TH>
+    </TR>
+    <TR>
+        <TH ALIGN=right> Format                                 </TH>
+        <TD COLSPAN=2> <TT> RRRR 1101 </TT> <I> [data] </I>     </TD>
+    </TR>
+    <TR>
+        <TH ALIGN=right ROWSPAN=4> Data Formats,<BR>by<TT> MODE</TT> </TH>
+        <TH ALIGN=right VALIGN=center> <TT>MODE 00</TT></TH>
+        <TD>
+<PRE>
+aaas     pppps      (Amplitude 6 MSBs, Pitch LSBs.)
+bbs      fffs       (B3 5 MSBs, F3 6 MSBs.)
+bbbs     fffs       (B4 7 MSBs, F4 6 MSBs.)
+</PRE>
+        </TD>
+    </TR>
+    <TR>
+        <TH ALIGN=right VALIGN=center> <TT>MODE 01</TT></TH>
+        <TD>
+<PRE>
+aaas     pppps      (Amplitude 6 MSBs, Pitch LSBs.)
+bbs      fffs       (B3 5 MSBs, F3 6 MSBs.)
+bbbs     fffs       (B4 7 MSBs, F4 6 MSBs.)
+bbbbs    ffffs      (B5 8 MSBs, F5 8 MSBs.)
+</PRE>
+        </TD>
+    </TR>
+    <TR>
+        <TH ALIGN=right VALIGN=center> <TT>MODE 10</TT></TH>
+        <TD>
+<PRE>
+aaas     pppps      (Amplitude 6 MSBs, Pitch LSBs.)
+bbbs     ffffs      (B3 7 MSBs, F3 7 MSBs.)
+bbbbs    ffffs      (B4 8 MSBs, F4 8 MSBs.)
+</PRE>
+        </TD>
+    </TR>
+    <TR>
+        <TH ALIGN=right VALIGN=center> <TT>MODE 11</TT></TH>
+        <TD>
+<PRE>
+aaas     pppps      (Amplitude 6 MSBs, Pitch LSBs.)
+bbbs     ffffs      (B3 7 MSBs, F3 7 MSBs.)
+bbbbs    ffffs      (B4 8 MSBs, F4 8 MSBs.)
+bbbbs    ffffs      (B5 8 MSBs, F5 8 MSBs.)
+</PRE>
+        </TD>
+    </TR>
+    <TR>
+        <TH ALIGN=right> Action </TH>
+        <TD COLSPAN=2>
+            Performs a delta update, adding small 2s complement numbers to
+            a series of coefficients.  The 2s complement updates for the
+            various filter coefficients only update some of the MSBs -- the
+            LSBs are unaffected.  The exact bits which are updated are noted
+            above.
+        </TD>
+    </TR>
+    <TR>
+        <TH ALIGN=right> Notes </TH>
+        <TD COLSPAN=2>
+            <UL>
+                <LI>The delta update is applied exactly once, as long
+                    as the repeat count is at least 1.  If the repeat
+                    count is greater than 1, the updated value is held
+                    through the repeat period, but the delta update is
+                    not reapplied.
+
+                <LI>The delta updates are applied to the 8-bit encoded
+                    forms of the coefficients, not the 10-bit decoded
+                    forms.
+
+                <LI>Normal 2s complement arithmetic is performed,
+                    and no protection is provided against overflow.
+                    Adding 1 to the largest value for a bit field wraps
+                    around to the smallest value for that bitfield.
+
+                <LI>The update to the amplitude register is a normal
+                    2s complement update to the <I>entire</I> register.
+                    This means that any carry/borrow from the mantissa
+                    will change the value of the exponent.  The update
+                    doesn't know anything about the format of that
+                    register.
+            </UL>
+        </TD>
+    </TR>
+</TABLE>
+<BR><HR><BR>
+
+<!-- --------------------------------------------------------------------- -->
+<A NAME="opcode_1110">
+[<A HREF="#quick_ref">Ref</A>]
+[<A HREF="#top">Top</A>]
+<TABLE BORDER=1 WIDTH=100% CELLPADDING=5>
+    <TR>
+        <TH WIDTH=10%> OPCODE <TT>1110</TT>                               </TH>
+        <TH WIDTH=15%> <TT> LOAD_E </TT>                                  </TH>
+        <TH WIDTH=75% ALIGN=left> 
+            Load Pitch, Amplitude 
+        </TH>
+    </TR>
+    <TR>
+        <TH ALIGN=right> Format                                 </TH>
+        <TD COLSPAN=2> <TT> RRRR 1110 AAAAAA PPPPPPPP </TT>     </TH>
+    </TR>
+    <TR>
+        <TH ALIGN=right> Action                                 </TH>
+        <TD COLSPAN=2> 
+            Loads new amplitude and pitch parameters.  Data
+            format does not seem to be affected by the Opcode <A
+            HREF="#opcode_1000">1000</A> (<TT>SETMODE</TT>) prefix,
+            although the repeat count may be extended using the Opcode
+            <A HREF="#opcode_1000">1000</A> (<TT>SETMODE</TT>) prefix.
+        </TD>
+    </TR>
+</TABLE>
+<BR><HR><BR>
+
+<!-- --------------------------------------------------------------------- -->
+<A NAME="opcode_1111">
+[<A HREF="#quick_ref">Ref</A>]
+[<A HREF="#top">Top</A>]
+<TABLE BORDER=1 WIDTH=100% CELLPADDING=5>
+    <TR>
+        <TH WIDTH=10%> OPCODE <TT>1111</TT>                               </TH>
+        <TH WIDTH=15%> <TT> PAUSE </TT>                                   </TH>
+        <TH WIDTH=75% ALIGN=left> 
+            Silent Pause
+        </TH>
+    </TR>
+    <TR>
+        <TH ALIGN=right> Format                                 </TH>
+        <TD COLSPAN=2> <TT> RRRR 1111 </TT>                     </TH>
+    </TR>
+    <TR>
+        <TH ALIGN=right> Action                                 </TH>
+        <TD COLSPAN=2> 
+            Provides a silent pause of varying length.  The length of the
+            pause is given by the 4-bit immediate constant<TT> RRRR</TT>.
+            The pause duration can be extended with the Opcode 
+            <A HREF="#opcode_1000">1000</A> (<TT>SETMODE</TT>) 
+            prefix.
+        </TD>
+    </TR>
+    <TR>
+        <TH ALIGN=right> Notes                                  </TH>
+        <TD COLSPAN=2>
+            <UL>
+                <LI>The pause behaves identially to a pitch with 
+                    Amplitude == 0 and Period == 64.   All coefficients 
+                    are cleared, as well.
+            </UL>
+        </TD>
+    </TR>
+</TABLE>
+<BR><HR><BR>
+<FONT SIZE=-1>$Id: sp0256_instr_set.html,v 1.1 2000/09/28 00:05:49 im14u2c Exp $</FONT>

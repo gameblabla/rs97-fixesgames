@@ -1,0 +1,160 @@
+<HEAD>
+    <TITLE>
+        The Keyboard Component
+    </TITLE>
+</HEAD>
+<BODY BGCOLOR=#BBCCDD>
+<H1>The Keyboard Component</H1>
+<P>
+    Currently, this document is a place-holder until I get more info here.
+</P>
+<P>
+    Quick rundown of what I know about the Keyboard Component and the
+    "6502 side" of things:
+</P>
+<UL>
+    <LI>
+        The Keyboard Component has its own 6502 CPU, making Keyboard +
+        Master component a two-CPU system.
+    <LI>
+        16K x 10-bit RAM that's shared between both Keyboard and Master
+        Components.
+    <LI>
+        The lower 8 bits of the 16K RAM appear to map to $0000 - $3FFF
+        in the 6502's address space.  The upper 2 bits of the 16K RAM
+        appear to map the lower 2 bits in locations $4000 - $7FFF,
+        although there may be a hole in this mapping in the range 
+        $4000 - $41FF.
+    <LI>
+        The 9927 display controller maps to locations $40C0 - $40CF.
+    <LI>
+        The Monitor and BASIC ROMs occupy 8K at $C000 - $DFFF.
+    <LI>
+        It appears that some of the bytes at $DFFx ROM get remapped
+        to $FFFx to set the RESET/IRQ/NMI/BRK vectors.
+    <LI>
+        Locations $4000-$4007 map to some peripheral.  Notably $4006
+        seems to be some sort of vertical retrace toggle.
+    <LI>
+        The keyboard is matrix scanned.  (Need to put table with the
+        matrix here.)
+</UL>
+<P>
+    On the "CP-1600 side":
+</P>
+<UL>
+    <LI>
+        The 16K x 10-bit RAM maps to locations $8000 - $BFFF in the
+        Master Component's memory map.
+        
+</UL>
+<P>
+   Also, here are some notes I've made while reading the 6502 ROM
+   dumps.
+</P>
+<PRE>
+
+Miscellaneous stuff noted about kbd component 6502 code
+
+Entry points:
+    $C000
+    $C009
+    $CE79  (ref: code @ $C1E1 ... $C1F3)
+
+    $C13B  (ref: boot code @ $C23C)
+    $CC16  (ref: boot code @ $C246)
+
+Subroutines:
+    $C1E1  Set default ISR vector & init flag? (point $3E8 @ $CE79)
+    $C363  Copy 12 bytes src=($96) to dst=($340 + A*12).
+    $C498  Store "$340 + A*12" to $96/$97.  Clear Y.  X = A*12.
+    $C926  Copy 12 bytes from $C91E to $340.
+
+    $DFBE  Block fill >255 w/ zero.  Count in $96/$97. $90 used as tmp.
+    $DFD2  Block fill with zero.  Address in $94/$95, count in $90.
+    $DFD4  Block fill with A.     Address in $94/$95, count in $90.
+    $DFDE  Block-move 6 bytes.    Src addr in $94/$95, Dst in $96/$97. 
+    $DFE0  Block-move Y bytes.    Src addr in $94/$95, Dst in $96/$97. 
+    $DFEE  Multiply A by 12, result in both A and X.
+
+
+Jump vectors:
+
+    $94/$95  (ref: code @ $C9C2, $DC73)
+    $96/$97  (ref: code @ $C12D)
+    $98/$99  (ref: code @ $D221)
+    $B1/$B2  (save area for $94/$95 vector?  Ref code @ $C878)
+    $E5/$E6  (save area for $94/$95 vector?  Ref code @ $C3C5,$D152)
+    $302     (ref: code @ $C3F3)
+    $3D3     (ref: code @ $C06E)
+    $3E8     (from IRQ routine.  Ref code @ $C022)
+
+
+Jump table at $C2EF .. $C305
+
+    $C36B,$C371,$C376,$C381,$C340,$C399,$C3E8,$C3EE,$C3F3,$C3F6,
+    $C40F,$C422,
+
+Jump table at $C731 .. $C772
+
+    $C81A,$C7AF,$C7E0,$C7EF,$C7AF,$C849,$C7AF,$CC0D,$C7AF,$C794,
+    $C7B0,$C7C8,$C800,$C7FD,$C816,$C784,$C77F,$C7AF,$C7AF,$C789,
+    $C7AF,$C773,$C824,$CB85,$CB9B,$CB2D,$CB44,$C893,$C43D,$C807,
+    $C80F,$C790,$CBEE,
+
+Jump table at $C972 .. $C989
+
+    $CA01,$CA3E,$C9D2,$C9EB,$CA0C,$CA25,$CA54,$CA50,$CA78,$CA6E,
+    $CA72,$CB0F,
+
+Jump table at $D2B1 .. $D2F4
+    $D116,$D337,$D34A,$D356,$D36B,$D36F,$D374,$D385,$D38D,$D39D,
+    $D3A4,$D3C4,$D3DA,$D3E7,$D411,$D415,$D468,$D46D,$D476,$D489,
+    $D496,$D621,$D673,$D676,$D728,$D786,$D843,$D981,$D9AC,
+
+Jump table at $DCB5 .. $DCBC
+    $DCBD,$DCC8,$DCD3,$DCDE,
+
+Jump table at $DCE9 .. $DCF0:  Not actually a jump table ???
+#    $DCF1,$DD08,$DD20,$DD38,
+
+RAM-based vector tables (?) at following locations:
+
+    $342-ish  (ref: code @ $C0EF, $C10E, $C6B3, $DF68, $DFAA)
+    $348-ish  (ref: code @ $C12D)
+    $3BB-ish  (ref: code @ $C2C2)
+
+
+Display buffer:
+
+    Row  0:    $B800 - $B827
+    Row  1:    $B840 - $B867
+    Row  2:    $B880 - $B8A7
+    Row  3:    $B8C0 - $B8E7
+    Row  4:    $B900 - $B927
+    Row  5:    $B940 - $B967
+    Row  6:    $B980 - $B9A7
+    Row  7:    $B9C0 - $B9E7
+    Row  8:    $BA00 - $BA27
+    Row  9:    $BA40 - $BA67
+    Row 10:    $BA80 - $BAA7
+    Row 11:    $BAC0 - $BAE7
+    Row 12:    $BB00 - $BB27
+    Row 13:    $BB40 - $BB67
+    Row 14:    $BB80 - $BBA7
+    Row 15:    $BBC0 - $BBE7
+    Row 16:    $BC00 - $BC27
+    Row 17:    $BC40 - $BC67
+    Row 18:    $BC80 - $BCA7
+    Row 19:    $BCC0 - $BCE7
+    Row 20:    $BD00 - $BD27
+    Row 21:    $BD40 - $BD67
+    Row 22:    $BD80 - $BDA7
+    Row 23:    $BDC0 - $BDE7
+</PRE>
+
+<BR><HR><BR>
+<FONT SIZE=-1>$Id: keyboard.html,v 1.1 2000/09/28 00:05:49 im14u2c Exp $</FONT>
+
+</BODY>
+</HTML>

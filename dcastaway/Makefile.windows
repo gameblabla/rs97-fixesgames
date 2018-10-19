@@ -1,0 +1,131 @@
+NAME   = dcastaway
+O      = o
+RM     = rm -f
+CC     = gcc-3
+CXX    = g++-3
+STRIP  = strip
+
+PROG   = $(NAME)
+
+all: $(PROG)
+
+FAME_CORE = 1
+#FAME_CORE_C = 1
+#TV_FILTER =1
+
+DEFAULT_CFLAGS = `sdl-config --cflags` -DWIN32
+LDFLAGS        = `sdl-config --libs` -lz
+
+MORE_CFLAGS = -I/usr/include/mingw -Di386 -DWINDOWS -O3 -DDATA_PREFIX=\"data/\" -ffast-math -fno-common -fno-builtin -fno-exceptions -fstrict-aliasing -O3 -march=i686 -DNOARGS -DROM_PATH_PREFIX=\"./\" -DFILE_SEPARATOR=\"/\" -DSAVE_PREFIX=\"./\" -DSAVE_MEM_PREFIX=\"./\" -DDISK_PATH_PREFIX=\"example/\"
+#MORE_CFLAGS = -Di386 -DWINDOWS -O3 -DDATA_PREFIX=\"data/\" -ffast-math -fno-common -fno-builtin -fno-exceptions -fstrict-aliasing -O3 -march=i686 -DNOARGS -DROM_PATH_PREFIX=\"data/\" -DFILE_SEPARATOR=\"/\" -DSAVE_PREFIX=\"data/\" -DSAVE_MEM_PREFIX=\"data/\" -DDISK_PATH_PREFIX=\"data/\"
+
+MORE_CFLAGS+=-DEMULATED_JOYSTICK
+MORE_CFLAGS+=-DUSE_SHORT_SLICE
+
+MORE_CFLAGS+=-DUSE_DOUBLE_BUFFER
+#MORE_CFLAGS+=-DUSE_FULLSCREEN
+MORE_CFLAGS+=-DMENU_MUSIC
+MORE_CFLAGS+=-DSOUND_16BIT
+#MORE_CFLAGS+=-DMEMSIZE=0x80000
+
+#MORE_CFLAGS+=-DNO_MENU
+#MORE_CFLAGS+=-DNO_VKBD
+#MORE_CFLAGS+=-DAUTOSAVESTATE
+#MORE_CFLAGS+=-DAUTOLOAD=\"example/a_480.zip\"
+#MORE_CFLAGS+=-DNAME_CAPTION=\"Flimbo\ Quest\"
+
+#MORE_CFLAGS+=-DDEBUG_FAME
+##MORE_CFLAGS+=-DDEBUG_FAME_FFLUSH
+#MORE_CFLAGS+=-DDEBUG_FAME_START=70000
+#MORE_CFLAGS+=-DDEBUG_FAME_STOP=80000
+#MORE_CFLAGS+=-DFAME_SINGLE_MEMORY
+#MORE_CFLAGS+=-DDEBUG_SAVESTATE
+#MORE_CFLAGS+=-DDEBUG_FILEMANAGER
+
+#MORE_CFLAGS+=-DCALCULE_CRC_FILES
+
+ifndef TV_FILTER
+MORE_CFLAGS += -DNO_USE_TV_FILTER
+endif
+
+CFLAGS  = $(DEFAULT_CFLAGS) $(MORE_CFLAGS) 
+CPPFLAGS  = $(DEFAULT_CFLAGS) $(MORE_CFLAGS) -Isrc -Isrc/m68k -Isrc/st -Isrc/menu -Isrc/vkbd -Isrc/unzip
+
+OBJS =	\
+	windows.o \
+	src/main.o \
+	src/dcastaway.o \
+	src/events.o \
+	src/render.o \
+	src/save.o \
+	src/savedisk.o \
+	src/sound/sound.o \
+	src/sound/audio.o \
+	src/disk.o \
+	src/icon.o \
+	src/st/init.o \
+	src/st/st.o \
+	src/st/mem.o \
+	src/st/ikbd.o \
+	src/st/blitter.o \
+	src/st/fdc.o \
+	src/st/tos.o \
+	src/vkbd/vkbd.o \
+	src/unzip/explode.o \
+	src/unzip/unreduce.o \
+	src/unzip/unshrink.o \
+	src/unzip/unzip.o \
+	src/tvfilter/tvfilter.o \
+	src/tvfilter/texture.o \
+	src/tvfilter/scanline.o \
+	src/tvfilter/tvzw5.o \
+	src/menu/fade.o \
+	src/menu/menu.o \
+	src/menu/background.o \
+	src/menu/sfont.o \
+	src/menu/menu_load.o \
+	src/menu/menu_main.o \
+	src/menu/menu_save.o \
+	src/menu/db.o
+
+ifdef FAME_CORE
+ifdef FAME_CORE_C
+CPPFLAGS+=-DUSE_FAME_CORE_C
+OBJS += src/m68k/fame/famec.o
+else
+src/m68k/fame/fame_win.o: src/m68k/fame/fame_win.asm
+	nasm -f win32 -o src/m68k/fame/fame_win.o src/m68k/fame/fame_win.asm
+OBJS += src/m68k/fame/fame_win.o 
+endif
+CPPFLAGS+=-DUSE_FAME_CORE
+OBJS += src/m68k/fame/m68k_intrf.o
+else
+OBJS += \
+	src/m68k/castaway/68000.o \
+	src/m68k/castaway/debug.o \
+	src/m68k/castaway/op68kadd.o \
+	src/m68k/castaway/op68karith.o \
+	src/m68k/castaway/op68klogop.o \
+	src/m68k/castaway/op68kmisc.o \
+	src/m68k/castaway/op68kmove.o \
+	src/m68k/castaway/op68kshift.o \
+	src/m68k/castaway/op68ksub.o
+endif
+
+windows.o: windows.rc windows.ico
+	windres windows.rc windows.o
+
+$(PROG): $(OBJS)
+ifndef TV_FILTER
+	$(CC) -L/usr/lib/mingw -L/usr/local/lib -o $(PROG) -lmingw32 $(OBJS)  -lstdc++ -lSDL_static_129 -mwindows -mno-cygwin -luser32 -lgdi32 -lwinmm -ldxguid
+else
+	$(CC) -L/usr/local/lib  -L/usr/lib/w32api/ -L/usr/X11R6/lib -lglu32 -lopengl32 -o $(PROG) -lmingw32 $(OBJS)  -lglu32  -lopengl32 -lSDL_static_1212 -lGL -lpthread -mwindows -mno-cygwin -luser32 -lgdi32 -lwinmm -ldxguid
+endif
+	$(STRIP) $(PROG).exe
+
+
+run: $(PROG)
+	./$(PROG).exe
+
+clean:
+	$(RM) $(PROG).exe $(OBJS) std*.txt example/dcastaway.sav example/*.raw

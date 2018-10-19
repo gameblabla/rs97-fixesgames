@@ -1,0 +1,30 @@
+OBJ = charset.o jymain.o luafun.o mainmap.o piccache.o sdlfun.o
+HEADERS = config.h list.h luafun.h
+CC = mipsel-linux-gcc
+CXX = mipsel-linux-g++
+TARGET = jysdllua.dge
+BASEFLAGS = -g3 -D_DEBUG=0
+#BASEFLAGS = -s -O3
+CFLAGS = ${BASEFLAGS} `/opt/mipsel-linux-gcc/usr/bin/sdl-config --cflags` -I/opt/mipsel-linux-gcc/usr/include -I/opt/mipsel-linux-gcc/usr/include/SDL -I/opt/mipsel-linux-gcc/include
+LDFLAGS = ${BASEFLAGS} `/opt/mipsel-linux-gcc/usr/bin/sdl-config --libs` -lSDL_image -lSDL_mixer -lSDL_ttf -llua --sysroot=/opt/mipsel-linux-gcc
+
+#CFLAGS += -DHAS_SDL_MPEG=1
+#LDFLAGS += -lsmpeg
+
+all: ${TARGET}
+
+${TARGET}: ${OBJ}
+	${CXX} ${LDFLAGS} -o ${TARGET} ${OBJ} -llua
+
+clean:
+	rm -f *.o ${TARGET}
+
+distclean:
+	rm -f *.o ${TARGET}
+
+%.o:    %.cpp ${HEADERS}
+	${CXX} ${CFLAGS} -c $< -o $@
+
+%.o:    %.c ${HEADERS}
+	${CC} ${CFLAGS} -c $< -o $@
+

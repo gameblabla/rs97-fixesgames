@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="REminiscence" />
+		<Option makefile="Makefile.gcw0" />
+		<Option makefile_is_custom="1" />
+		<Option pch_mode="2" />
+		<Option compiler="gcw_mips_gnu_gcc_compiler" />
+		<MakeCommands>
+			<Build command="$make -f $makefile rs" />
+			<CompileFile command="$make -f $makefile $file" />
+			<Clean command="$make -f $makefile clean$target" />
+			<DistClean command="$make -f $makefile distclean$target" />
+			<AskRebuildNeeded command="$make -q -f $makefile $target" />
+			<SilentBuild command="$make -s -f $makefile $target" />
+		</MakeCommands>
+		<Build>
+			<Target title="all">
+				<Option output="bin/Release/emptyProj" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Release/" />
+				<Option type="1" />
+				<Option compiler="gcw_mips_gnu_gcc_compiler" />
+				<Compiler>
+					<Add option="-O2" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+				</Linker>
+				<MakeCommands>
+					<Build command="$make -f $makefile all" />
+					<CompileFile command="$make -f $makefile $file" />
+					<Clean command="$make -f $makefile clean" />
+					<DistClean command="$make -f $makefile distclean$target" />
+					<AskRebuildNeeded command="$make -q -f $makefile $target" />
+					<SilentBuild command="$make -s -f $makefile $target" />
+				</MakeCommands>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wall" />
+		</Compiler>
+		<Unit filename="Makefile.gcw0" />
+		<Unit filename="collision.cpp" />
+		<Unit filename="config.cpp" />
+		<Unit filename="config.h" />
+		<Unit filename="cutscene.cpp" />
+		<Unit filename="cutscene.h" />
+		<Unit filename="file.cpp" />
+		<Unit filename="file.h" />
+		<Unit filename="fs.cpp" />
+		<Unit filename="fs.h" />
+		<Unit filename="game.cpp" />
+		<Unit filename="game.h" />
+		<Unit filename="gcw0staticres.cpp" />
+		<Unit filename="graphics.cpp" />
+		<Unit filename="graphics.h" />
+		<Unit filename="intern.h" />
+		<Unit filename="locale.cpp" />
+		<Unit filename="locale.h" />
+		<Unit filename="main.cpp" />
+		<Unit filename="menu.cpp" />
+		<Unit filename="menu.h" />
+		<Unit filename="mixer.cpp" />
+		<Unit filename="mixer.h" />
+		<Unit filename="mod_player.cpp" />
+		<Unit filename="mod_player.h" />
+		<Unit filename="piege.cpp" />
+		<Unit filename="resource.cpp" />
+		<Unit filename="resource.h" />
+		<Unit filename="scaler.cpp" />
+		<Unit filename="scaler.h" />
+		<Unit filename="seq_player.cpp" />
+		<Unit filename="seq_player.h" />
+		<Unit filename="sfx_player.cpp" />
+		<Unit filename="sfx_player.h" />
+		<Unit filename="staticres.cpp" />
+		<Unit filename="sys.h" />
+		<Unit filename="systemstub.h" />
+		<Unit filename="systemstub_sdl.cpp" />
+		<Unit filename="unpack.cpp" />
+		<Unit filename="unpack.h" />
+		<Unit filename="util.cpp" />
+		<Unit filename="util.h" />
+		<Unit filename="video.cpp" />
+		<Unit filename="video.h" />
+		<Extensions>
+			<code_completion />
+			<debugger />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>

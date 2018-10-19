@@ -1,0 +1,7 @@
+stb_zlib.o: stb_zlib.c \
+ /home/anonymous/Documents/Dev/rs97-toolchain/mipsel-buildroot-linux-musl/sysroot/usr/include/stdc-predef.h \
+ ../config.h
+
+/home/anonymous/Documents/Dev/rs97-toolchain/mipsel-buildroot-linux-musl/sysroot/usr/include/stdc-predef.h:
+
+../config.h:

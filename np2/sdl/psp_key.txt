@@ -1,0 +1,39 @@
+[KeySetting]
+up = UP
+down = DOWN
+left = LEFT
+right = RIGHT
+circle = RET
+cross = ESC
+triangle = SHIFT
+square = SPC
+mm_triangle = SHIFT
+mm_square = SPC
+comment = "基本セッティング(カーソルキー移動)"
+
+[KeySetting]
+up = [8]
+down = [2]
+left = [4]
+right = [6]
+circle = RET
+cross = ESC
+triangle = SHIFT
+square = SPC
+mm_triangle = SHIFT
+mm_square = SPC
+comment = "基本セッティング(テンキー移動)"
+
+[KeySetting]
+up =
+down =
+left =
+right =
+circle =
+cross =
+triangle =
+square =
+mm_triangle =
+mm_square =
+comment = "テンプレート"
+

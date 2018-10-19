@@ -1,0 +1,471 @@
+==============================================================================
+  STANDARD TELEVISION INTERFACE CIRCUIT (STIC)
+==============================================================================
+
+If the CP-1600 is the brain of the Intellivision, then the STIC chip 
+(AY-3-8900) is heart.  The STIC chip provide all the display functions
+of the Intellivision, as well as the sole timebase in the machine.
+
+Note:  The files "interrupts.txt", "graphics_mem.txt" and "memory_map.txt"
+contain some details that may not be covered here.  Most notably, I do
+not cover interrupts and interrupt timing issues here.
+
+------------------------------------------------------------------------------
+  FEATURES OVERVIEW
+------------------------------------------------------------------------------
+
+The STIC provides a 167 x 105 pixel field (NTSC) or 168 x 104 pixel field
+(PAL) on which to place movable objects (MOBs).  The visible portion of
+this field is 159 x 96 pixels.
+
+The STIC provides 8 Movable Objects (MOBs) which may be placed anywhere
+on the display.  It also provides a 20 x 12 matrix of 8x8 background cards
+which may be used to display scenery or other game information.
+
+The MOBs are individually programmable, allowing the shape, color, X
+and Y magnification, and other attributes to be selectable on a MOB by 
+MOB basis.  Further, the STIC can compute collision information (called 
+"interaction") for the MOBs.  MOBs can interact with other MOBs, 
+background cards and the screen border.  Interaction can be turned on or 
+off on a per-MOB basis as well.
+
+The STIC offers multiple modes for displaying background cards, including
+Color Stack mode, Colored Squares mode, and Foreground/Background mode.
+
+------------------------------------------------------------------------------
+  COLOR PALETTE
+------------------------------------------------------------------------------
+
+The STIC offers a 16-color palette.  This palette is divided into two
+ranges:  The Primary Color Set and the Pastel Color Set.  The colors
+are assigned numbers as follows.
+
+         Primary Color Set                Pastel Color Set                    
+      ------------------------       -----------------------------          
+       0 Black   4 Dark Green          8 Grey     12 Pink                   
+       1 Blue    5 Green               9 Cyan     13 Light Blue             
+       2 Red     6 Yellow             10 Orange   14 Yellow-Green           
+       3 Tan     7 White              11 Brown    15 Purple                 
+                                                                            
+
+The Primary Color Set is available for most purposes.  The Pastel Color
+Set can only be used in more limited circumstances.  These restrictions
+will be noted in the descriptions below.
+
+------------------------------------------------------------------------------
+  STIC REGISTER SUMMARY
+------------------------------------------------------------------------------
+
+This is a brief summary of the STIC register set.  The operation of
+these registers will be described in detail below.  Note that the STIC
+registers are only available during the VBLANK interval, or when the
+display is blanked.
+
+    ADDRESSES          DESCRIPTION
+  -----------------  ----------------------------------------------
+    $0000 - $0007      MOB X-position registers
+    $0008 - $000F      MOB Y-position registers
+    $0010 - $0017      MOB Attribute registers
+    $0018 - $001F      MOB Collision registers
+    $0020              Display enable
+    $0021              Mode select
+    $0022 - $0027      reserved
+    $0028 - $002B      Color Stack 0 through 3  (colors 0-15)
+    $002C              Display border color (0-15)
+    $002D - $002F      reserved
+    $0030              Horizontal Delay register
+    $0031              Vertical Delay register
+    $0032              Border extension (bit 0=left; bit 1=top)
+    $0033 - $007F      Reserved
+
+
+------------------------------------------------------------------------------
+  THE OBJECT FIELD VS. THE DISPLAYED AREA.
+------------------------------------------------------------------------------
+
+The STIC provides 8 movable objects.  These objects may be placed
+anywhere on a 167 x 105 pixel field (NTSC) or 168 x 104 pixel field (PAL).
+This field is larger than the actual display.  (Recall, the display is
+159 x 96.)  By default, the object field relates to the displayed area 
+like so:
+
+  
+              +--------------------------------------------+
+              |  OBJECT FIELD outer area                   |
+              |   +---------------------------------------+|
+              |   |  DISPLAYED AREA of object field       ||
+              |   |                                       ||
+              |   |                                       ||
+              |   |                                       ||
+              |   |                                       ||
+              |   |                                       ||
+              |   |                                       ||
+              |   |                                       ||
+              |   |                                       ||
+              |   |                                       ||
+              |   |                                       ||
+              |   +---------------------------------------+|
+              +--------------------------------------------+
+
+Notice that the Object Field starts above and to the left of the
+displayed area.  By default, the object field starts 8 pixels to the
+left of the display and 8 pixels above the display.  The right edges of
+the object field and the displayed area touch each other.
+
+The upper left corner of a MOB can be placed anywhere in the object field.
+Because most MOBs are 8x8 pictures, this arrangement allows MOBs to
+slide smoothly off the edges of the screen.  
+
+In contrast, the 20x12 matrix of background cards is restricted to the 159
+x 96 area in the lower-right corner of the object field.  (Or rather, more
+exactly, the 20x12 matrix starts 8 rows below and 8 columns to the right
+of the object field.)  This corresponds to the default displayed area.
+The remaining portion of the object field is blank -- that is, it is
+filled in with the background color, as defined by the given display mode.
+
+Notice that I keep saying "default" in the above discussion when referring
+to the displayed areas.  It is possible to move the object field relative
+to the displayed area.  This is done using the "horizontal delay" and
+"vertical delay" registers.  The effect of these registers is to move the
+object field to the right or downwards relative to the displayed area.
+At the maximum "delay", the object field has the following orientation
+relative to the displayed area:
+
+                 +--------------------------------------------+
+                 |+---------------------------------------+   |
+                 ||                                       |   |
+                 ||                                       |   |
+                 ||                                       |   |
+                 ||                                       |   |
+                 ||                                       |   |
+                 ||                                       |   |
+                 ||                                       |   |
+                 ||                                       |   |
+                 ||                                       |   |
+                 ||                                       |   |
+                 ||        DISPLAYED AREA of object field |   |
+                 |+---------------------------------------+   |
+                 |                    OBJECT FIELD outer area |
+                 +--------------------------------------------+
+
+Note that all background cards and MOBs move with the object field.  Thus,
+the delay registers will cause the blank areas to the top and left of the
+screen to become visible.  Depending on the application, this may or may
+not be desirable.  
+
+The STIC offers two additional control bits, the Border Extension bits
+in location $0032, which address this need.  These work by reducing
+the displayed area along the top edge or left edge.  When one is set,
+an 8-pixel wide area along the corresponding edge is blocked out --
+that is, the area is filled with the border color.  As a result, the
+blank areas of the object field are never visible; rather, only the
+background-card filled areas are visible.  The displayed area affected
+by these bits is indicated with "//", "\\" and "XX" below:
+
+                 +--------------------------------------------+
+                 |+---------------------------------------+   |
+                 ||XX\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\|   |
+                 ||XX\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\|   |
+                 ||//                                     |   |
+                 ||//                                     |   |
+                 ||//                                     |   |
+                 ||//                                     |   |
+                 ||//                                     |   |
+                 ||//                                     |   |
+                 ||//                                     |   |
+                 ||//                                     |   |
+                 ||//      DISPLAYED AREA of object field |   |
+                 |+---------------------------------------+   |
+                 |                    OBJECT FIELD outer area |
+                 +--------------------------------------------+
+
+The net effect of the delay registers and border extension registers is
+to provide a complete mechanism for smoothly scrolling the screen around.
+Careful programming can use these mechanisms to provide the illusion of 
+an infinitely large object field.
+
+MOB coordinates are specified relative to the object field, not the
+displayed area.  Also, a MOB with an X coordinate of 0 behaves as if it
+is disabled.  (Y coordinate of 0 is not special, however.)  Thus,
+with the default display area, the smallest coordinate position where
+a single pixel of an 8x8 MOB is visible is (1, 1).  An 8x8 MOB in that
+position will have a single pixel of the lower right corner of the MOB
+is visible in the upper left corner of the screen.
+
+
+------------------------------------------------------------------------------
+  MOB CONTROLS
+------------------------------------------------------------------------------
+
+The STIC provides 3 registers for controlling each MOB, and a 4th register
+for reading its collision (or "interaction") status.  The registers are 
+laid out as follows:
+
+   X Register:    Address = $0000 + MOB #
+
+      13   12   11   10    9    8    7    6    5    4    3    2    1    0
+    +----+----+----+----+----+----+----+----+----+----+----+----+----+----+
+    | ?? | ?? | ?? | X  |VISB|INTR|            X Coordinate               |
+    |    |    |    |SIZE|    |    |             (0 to 255)                |
+    +----+----+----+----+----+----+----+----+----+----+----+----+----+----+
+
+   Y Register:    Address = $0008 + MOB #
+
+      13   12   11   10    9    8    7    6    5    4    3    2    1    0
+    +----+----+----+----+----+----+----+----+----+----+----+----+----+----+
+    | ?? | ?? | Y  | X  | Y  | Y  |YRES|          Y Coordinate            |
+    |    |    |FLIP|FLIP|SIZ4|SIZ2|    |           (0 to 127)             |
+    +----+----+----+----+----+----+----+----+----+----+----+----+----+----+
+
+   A Register:    Address = $0010 + MOB #
+
+      13   12   11   10    9    8    7    6    5    4    3    2    1    0
+    +----+----+----+----+----+----+----+----+----+----+----+----+----+----+
+    |PRIO| FG |GRAM|      GRAM/GROM Card # (0 to 255)      |   FG Color   |
+    |    |bit3|GROM|     (bits 9, 10 ignored for GRAM)     |   Bits 0-2   |
+    +----+----+----+----+----+----+----+----+----+----+----+----+----+----+
+
+   C Register:    Address = $0018 + MOB #
+
+      13   12   11   10    9    8    7    6    5    4    3    2    1    0
+    +----+----+----+----+----+----+----+----+----+----+----+----+----+----+
+    | ?? | ?? | ?? | ?? |COLL|COLL|COLL|COLL|COLL|COLL|COLL|COLL|COLL|COLL|
+    |    |    |    |    |BORD| BG |MOB7|MOB6|MOB5|MOB4|MOB3|MOB2|MOB1|MOB0|
+    +----+----+----+----+----+----+----+----+----+----+----+----+----+----+
+
+Notice that there are a variety of flag bits packed into each of the 
+registers.  The various flag bits affect the MOBs as follows:
+
+    INTR    If set, this MOB will interact with other MOBs, background
+            cards and the screen borders.  If clear, it will not interact.
+            For two MOBs to interact, both of their INTR bits must be set.
+
+    VISB    If set, the MOB is visible onscreen.  If clear, it is not
+            visible.  The MOB does not need to be visible in order to
+            interact with other MOBs, background cards or the screen border.
+
+    PRIO    If set, the MOB appears behind background cards.  If clear,
+            the MOB appears in front of background cards.  This ordering
+            applies to the visible pixels of the MOB only.  MOBs are first
+            ordered according to their number, with MOB #0 being visible
+            over MOB #1 and so on.  The PRIO bit does not affect MOB-to-MOB
+            priority ordering.
+
+    XSIZE   Controls the magnification of the MOB along the X axis.
+            If clear, the MOB is displayed at normal width (8 pixels).
+            If set, the MOB is displayed at double width (16 pixels).
+
+    YRES    These three bits controls the size and magnification of the
+    YSIZ2   MOB along the Y axis.  To explain their interaction, consult
+    YSIZ4   the following table.  Note that MOBs display with half-pixels
+            vertically, so the displayed height is given in terms of card
+            pixels.
+
+                YRES  YSIZ4  YSIZ2    MOB Resolution   Displayed height
+                  0     0      0          8 x 8            4 pixels
+                  0     0      1          8 x 8            8 pixels
+                  0     1      0          8 x 8           16 pixels
+                  0     1      1          8 x 8           32 pixels
+                  1     0      0          8 x 16           8 pixels
+                  1     0      1          8 x 16          16 pixels
+                  1     1      0          8 x 16          32 pixels
+                  1     1      1          8 x 16          64 pixels
+
+            When YRES is set, the MOB takes its picture information
+            from two consecutive card bitmaps.  The upper half always
+            comes from an even numbered card, and the lower half always
+            comes from an odd numbered card.  Bit #3 in the A register 
+            (the least-significant bit of the card number) is ignored
+            when YRES is set.
+
+            When both YSIZ4 and YSIZ2 are clear, the MOB is displayed
+            using half-pixels vertically.  That is, they have double
+            the vertical resolution of background cards.  The displayed
+            heights above are in terms of full pixels.
+
+    XFLIP   Display the horizontal mirror image of the MOB.
+
+    YFLIP   Display the vertical mirror image of the MOB.
+
+    GRAM/   If set, the bitmap image comes from GRAM.  Otherwise, it
+    GROM    comes from GROM.  
+
+    CARD #  Determines the card # displayed.  This field combines with
+            the GRAM/GROM bit to create a 9-bit card # field.  This allows
+            addressing all 320 pictures contained in GROM and GRAM.  Some 
+            of these bits are ignored in certain circumstances, though:
+
+            Bits 9 and 10 of the attribute register (bits 7 and 6 of 
+            the card #) are ignored when the bitmap comes from GRAM, 
+            or when the display is in Foreground/Background mode.  
+            (This means that only 128 of the 320 pictures are available
+            when the display is in FGBG mode.  GROM cards #64 - #255
+            are unavailable in FGBG mode.)
+
+            Bit 3 of the attribute register (bit 0 of the card number)
+            is ignored if the YRES bit is set. 
+
+            Bits that are ignored by the hardware may be used by 
+            programs to store flags or other information.
+
+    COLL    Set when the MOB interacts with the display borders.
+    BORD
+
+    COLL    Set when the MOB interacts with a set pixel in a background
+     BG     card.  Note that colored-squares colors 0 through 6 are
+            treated as "set", and color 7 is treated as "clear".
+
+    COLL    Set when the MOB interacts with one of the other MOBs 0 through
+    MOBn    7.  Note that a MOB *never* interacts with itself, so its
+            self-collision bit will *never* be set under any circumstance.
+
+            All 10 collision bits are "sticky", meaning that once set by
+            an interaction, they remain set until the CPU clears them.
+            They will remain set even if the INTR bit is subsequently
+            cleared.  The CPU may also artifically set collision bits by
+            writing to the collision registers, although bit #N for MOB
+            #N will never read as 1 even if the CPU tries to set it.
+            Also, writing a new value in bit #X for MOB #Y will not
+            automatically change the value for bit #Y for MOB #X.
+
+
+
+------------------------------------------------------------------------------
+  BACKGROUND CARDS:  Color Stack Mode
+------------------------------------------------------------------------------
+
+The STIC offers two primary modes for displaying background cards:
+Color Stack Mode and Foreground/Background mode.  Color Stack Mode is
+set by READING from the STIC Mode Select at location $0021 during VBLANK.
+
+The background cards are stored in BACKTAB at locations $200 - $2EF.
+The cards are stored in raster order.  That is, the first row is stored
+at $200 - $213, the next row is at $214 - $227, and so on.
+
+In Color Stack mode, each card specifies the following:
+
+ -- The Card # to display from GROM or GRAM.  All 320 pictures are available.
+
+ -- The foreground color of the card.  The 8 primary colors are available
+    to GROM cards, and all 16 colors are available to GRAM cards.
+
+ -- Whether to advance the color stack.  The color stack determines
+    the background color for the card.
+
+This information is packed into the cards like so:
+
+    13   12    11   10    9    8    7    6    5    4    3    2    1    0   
+  +----+-----+----+----+----+----+----+----+----+----+----+----+----+----+ 
+  |Adv.|FG   |GRAM|           GRAM/GROM Card #            |   FG Color   | 
+  |col |Bit3/|GROM|    (0-255 for GROM, 0-63 for GRAM)    |   Bits 0-2   | 
+  |stck|     |    |                                       |              | 
+  +----+-----+----+----+----+----+----+----+----+----+----+----+----+----+ 
+
+
+The Color Stack contains a 4-entry table of colors.  The STIC refers
+to the color stack to set the background colors for cards on the display.
+All 16 colors are available to the color stack.  The STIC resets the
+color stack to position 0 at the start of the display.  It advances
+the color stack when reaching a card with the color stack advance bit
+(bit 13) set.  The STIC advances the color stack immediately, so that
+the card which sets this bit gets the new background color.
+
+The Color Stack is really a circular entity.  If the display asks the
+STIC to advance beyond position 3 in the color stack, the STIC wraps
+the color stack back around to position 0.
+
+Notes:  
+
+ -- Bit #3 of the foreground color must be 0 when selecting a card
+    from GROM.  This is because Bits 11 and 12 are used to select Colored
+    Squares mode, as discussed in the next section.
+
+ -- Bits 9 and 10 of the card number are ignored for cards coming from
+    GRAM.  Thus, these bits may be used for storing other status for
+    pictures coming from GRAM.
+
+ -- Pixels that are "on" in the background cards will interact with MOBs.
+    Pixels that are "off" will not.  Color doesn't matter.
+
+ -- Bits 14 and 15 are ignored by the STIC and can be used by your
+    program to store whatever information you'd like.  This is true in
+    all display modes -- these bits are not physically connected to the
+    STIC.
+
+------------------------------------------------------------------------------
+  BACKGROUND CARDS:  Colored Squares Mode
+------------------------------------------------------------------------------
+
+Colored Squares mode isn't really a display mode, per se, but rather a
+special way of displaying individual cards in Color Stack mode.  To display
+colored squares, the STIC must be set in Color Stack mode.  Color Stack 
+Mode is set by READING from the STIC Mode Select at location $0021 during 
+VBLANK.
+
+To display a given card in Colored Squares mode, set bit 12 to 1, and
+bit 11 to 0.  This causes the card to be displayed as a Colored Squares
+card rather than a Color Stack card.  In Colored Squares mode, the other
+bits of the card are interpreted as follows:
+
+    13   12   11   10    9    8    7    6    5    4    3    2    1    0    
+  +----+----+----+----+----+----+----+----+----+----+----+----+----+----+  
+  |Pix3|  1 |  0 | Pix. 3  | Pix. 2 color | Pix. 1 color | Pix. 0 color |  
+  |Bit2|    |    | bit 0-1 |    (0-7)     |    (0-7)     |    (0-7)     |  
+  +----+----+----+----+----+----+----+----+----+----+----+----+----+----+  
+                                                                         
+The four pixels are displayed within an 8x8 card like so:
+                        
+                               +-----+-----+                             
+                               |Pixel|Pixel|                             
+                               |  0  |  1  |                             
+                               +-----+-----+                             
+                               |Pixel|Pixel|                             
+                               |  2  |  3  |                             
+                               +-----+-----+                             
+
+Notes:
+
+ -- Colors 0 through 6 display directly from the Primary Color Set.
+
+ -- Color 7 actually displays the current color on the top of the 
+    color-stack.
+
+ -- Colors 0 through 6 behave as "on" pixels that will interact with
+    MOBs.  Color 7 behaves as "off" pixels and does not interact with MOBs.
+
+ -- Bits 14 and 15 are ignored by the STIC and can be used by your
+    program to store whatever information you'd like.  This is true in
+    all display modes -- these bits are not physically connected to the
+    STIC.
+
+------------------------------------------------------------------------------
+  BACKGROUND CARDS:  Foreground/Background Mode
+------------------------------------------------------------------------------
+
+Foreground/Background (FGBG) mode is a more flexible display mode than 
+Color Stack in some ways, although it can be more restrictive in others.  
+Foreground/Background mode is selected by WRITING to the STIC Mode Select 
+at location $0021 during VBLANK.
+
+In FGBG mode, the contents of the color stack are ignored.  Rather, the
+STIC reads the foreground and background color information directly from
+each card's information in BACKTAB.  In this mode, each card specifies
+the following:
+
+ -- Foreground color.  These are restricted to the primary color set.
+
+ -- Background color.  All 16 colors are available.
+
+ -- Card #.  Only GROM cards #0 - #63 and GRAM cards #0 - #63 are
+    available.  GROM cards #64 - #255 are unavailable.  These card
+    numbers are also not available to MOBs in this mode (!).
+
+The display word is formatted as follows in FGBG mode:
+
+    13   12   11   10    9    8    7    6    5    4    3    2    1    0   
+  +----+----+----+----+----+----+----+----+----+----+----+----+----+----+ 
+  |BG  |BG  |GRAM|BG  |BG  |      GRAM/GROM Card #       |   FG Color   | 
+  |Bit2|Bit3|GROM|Bit1|Bit0|          (0 - 63)           |   Bits 0-2   | 
+  +----+----+----+----+----+----+----+----+----+----+----+----+----+----+ 
+
+

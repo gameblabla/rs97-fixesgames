@@ -1,0 +1,20 @@
+
+armor:     $502D            left  = $DE
+bodyslam:  $5662            right = $9C
+chipshta:  $5FE5            left  = $9E
+defender:  $71FD            right = $00
+digdug:    $6DA8
+           $6DB4
+diner:     $6796
+frogbog:   $5A6B
+           $5A71
+horserac:  $5F1E            right = $D9
+novablst:  $509D
+           $509F
+routlette: $5027            left  = $5E, right = $1E
+scooby:    $6E74
+spiker:    $97EE            left  = $7E, right = $7E
+           $97F0
+subhunt:   $502C
+venture:   $5940            right = $9A
+

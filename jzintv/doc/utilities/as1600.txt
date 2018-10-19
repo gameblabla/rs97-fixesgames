@@ -1,0 +1,756 @@
+==============================================================================
+  AS1600 Quick-and-Dirty Documentation
+==============================================================================
+
+All of the other C and H files in the source directory (except as1600.c)
+come from the public-domain retargetable Frankenstein Assembler by
+Mark Zenier.  The Yacc description for the CP-1600 was written based
+loosely on the existing as2650 description, and was written by yours
+truly, Joe Zbiciak.
+
+The Frankenstein Assembler is in the public domain.  My modifications
+to the Frankenstein Assembler are hereby placed under GPL.  (Eventually,
+I plan to clean up the 100s of warnings that GCC spews out for the 
+code.  Eventually.)
+
+Note:  General documentation for Frankenstein is in the file 'as1600.ps'.
+The full, original source for the Frankenstein Assembler can be
+downloaded from
+
+    http://spatula-city.org/~im14u2c/intv/franky.zip
+
+Have fun.  Questions, problems:  intvnut AT gmail.com (Joe Zbiciak)
+
+QuickStart:
+
+ -- To invoke the assembler on the source file "program.asm", producing
+    the listing file "program.lst" and the object binary "program.rom",
+    issue the following command:
+
+        as1600 -o program.rom -l program.lst program.asm
+
+    Any errors will be recorded in the assembly listing file.  The
+    output is in Intellicart .ROM format.  To generate a BIN+CFG format
+    output instead, run:
+
+        as1600 -o program.bin -l program.lst program.asm
+
+    This will generate "program.bin" and "program.cfg" instead of
+    "program.rom".
+
+Some additional quick notes not covered in the Postscript documentation:
+
+ -- As of Release 004, AS1600 supports the following new directives and
+    operators: MACRO, REPEAT/RPT, ERR, STRLEN, ASC and LISTING.  See
+    "Major New  Directives And Operators" below for REPEAT, ERR, STRLEN
+    and ASC.   Macros are covered separately in the file "macros.txt".
+
+ -- as1600 outputs either BIN+CFG or Intellicart ROM formats.  It
+    can handle arbitrary memory maps as a result.
+
+    NOTE:  Generating .ROM format directly gives you exact control
+    over every memory range's memory attributes.  The .CFG format
+    does not give exact control, although it is good enough for most
+    purposes.
+
+ -- To generate a BIN and CFG file from a .ROM, use the "rom2bin" utility.
+    The rom2bin utility will determine the memory map from the .ROM
+    file and generate an appropriate BIN and CFG file from the assembler
+    output.
+
+ -- To generate a .ROM from a BIN and CFG file, use the "bin2rom" utility.
+    The .ROM utility will parse the CFG and construct a .ROM file from
+    your BIN.  
+
+    Note:  The .CFG format cannot express the full flexibility of the
+    .ROM format.  If you're writing code which uses the Intellicart
+    in advanced ways, you may run into issues with the .CFG format.
+    That said, most sane programs have no problem with the .CFG format.
+
+ -- I've added support for "include paths."  The "-i pathname" adds
+    a directory to the include-path.  Also, the environment variable
+    AS1600_PATH can specify additional directories to search. 
+    The search order for an INCLUDE is:
+
+     -- Current directory
+     -- Directories specified on command line
+     -- Directories specified in AS1600_PATH environment variable
+
+    For the AS1600_PATH environment variable, individual directory
+    names should be separated by semicolons.  For example:
+
+        "/path/to/dir1;path/to/dir2;/path/to/dir3"
+
+    The AS1600_PATH environment variable can be set from DOS using
+    the SET command:
+
+        SET AS1600_PATH="C:\path\to\dir1;C:\path\to\dir2"
+
+    It can be set under UNIX and Linux by simple assignment.  Under Bourne
+
+    It can be set under UNIX and Linux by simple assignment.  Under Bourne
+    shell, the correct syntax is:
+
+        AS1600_PATH="/path/to/dir1:/path/to/dir2"
+        export AS1600_PATH
+
+    Under C-Shell and tcsh, the correct syntax is:
+
+        setenv AS1600_PATH "/path/to/dir1:/path/to/dir2"
+
+
+ -- AS1600 Syntax differs sligthly from Carl's assembler.  This assembler 
+    is much stricter about using GI's proper syntax.  Also, procedure
+    declarations are handled differently.
+
+             Carl's:                      Frankenstein:
+
+    ROMWIDTH EQU 10                       ROMWIDTH 10
+    PROC     FOO                  FOO:    PROC
+             XORI  $123, R0               XORI #$123, R0
+    @@LBL:                        @@LBL:  MVII #$123, R0
+             MVII  $123, R0             
+    ENDP                                  ENDP
+             JSR   R5,FOO.LBL             CALL FOO.LBL
+
+ -- This assembler recognizes "SP" as an alias for R6, and "PC" as an 
+    alias for R7.
+
+ -- This assembler supports a large number of pseudo-ops:
+
+        TSTR Rx     -->   MOVR Rx, Rx
+        CLRR Rx     -->   XORR Rx, Rx
+        PSHR Rx     -->   MVO@ Rx, SP
+        PULR Rx     -->   MVI@ SP, Rx
+        JR   Rx     -->   MOVR Rx, PC
+        CALL addr   -->   JSR  R5, addr
+        BEGIN       -->   MVO@ R5, SP
+        RETURN      -->   MVI@ SP, PC
+
+ -- It also supports a number of CP-1600-specific directives:
+
+        DCW         -->   Emit words to binary.  Same as DECLE.
+        DECLE       -->   Same as DCW, similar to BYTE.
+        BIDECLE     -->   Outputs word in DBD format.  Same as WORD.
+        ROMWIDTH    -->   Sets ROM width (default is 16.)
+        ROMW        -->   Alias for ROMWIDTH
+
+        STRUCT/ENDS -->   SEE BELOW
+        MEMATTR     -->   SEE BELOW
+        ORG         -->   SEE BELOW
+        RMB/RESERVE -->   SEE BELOW
+
+    The BYTE, DCW, DECLE, BIDECLE and WORD directives have somewhat odd
+    definitions.  This is due to the fact that I've adapted an 8-bit
+    assembler for a machine that is not byte-addressable.  Further
+    complicating things is the fact that the width of the output word is 
+    variable.  Here is a short description of each:
+
+        BYTE:    Emits a single byte (in the range 0..255) to the output.
+                 The byte occupies exactly one location in the output.
+                
+        DECLE:   Emits a single word to the output.  The allowed range 
+                 of values determined by the ROM width.  For instance, if 
+                 the ROM width is 10, then the allowed range is $000 - $3FF.
+                 If the ROM width is 16, then the allowed range is $0000 - 
+                 $FFFF.  The value will occupy exactly one location in 
+                 the output.
+
+        BIDECLE: Divides a 16-bit word into two 8-bit values.  It outputs
+                 the lower 8 bits first, followed by the upper 8 bits.
+                 This is sometimes known as "DBD format".  The value
+                 will occupy exactly two locations in the output.
+
+        WORD:    Identical to BIDECLE.
+    
+
+ -- This assembler will automatically insert SDBDs in many cases
+    for immediate-mode instructions.  See the description of ROMW
+    (next bullet) for more details.
+
+ -- The ROMW directive accepts one or two parameters.  The first
+    parameter is the ROM width.  The second parameter changes the
+    the assembler's behavior on immediate values.  The default
+    is Mode 0 -- assume forward references do not need SDBD.  
+    You can change this to Mode 1 -- assume forward references DO
+    need SDBD.
+
+    Ordinarily, the assembler automatically inserts SDBD instructions
+    for immediate operands as is necessary.  However, this does not
+    work when an expression or symbol is not yet defined (eg. a forward
+    reference).  By default, the assembler assumes these references
+    will fit within the ROM width, and it requires you to explicitly
+    provide SDBD where they won't.  In Mode 1, the assembler will
+    insert an SDBD in this case, and issue a warning telling you it
+    did so.
+
+
+Limitations:
+
+ -- Error reporting isn't all that great when constant widths overflow
+    the ROM width.  All you get is "expression exceeds available field 
+    width", which isn't 100% descriptive.
+
+ -- When using SDBD Mode 0 (see ROMW description above), you will still
+    need to use SDBDs when making forward references which will not fit 
+    in the immediate field width.  There are also certain pathelogical
+    cases in *both* SDBD modes where you will need to insert an explicit
+    SDBD.  Honestly, just set ROMW 16 and don't sweat the details.  :-)
+
+ -- Code which works with Carl's assembler will not work with this
+    one out-of-the-box, due to the difference in syntax on immediate-mode 
+    instructions.
+
+ -- Multiple ORG statements or ROM images with gaps are supported,
+    but one must still take care to stay within the desired memory map.
+    There is no protection against spilling into areas of the memory
+    map that you don't want to be in.  See the "world" example in the
+    "examples" directory for an example of a program that is larger than
+    8K words.
+
+
+==============================================================================
+  Major New Directives And Operators
+==============================================================================
+
+I've made some additions to as1600 to support Intellicart bank switching,
+overlays, and so on.  To do this, I've extended "ORG" and "RMB" (aka
+RES or RESERVE), and I've added a new directive "MEMATTR" below.
+
+------------------------------------------------------------------------------
+    [label] ORG  inty_addr [, icart_addr[, icart_attr]]
+------------------------------------------------------------------------------
+
+Sets the current program counter, and optionally a different load address
+within the Intellicart's address space.  It can also specify the memory
+attributes for the given range of addresses in the Intellivision's
+address map.
+
+ -- inty_addr is the address at which the code will appear in the
+    Intellivision address map.
+
+ -- icart_addr is the address at which the code will be loaded
+    into the Intellicart address map.  If unspecified, "icart_addr ==
+    inty_addr".
+
+ -- icart_attr is a string defining the attributes for this
+    range of memory.  The icart_attr defaults to "+R" if "icart_addr ==
+    inty_addr", or "" if "icart_addr != inty_addr".  See the description
+    below for a definition of "icart_attr" strings.
+
+    NOTE:  The memory attributes are assigned on the corresponding
+    range of addresses in the Intellicarts's address map, not the
+    Intellivision's.  If you are constructing overlays, you will need
+    to set the attributes on the overlay window separately.
+
+
+EXAMPLE: Overlaid Tables
+
+This example assembles two pairs of lookup tables.  They both pairs are 
+intended to reside at $6000 in the Intellivision memory map, but one will 
+be loaded at $0000 in the Intellicart address space and the other will be 
+loaded at $1000.  The tables can be selected using the Intellicart's
+bankswitching functionality.
+
+
+        ; Set up TABLE1A/TABLE1B to load at $0000 in Intellicart.  
+        ; The symbols for TABLE1A and TABLE1B will show them residing
+        ; at $6000 and $6010.
+
+        ORG      $6000,  $0000,  "-RWBN"  
+TABLE1A PROC
+        DECLE    0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15
+        ENDP
+TABLE1B PROC
+        DECLE    0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15
+        ENDP
+
+        ; Set up TABLE2A/TABLE2B to load at $1000 in Intellicart.  
+        ; The symbols for TABLE2A and TABLE2B will show them residing
+        ; at $6000 and $6010.
+
+        ORG      $6000,  $1000,  "-RWBN"  
+TABLE2A PROC
+        DECLE    0,-1,-2,-3,-4,-5,-6,-7,-8,-9,-10,-11,-12,-13,-14,-15
+        ENDP
+TABLE2B PROC
+        DECLE    0,-1,-2,-3,-4,-5,-6,-7,-8,-9,-10,-11,-12,-13,-14,-15
+        ENDP
+
+        ; Finally, reserve some readable memory at $6000 that is 
+        ; bankswitched, so that we can switch in these tables on the
+        ; fly:
+
+        ORG      $6000,  $6000,  "=RB"
+        RMB      32      ; Each pair of tables is 32 words long
+
+------------------------------------------------------------------------------
+    [label] RMB      count
+    [label] RES      count
+    [label] RESERVE  count
+------------------------------------------------------------------------------
+
+Advances the program counter by 'count' words, without defining the
+contents of the storage.  The range of addresses are assigned the
+currently active memory attributes as specified in the most recent
+"ORG" statement.
+
+The RMB (aka RES or RESERVE) directive is useful for allocating storage
+to global and local variables without having to manually assign addresses
+to objects.  In conjunction with ORG, it's also useful for allocating 
+bankswitched ranges as shown above.
+
+------------------------------------------------------------------------------
+    MEMATTR icart_attr, addr_lo, addr_hi
+------------------------------------------------------------------------------
+
+Adjusts attributes on an inclusive range of addresses in the
+Intellivision's address map.  This directive should be used carefully
+and sparingly.  The most common use of MEMATTR is to mark a range of
+uninitialized memory as read/write and possibly bankswitched.
+
+MEMATTR is provided as an "out" for unforseen circumstances.
+Most programs shouldn't need it, and should use ORG and RMB together.
+
+------------------------------------------------------------------------------
+    [label]            STRUCT [addr]  
+    @@[local_label]:   EQU    $ + offset
+                       ENDS
+------------------------------------------------------------------------------
+
+The STRUCT directive is very similar to PROC.  It is an enclosure that
+is intended to make it easy to define a set of related symbols.  It
+supports local labels in a manner similar to PROC.  STRUCTs cannot nest,
+and cannot be contained within PROCs.  STRUCTs are ended by the ENDS
+directive.
+
+The primary difference of STRUCT as compared to PROC is that it accepts 
+a starting address.  Also, the main program counter is not advanced while 
+a STRUCT is active.  STRUCTs have their own private program counter.  This 
+makes them useful for defining the structure of objects in memory, such 
+as peripherals.  
+
+Consider this example from gimini.asm.  It defines a set of labels named
+PSG0.register which map to the 16 registers in the Programmable Sound
+Generator.  In this example, notice how '$' expands to the address of the
+STRUCT itself ($1F0).
+
+PSG0            STRUCT  $01F0
+
+@@chn_a_lo      EQU     $ + 0   ; Channel A period, lower 8 bits of 12
+@@chn_b_lo      EQU     $ + 1   ; Channel B period, lower 8 bits of 12
+@@chn_c_lo      EQU     $ + 2   ; Channel C period, lower 8 bits of 12
+@@envlp_lo      EQU     $ + 3   ; Envelope period,  lower 8 bits of 16
+
+@@chn_a_hi      EQU     $ + 4   ; Channel A period, upper 4 bits of 12
+@@chn_b_hi      EQU     $ + 5   ; Channel B period, upper 4 bits of 12
+@@chn_c_hi      EQU     $ + 6   ; Channel C period, upper 4 bits of 12
+@@envlp_hi      EQU     $ + 7   ; Envelope period,  upper 8 bits of 16
+
+@@chan_enable   EQU     $ + 8   ; Channel enables (bits 3-5 noise, 0-2 tone)
+@@noise         EQU     $ + 9   ; Noise period (5 bits)
+@@envelope      EQU     $ + 10  ; Envelope type/trigger (4 bits)
+
+@@chn_a_vol     EQU     $ + 11  ; Channel A volume / Envelope select (6 bits)
+@@chn_b_vol     EQU     $ + 12  ; Channel B volume / Envelope select (6 bits)
+@@chn_c_vol     EQU     $ + 13  ; Channel C volume / Envelope select (6 bits)
+
+@@io_port0      EQU     $ + 14  ; I/O port 0 (8 bits)
+@@io_port1      EQU     $ + 15  ; I/O port 1 (8 bits)
+
+                ENDS
+
+STRUCT can also be useful for constructing a set of related constants
+under a single umbrella.  Consider the following example, adapted from
+gimini.asm:
+
+PSG             STRUCT  $0000   ; Constants, etc. common to both PSGs.
+
+                ;;----------------------------------------------------------;;
+                ;; Bits to OR together for Channel Enable word              ;;
+                ;;----------------------------------------------------------;;
+@@tone_a_on     EQU     00000000b   
+@@tone_b_on     EQU     00000000b
+@@tone_c_on     EQU     00000000b
+@@noise_a_on    EQU     00000000b
+@@noise_b_on    EQU     00000000b
+@@noise_c_on    EQU     00000000b
+
+@@tone_a_off    EQU     00000001b
+@@tone_b_off    EQU     00000010b
+@@tone_c_off    EQU     00000100b
+@@noise_a_off   EQU     00001000b
+@@noise_b_off   EQU     00010000b
+@@noise_c_off   EQU     00100000b
+
+                ENDS
+
+Notice that this example does not make use of the STRUCT's address.
+Therefore, the address was set to 0.
+
+
+And finally a word of warning:  While one may include code inside a 
+STRUCT, this is strongly discouraged.  The results of such an action 
+are NOT well defined.
+
+
+------------------------------------------------------------------------------
+    Syntax of icart_attr
+------------------------------------------------------------------------------
+
+The "icart_attr" argument is a case-insensitive string whose format is
+similar to the UNIX "chmod" command.  The string may specify relative
+or absolute attributes for the particular range of addresses.  Because
+attribute mode changes are processed in linear order at assembly time,
+the final value of the memory attributes for a given range of addresses
+is determined by the order in which attributes are applied.  For this
+reason, avoid specifying overlapping attributes that conflict.
+
+Attribute strings take on the following forms:
+
+  [{ACTION}{FLAGS}[,{ACTION}{FLAGS}]]
+
+ACTION is one these characters:
+
+  +    Set the following flag bits
+  -    Clear the following flag bits
+  =    Set the memory attributes to this exact pattern of flags
+
+FLAGS is a list of characters from the following set:
+
+  R    Readable
+  W    Writable
+  N    Narrow (8-bit memory -- not supported by Intellicart.)
+  B    Bank-switchable
+
+Notes:
+  -- Up to two actions may be specified, but the "=" action
+     only makes sense when used alone.
+
+  -- Attribute strings are case insensitive, and the
+     ordering within a set of flags is unimportant.
+
+  -- Empty strings are valid, and represent "no change" on 
+     memory attributes.
+
+Examples:
+
+  "+RWN"   ; Add readable, writable and 8-bit flags to memory
+  "+RB"    ; Add readable and bank-switchable to memory
+  "-W"     ; Remove writable flag from memory.
+  "=RW"    ; Mark memory as exactly readable and writable.
+  "+RB,-W" ; Add readable, bank-switchable, remove writable
+
+This syntax is probably overkill, and it certainly provides the programmer
+with enough rope to shoot himself in the foot.  ;-)  But that's what
+assembly's all about, right?
+
+
+------------------------------------------------------------------------------
+    REPEAT [constant expression]    
+    ; block to repeat
+    ENDR
+
+ or: 
+
+    RPT [constant expression]    
+    ; block to repeat
+    ENDR
+------------------------------------------------------------------------------
+
+The REPEAT directive causes the enclosed block to be repeated in the
+output file the specified number of times.  The argument must be a
+constant expression -- that is, an expression whose exact value is 
+known at the point the REPEAT block is first reached.
+
+The mnemonic "RPT" is a synonym for REPEAT.
+
+The repeat count must be >= 0.  If the count == zero, the enclosed
+block is skipped -- that is, no code object code is generated for the
+enclosed block.  If the count == 1, the block is copied and assembled
+as-is.  If the count > 1, then the block is copied and assembled a 
+total of 'count' times -- once within the REPEAT/ENDM block, and count-1
+times immediately following ENDM.
+
+When the count is larger than 1, the assembler will insert comments
+to delimit the repeated copies.  
+
+EXAMPLE #1:
+
+    ; Copy 8 words 
+    REPEAT 8 
+    MVI@ R4, R0
+    MVO@ R0, R5
+    ENDM
+
+This assembles to (from the listing file):
+
+                            ; Copy 8 words
+                            REPEAT 8
+0000 02a0                   MVI@ R4, R0
+0001 0268                   MVO@ R0, R5
+                            ENDR
+                        ;== 1
+0002 02a0                   MVI@ R4, R0
+0003 0268                   MVO@ R0, R5
+                        ;== 2
+0004 02a0                   MVI@ R4, R0
+0005 0268                   MVO@ R0, R5
+                        ;== 3
+0006 02a0                   MVI@ R4, R0
+0007 0268                   MVO@ R0, R5
+                        ;== 4
+0008 02a0                   MVI@ R4, R0
+0009 0268                   MVO@ R0, R5
+                        ;== 5
+000a 02a0                   MVI@ R4, R0
+000b 0268                   MVO@ R0, R5
+                        ;== 6
+000c 02a0                   MVI@ R4, R0
+000d 0268                   MVO@ R0, R5
+                        ;== 7
+000e 02a0                   MVI@ R4, R0
+000f 0268                   MVO@ R0, R5
+                        ;== 8
+
+
+EXAMPLE #2:
+
+    ; Just copy 1 word
+    REPEAT 1
+    MVI@ R4, R0
+    MVO@ R0, R5
+    ENDR
+
+This assembles to (from the listing file):
+
+                            ; Just copy one word
+                            REPEAT 1
+0000 02a0                   MVI@ R4, R0
+0001 0268                   MVO@ R0, R5
+                            ENDR
+
+EXAMPLE #3:
+
+    ; No code will be generated
+    REPEAT 0
+    MVI@ R4, R0
+    MVO@ R0, R5
+    ENDR
+
+This assembles to (from the listing file):
+                            ; No code will be generated
+                            REPEAT 0
+                            MVI@ R4, R0
+                            MVO@ R0, R5
+                            ENDR
+
+Notice that although the lines from the source appear in the listing
+file, no code was generated (nothing appears to the left of the code).
+
+
+RESTRICTIONS:
+
+ -- Repeat counts must be >= 0.  
+ -- Repeat blocks may not nest.
+ -- Repeat blocks may not cross file boundaries.
+ -- Repeat blocks may not contain INCLUDE directives.
+
+Other details:
+
+ -- Repeat blocks are processed after macro expansion.  Repeat blocks
+    may therefore contains expanded macros.
+
+ -- Errors reported for repeated lines contain the line number of the 
+    original line.  In the case of a macro-expanded line, this line 
+    number will be the line of the pre-expansion source line.
+
+ -- MACRO definitions contained within a repeat block will not be repeated.
+    All other text within the repeat block *will* be repeated.
+
+
+------------------------------------------------------------------------------
+    ERR "string"
+------------------------------------------------------------------------------
+
+This directive issues an assembler error with the indicated message string.
+This is intended to be used inside a conditional-assembly directive,
+in order to indicate that some condition was not met.
+
+Potential uses include error-checking for macro arguments, and checking
+to ensure assembly did not extend beyond certain ROM boundaries.
+
+Example:
+
+    IF ($ > $7000)
+        ERR "Program code extends beyond location $7000."
+    ENDI
+
+------------------------------------------------------------------------------
+    LISTING "on"
+    LISTING "off"
+    LISTING "code"
+    LISTING "prev"
+------------------------------------------------------------------------------
+
+Controls the listing file generation mode.  The default is "on", where
+all source code lines are echoed to the listing file.  The mode "off" 
+causes no lines to be echoed to the listing file.  The mode "code" causes
+only those lines which generate object code to be echoed to the listing
+file.  
+
+Whenever a LISTING directive is encountered, the assembler pushes the
+previous mode onto a "listing mode stack".  To return to the previous
+listing mode, use the listing mode "prev".  The listing mode stack is
+255 modes deep.  Overflowing this stack is not an error.  The dropped
+entries are replaced with the mode "on".
+
+The main purpose of the "code" listing mode is within macros that have
+extensive conditional-assembly directives.  By including a LISTING "code"
+directive at the beginning and a LISTING "prev" directive at the end,
+one can produce rather clean macro assemblies.  Consider, for example,
+this beast:
+
+MACRO   gfx_row s
+        LISTING "code"
+        ; start of graphics definition
+_gfx_x  SET 0
+_gfx_b  SET $8000
+_gfx_w  SET (_gfx_w SHR 8)
+        REPEAT 8
+_gfx_w  SET (_gfx_w + _gfx_b*((ASC(%s%,_gfx_x)<>$20) AND (ASC(%s%,_gfx_x)<>$2E) 
+AND (ASC(%s%,_gfx_x)<>0)))
+_gfx_x  SET _gfx_x + 1
+_gfx_b  SET _gfx_b SHR 1
+        ENDR
+_gfx_eo SET _gfx_eo + 1
+        IF  _gfx_eo = 2
+        DECLE _gfx_w
+_gfx_eo SET 0
+        ENDI
+        LISTING "prev"
+ENDM
+
+Now consider the following code which invokes this macro:
+
+_gfx_eo SET 0
+_gfx_w  SET 0
+    gfx_row   ".######."
+    gfx_row   "#......#"
+    gfx_row   "#.#..#.#"
+    gfx_row   "#......#"
+    gfx_row   "#.#..#.#"
+    gfx_row   "#..##..#"
+    gfx_row   "#......#"
+    gfx_row   ".######."
+
+
+The following listing output is generated, thanks to the LISTING "code"
+and LISTING "prev" directives:
+
+                        ;   gfx_row   ".######."
+                        ;   gfx_row   "#......#"
+0000 817e                       DECLE _gfx_w
+                        ;   gfx_row   "#.#..#.#"
+                        ;   gfx_row   "#......#"
+0001 81a5                       DECLE _gfx_w
+                        ;   gfx_row   "#.#..#.#"
+                        ;   gfx_row   "#..##..#"
+0002 99a5                       DECLE _gfx_w
+                        ;   gfx_row   "#......#"
+                        ;   gfx_row   ".######."
+0003 7e81                       DECLE _gfx_w
+
+
+
+------------------------------------------------------------------------------
+    STRLEN ("string")
+------------------------------------------------------------------------------
+
+This operator returns the length of the enclosed string.  This length is
+a constant expression and can be used in SET/EQU directives, or as the
+argument to a REPEAT block.
+
+This operator is mostly useful in a macro context.
+
+------------------------------------------------------------------------------
+    ASC ("string", index)
+------------------------------------------------------------------------------
+
+This operator returns the ASCII value of the character at given index 
+within the string.  ASC returns 0 for indices that are beyond the end
+of the string.  The index must be a constant expresion.  ASC returns
+a constant expression, and so can be used in SET/EQU directives, or
+as the argument of a REPEAT block.
+
+This operator is mostly useful in a macro context.
+
+------------------------------------------------------------------------------
+    label QSET expr     => "Quiet" SET
+    label QEQU expr     => "Quiet" EQUate
+------------------------------------------------------------------------------
+
+These directives behave identically to SET/EQU, except that they mark
+the symbol as "quiet."  A "quiet" symbol functions like an ordinary
+symbol, but will not appear in AS1600's symbol table output.
+
+This is useful inside macros to keep macro-internal symbols from
+cluttering up the symbol table and listing output files.
+
+
+------------------------------------------------------------------------------
+    WMSG "string" => Warning message
+    CMSG "string" => Comment message
+    SMSG "string" => Status message
+------------------------------------------------------------------------------
+
+These three related directives write out messages of various forms:
+
+ -- WMSG writes out an assembler warning from "string"
+
+ -- CMSG writes out a comment message in the listing from "string"
+
+ -- SMSG writes out a status message in the listing and to stdout 
+    from "string"
+
+
+------------------------------------------------------------------------------
+    Stringification operators:
+        $( expr-list )      => Stringify expr-list
+        $#( expr )          => Render expr as signed decimal string
+        $$( expr )          => Render expr as a 4 character hex string
+        $%( expr )          => Render expr as an 8 character hex string
+------------------------------------------------------------------------------
+
+These operators produce strings that are usable in most contexts 
+that require or accept strings.  The only exceptions are INCLUDE,
+ORG and LISTING directives.
+
+The generic stringify operator $( ) produces a string from the lower
+byte of each value in expr-list.  If one of the expressions in the
+list is undefined or not computable, stringify will substitute in a 
+question mark ('?').
+
+The numeric stringify operators $#( ), $$( ), and $%( ) return a
+string rendered either as a signed decimal value, 4 character hex
+value or 8 character hex string.  If the value is undefined or
+not computable, the stringify operator will return an appropriate
+number of question marks.
+
+NOTE:  The generic stringify operator $( ) assumes no character
+translation is currently active, and will warn if it detects that
+a translation table is currently active.  It warns due to the
+potential for a subtle interaction between these two features.
+
+Strings decay to expression lists as needed.  AS1600 applies
+character translations when converting strings to expression lists.
+The stringify operator takes expression lists and converts them back
+into strings.  That makes complicated expressions such as this work:
+
+ SMSG $(" Game size:  $", $$(_SIZE), " (", $#(_SIZE), " decimal) words")
+
+However, when a character translation table is active, the string
+gets converted when decaying to an expression list.  When $( )
+then converts the list back into a string, there is no way to do
+a reverse mapping.
+

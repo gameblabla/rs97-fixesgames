@@ -1,0 +1,39 @@
+
+Chad's email:
+
+------------------------------------------------------------------------------
+
+  Anyways, I was wondering if you could slap together a program to test the
+  bankswitching code.  I basically implemented your suggestion.  Namely,
+  writes to 0x0040 to 0x005F are loaded into the bankswitch table, with the
+  following simple mapping:
+
+      0x0040          0x0000 - 0x07FF
+      0x0041          0x1000 - 0x17FF
+      ...
+      0x004F          0xF000 - 0xF7FF
+      0x0050          0x0800 - 0x0FFF
+      0x0051          0x1800 - 0x1FFF
+      ...
+      0x005F          0xF800 - 0xFFFF
+
+  where the number on the left is the address to which you write the remap
+  bits, and the numbers on the right are the window (as seen from the intv)
+  that will be remapped internally by the SX.  So to remap 0x5000-0x57FF in
+  INTV space to 0x1000 - 0x17FF in Intellicharger RAM space, you'd write
+  0x0010 to address 0x0041.  I guess that implicitly states what I haven't,
+  which is that the remap bits are grabbed from the lower 8 bits of the
+  written data.
+
+  Of course, to allow this remapping to occur, you'd have to set the remap
+  enable bit for 0x5000 to 0x57FF when the enable tables are downloaded to
+  the SX.
+
+------------------------------------------------------------------------------
+
+Additional details:
+
+ -- The remapping works by XORing the 8 bit value that was written to
+    the bank-switch register with the 8 MSBs of the address.
+
+

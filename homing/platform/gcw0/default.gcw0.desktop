@@ -1,0 +1,11 @@
+[Desktop Entry]
+Name=Homing Fever
+Comment=Addictive missile dodging game
+Exec=fever.elf
+Terminal=false
+Type=Application
+StartupNotify=true
+Icon=fever
+X-OD-Manual=gcw0.man.txt
+Categories=games;
+

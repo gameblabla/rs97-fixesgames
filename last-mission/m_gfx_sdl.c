@@ -189,12 +189,14 @@ void LM_GFX_Flip(unsigned char *p)
   int x, y;
   uint32_t *s = (uint32_t*)screen->pixels;
   uint32_t *d = (uint32_t*)ScreenSurface->pixels;
-  for(y=0; y<240; y++){
+		for(uint8_t y2 = 0; y2 < 240; y2++, s += 160, d += 320) 
+			memmove(d, s, 1280); // double-line fix by pingflood, 2018
+  /*for(y=0; y<240; y++){
     for(x=0; x<160; x++){
       *d++ = *s++;
     }
     d+= 160;
-  }
+  }*/
   if(SDL_MUSTLOCK(ScreenSurface)) SDL_UnlockSurface(ScreenSurface);
   SDL_Flip(ScreenSurface);
 #else

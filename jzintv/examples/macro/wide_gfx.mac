@@ -1,0 +1,187 @@
+;; ======================================================================== ;;
+;;  WIDE_GFX.MAC                                                            ;;
+;;                                                                          ;;
+;;  MACROS DEFINED IN THIS FILE:                                            ;;
+;;      wgfx_start n     Start a packed graphic of width 'n' pixels         ;;
+;;      wgfx     s       Add an 8-pixel wide row to a packed graphic        ;;
+;;      wgfx_flush       End a packed graphic                               ;;
+;;                                                                          ;;
+;;  These macros allow defining graphics wider than a single tile.  The     ;;
+;;  wide graphics are divided up into 8x8 tiles left to right.  Graphics    ;;
+;;  may be as wide as 256 pixels, which is certainly overkill.  :-)         ;;
+;;                                                                          ;;
+;;  Graphics taller than 8px are supported.  wgfx will always force the     ;;
+;;  height of the graphic to be a multiple of 8, with the pixels aligned    ;;
+;;  to the top of the tiles.  The generated width will also be a multiple   ;;
+;;  of 8, aligned to the left, although only pixels within the user-        ;;
+;;  specified width will get set.                                           ;;
+;;                                                                          ;;
+;;  EXAMPLE USAGE:                                                          ;;
+;;                                                                          ;;
+;;  wgfx_start 60                                                           ;;
+;;  wgfx ".###........................................................"     ;;
+;;  wgfx "#...#.....................................#...#............."     ;;
+;;  wgfx "#...#.....................................#................."     ;;
+;;  wgfx "#####.#...#..##..#.##..###..###...##.....###..#.###.##...##."     ;;
+;;  wgfx "#...#.#...#.#.##.##...#..#.#...#.#.##.....#...#.#..#..#.#.##"     ;;
+;;  wgfx "#...#..#.#..##...#....#..#..####.##.......#...#.#..#..#.##.."     ;;
+;;  wgfx "#...#...#....###.#.....###.....#..###......##.#.#..#..#..###"     ;;
+;;  wgfx "............................###............................."     ;;
+;;  wgfx_flush                                                              ;;
+;;                                                                          ;;
+;; ======================================================================== ;;
+
+    IF (DEFINED _WGFX_MAC) = 0
+
+_WGFX_MAC QEQU 1
+
+MACRO       _wgfx_do    m
+
+            %m%     0
+            %m%     1
+            %m%     2
+            %m%     3
+            %m%     4
+            %m%     5
+            %m%     6
+            %m%     7
+ENDM
+
+MACRO       _wgfx_clr   r
+
+_wgfx_%r%0  QSET    0
+_wgfx_%r%1  QSET    0
+_wgfx_%r%2  QSET    0
+_wgfx_%r%3  QSET    0
+_wgfx_%r%4  QSET    0
+_wgfx_%r%5  QSET    0
+_wgfx_%r%6  QSET    0
+_wgfx_%r%7  QSET    0
+ENDM
+
+MACRO       _wgfx_shl8  r
+
+_wgfx_%r%0  QSET (-256 AND (_wgfx_%r%0 SHL 8)) OR ($FF AND (_wgfx_%r%1 SHR 24))
+_wgfx_%r%1  QSET (-256 AND (_wgfx_%r%1 SHL 8)) OR ($FF AND (_wgfx_%r%2 SHR 24))
+_wgfx_%r%2  QSET (-256 AND (_wgfx_%r%2 SHL 8)) OR ($FF AND (_wgfx_%r%3 SHR 24))
+_wgfx_%r%3  QSET (-256 AND (_wgfx_%r%3 SHL 8)) OR ($FF AND (_wgfx_%r%4 SHR 24))
+_wgfx_%r%4  QSET (-256 AND (_wgfx_%r%4 SHL 8)) OR ($FF AND (_wgfx_%r%5 SHR 24))
+_wgfx_%r%5  QSET (-256 AND (_wgfx_%r%5 SHL 8)) OR ($FF AND (_wgfx_%r%6 SHR 24))
+_wgfx_%r%6  QSET (-256 AND (_wgfx_%r%6 SHL 8)) OR ($FF AND (_wgfx_%r%7 SHR 24))
+_wgfx_%r%7  QSET (-256 AND (_wgfx_%r%7 SHL 8))                    
+ENDM
+
+MACRO       _wgfx_row_adv_col c
+
+_wgfx_0%c%  QSET _wgfx_1%c%
+_wgfx_1%c%  QSET _wgfx_2%c%
+_wgfx_2%c%  QSET _wgfx_3%c%
+_wgfx_3%c%  QSET _wgfx_4%c%
+_wgfx_4%c%  QSET _wgfx_5%c%
+_wgfx_5%c%  QSET _wgfx_6%c%
+_wgfx_6%c%  QSET _wgfx_7%c%
+_wgfx_7%c%  QSET 0
+ENDM
+
+MACRO       _wgfx_row_adv
+
+_wgfx_row   QSET        _wgfx_row + 1
+            _wgfx_do    _wgfx_row_adv_col
+ENDM
+
+
+;; ======================================================================== ;;
+;;  wgfx_start n                                                            ;;
+;;                                                                          ;;
+;;  Initializes symbols for the string->bitmap graphic generator.  The      ;;
+;;  argument 'n' states the width of the bitmap.  The wgfx macros will      ;;
+;;  output the minimum number of 8x8 tiles to cover the specified width.    ;;
+;;                                                                          ;;
+;;  ARGUMENTS                                                               ;;
+;;      n   Width of graphic to generate.                                   ;;
+;; ======================================================================== ;;
+MACRO       wgfx_start  wpix
+            LISTING "code"
+_wgfx_chr   QSET    (%wpix% + 7) / 8
+_wgfx_pix   QSET    %wpix%
+_wgfx_row   QSET    0
+            _wgfx_do    _wgfx_clr
+            LISTING "prev"
+ENDM
+
+;; ======================================================================== ;;
+;;  wgfx_flush                                                              ;;
+;;                                                                          ;;
+;;  Ensures that all bitmap data for a packed bitmap is output.             ;;
+;;  if any rows of bitmap are waiting to be pushed to the object file,      ;;
+;;  this macro will push those to the object file.  In general, each        ;;
+;;  bitmap definition should be followed by gfx_flush.                      ;;
+;; ======================================================================== ;;
+MACRO       wgfx_flush
+            LISTING "code"
+
+            REPEAT  8 - _wgfx_row
+            _wgfx_row_adv
+            ENDR
+
+            REPEAT  _wgfx_chr
+            DECLE   ((_wgfx_10 SHR 16) AND $FF00) OR ($FF AND (_wgfx_00 SHR 24))
+            DECLE   ((_wgfx_30 SHR 16) AND $FF00) OR ($FF AND (_wgfx_20 SHR 24))
+            DECLE   ((_wgfx_50 SHR 16) AND $FF00) OR ($FF AND (_wgfx_40 SHR 24))
+            DECLE   ((_wgfx_70 SHR 16) AND $FF00) OR ($FF AND (_wgfx_60 SHR 24))
+            _wgfx_do    _wgfx_shl8
+            ENDR
+_wgfx_row   QSET    0
+            LISTING "prev"
+ENDM
+
+
+;; ======================================================================== ;;
+;;  wgfx s                                                                  ;;
+;;                                                                          ;;
+;;  Takes a string, and generates a row of bitmap from the first 'n'        ;;
+;;  characters in the string, where 'n' is the argument that was passed to  ;;
+;;  wgfx_start.  Space characters and dot characters are mapped to '0'      ;;
+;;  bits in the bitmap.  All others are mapped to 1.  If the string is      ;;
+;;  shorter than 'n' characters, the missing characters are mapped to 0.    ;;
+;;                                                                          ;;
+;;  The bitmap is output as a series of DECLE statements.  Even numbered    ;;
+;;  rows of 8x8 tiles are stored in the lower byte of each 16-bit word.     ;;
+;;  Odd numbered rows of 8x8 tiles are stored in the upper byte of each     ;;
+;;  16-bit word.                                                            ;;
+;;                                                                          ;;
+;;  ARGUMENTS                                                               ;;
+;;      s   String to convert into a bitmap.                                ;;
+;; ======================================================================== ;;
+MACRO       wgfx s
+            LISTING "code"
+
+            IF      _wgfx_row = 8
+                wgfx_flush
+            ENDI
+            _wgfx_row_adv
+_wgfx_col   QSET    _wgfx_pix
+            REPEAT  _wgfx_pix
+_wgfx_col   QSET    _wgfx_col - 1
+_wgfx_77 QSET ((_wgfx_76 SHL 31)AND $80000000)OR((_wgfx_77 SHR 1)AND $7FFFFFFF)
+_wgfx_76 QSET ((_wgfx_75 SHL 31)AND $80000000)OR((_wgfx_76 SHR 1)AND $7FFFFFFF)
+_wgfx_75 QSET ((_wgfx_74 SHL 31)AND $80000000)OR((_wgfx_75 SHR 1)AND $7FFFFFFF)
+_wgfx_74 QSET ((_wgfx_73 SHL 31)AND $80000000)OR((_wgfx_74 SHR 1)AND $7FFFFFFF)
+_wgfx_73 QSET ((_wgfx_72 SHL 31)AND $80000000)OR((_wgfx_73 SHR 1)AND $7FFFFFFF)
+_wgfx_72 QSET ((_wgfx_71 SHL 31)AND $80000000)OR((_wgfx_72 SHR 1)AND $7FFFFFFF)
+_wgfx_71 QSET ((_wgfx_70 SHL 31)AND $80000000)OR((_wgfx_71 SHR 1)AND $7FFFFFFF)
+_wgfx_70 QSET                                   ((_wgfx_70 SHR 1)AND $7FFFFFFF)
+_wgfx_c     QSET    ASC(%s%, _wgfx_col)
+            IF      (_wgfx_c <> $20) AND (_wgfx_c <> $2E) AND (_wgfx_c <> 0)
+_wgfx_70    QSET    _wgfx_70 OR $80000000
+            ENDI
+            ENDR
+
+            LISTING "prev"
+ENDM
+
+    ENDI
+
+;; ======================================================================== ;;
+;;  End of file: wgfx.mac                                                   ;;
+;; ======================================================================== ;;

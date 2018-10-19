@@ -1,0 +1,92 @@
+cpu68k.o: cpu68k.c \
+ /home/anonymous/Documents/Dev/rs97-toolchain/mipsel-buildroot-linux-musl/sysroot/usr/include/stdc-predef.h \
+ /home/anonymous/Documents/Dev/rs97-toolchain/mipsel-buildroot-linux-musl/sysroot/usr/include/stdio.h \
+ /home/anonymous/Documents/Dev/rs97-toolchain/mipsel-buildroot-linux-musl/sysroot/usr/include/features.h \
+ /home/anonymous/Documents/Dev/rs97-toolchain/mipsel-buildroot-linux-musl/sysroot/usr/include/bits/alltypes.h \
+ /home/anonymous/Documents/Dev/rs97-toolchain/mipsel-buildroot-linux-musl/sysroot/usr/include/string.h \
+ /home/anonymous/Documents/Dev/rs97-toolchain/mipsel-buildroot-linux-musl/sysroot/usr/include/strings.h \
+ /home/anonymous/Documents/Dev/rs97-toolchain/mipsel-buildroot-linux-musl/sysroot/usr/include/stdlib.h \
+ /home/anonymous/Documents/Dev/rs97-toolchain/mipsel-buildroot-linux-musl/sysroot/usr/include/alloca.h \
+ generator.h ../../config.h /usr/include/SDL/SDL_types.h \
+ /usr/include/SDL/SDL_stdinc.h /usr/include/SDL/SDL_config.h \
+ /usr/include/SDL/SDL_platform.h \
+ /home/anonymous/Documents/Dev/rs97-toolchain/mipsel-buildroot-linux-musl/sysroot/usr/include/sys/types.h \
+ /home/anonymous/Documents/Dev/rs97-toolchain/mipsel-buildroot-linux-musl/sysroot/usr/include/endian.h \
+ /home/anonymous/Documents/Dev/rs97-toolchain/lib/gcc/mipsel-buildroot-linux-musl/7.3.0/include/stdint.h \
+ /home/anonymous/Documents/Dev/rs97-toolchain/mipsel-buildroot-linux-musl/sysroot/usr/include/stdint.h \
+ /home/anonymous/Documents/Dev/rs97-toolchain/mipsel-buildroot-linux-musl/sysroot/usr/include/bits/stdint.h \
+ /home/anonymous/Documents/Dev/rs97-toolchain/mipsel-buildroot-linux-musl/sysroot/usr/include/sys/select.h \
+ /home/anonymous/Documents/Dev/rs97-toolchain/mipsel-buildroot-linux-musl/sysroot/usr/include/sys/sysmacros.h \
+ /home/anonymous/Documents/Dev/rs97-toolchain/lib/gcc/mipsel-buildroot-linux-musl/7.3.0/include/stddef.h \
+ /home/anonymous/Documents/Dev/rs97-toolchain/lib/gcc/mipsel-buildroot-linux-musl/7.3.0/include/stdarg.h \
+ /home/anonymous/Documents/Dev/rs97-toolchain/mipsel-buildroot-linux-musl/sysroot/usr/include/inttypes.h \
+ /home/anonymous/Documents/Dev/rs97-toolchain/mipsel-buildroot-linux-musl/sysroot/usr/include/ctype.h \
+ /home/anonymous/Documents/Dev/rs97-toolchain/mipsel-buildroot-linux-musl/sysroot/usr/include/iconv.h \
+ /usr/include/SDL/begin_code.h /usr/include/SDL/close_code.h cpu68k.h \
+ mem68k.h def68k-iibs.h def68k-proto.h def68k-funcs.h
+
+/home/anonymous/Documents/Dev/rs97-toolchain/mipsel-buildroot-linux-musl/sysroot/usr/include/stdc-predef.h:
+
+/home/anonymous/Documents/Dev/rs97-toolchain/mipsel-buildroot-linux-musl/sysroot/usr/include/stdio.h:
+
+/home/anonymous/Documents/Dev/rs97-toolchain/mipsel-buildroot-linux-musl/sysroot/usr/include/features.h:
+
+/home/anonymous/Documents/Dev/rs97-toolchain/mipsel-buildroot-linux-musl/sysroot/usr/include/bits/alltypes.h:
+
+/home/anonymous/Documents/Dev/rs97-toolchain/mipsel-buildroot-linux-musl/sysroot/usr/include/string.h:
+
+/home/anonymous/Documents/Dev/rs97-toolchain/mipsel-buildroot-linux-musl/sysroot/usr/include/strings.h:
+
+/home/anonymous/Documents/Dev/rs97-toolchain/mipsel-buildroot-linux-musl/sysroot/usr/include/stdlib.h:
+
+/home/anonymous/Documents/Dev/rs97-toolchain/mipsel-buildroot-linux-musl/sysroot/usr/include/alloca.h:
+
+generator.h:
+
+../../config.h:
+
+/usr/include/SDL/SDL_types.h:
+
+/usr/include/SDL/SDL_stdinc.h:
+
+/usr/include/SDL/SDL_config.h:
+
+/usr/include/SDL/SDL_platform.h:
+
+/home/anonymous/Documents/Dev/rs97-toolchain/mipsel-buildroot-linux-musl/sysroot/usr/include/sys/types.h:
+
+/home/anonymous/Documents/Dev/rs97-toolchain/mipsel-buildroot-linux-musl/sysroot/usr/include/endian.h:
+
+/home/anonymous/Documents/Dev/rs97-toolchain/lib/gcc/mipsel-buildroot-linux-musl/7.3.0/include/stdint.h:
+
+/home/anonymous/Documents/Dev/rs97-toolchain/mipsel-buildroot-linux-musl/sysroot/usr/include/stdint.h:
+
+/home/anonymous/Documents/Dev/rs97-toolchain/mipsel-buildroot-linux-musl/sysroot/usr/include/bits/stdint.h:
+
+/home/anonymous/Documents/Dev/rs97-toolchain/mipsel-buildroot-linux-musl/sysroot/usr/include/sys/select.h:
+
+/home/anonymous/Documents/Dev/rs97-toolchain/mipsel-buildroot-linux-musl/sysroot/usr/include/sys/sysmacros.h:
+
+/home/anonymous/Documents/Dev/rs97-toolchain/lib/gcc/mipsel-buildroot-linux-musl/7.3.0/include/stddef.h:
+
+/home/anonymous/Documents/Dev/rs97-toolchain/lib/gcc/mipsel-buildroot-linux-musl/7.3.0/include/stdarg.h:
+
+/home/anonymous/Documents/Dev/rs97-toolchain/mipsel-buildroot-linux-musl/sysroot/usr/include/inttypes.h:
+
+/home/anonymous/Documents/Dev/rs97-toolchain/mipsel-buildroot-linux-musl/sysroot/usr/include/ctype.h:
+
+/home/anonymous/Documents/Dev/rs97-toolchain/mipsel-buildroot-linux-musl/sysroot/usr/include/iconv.h:
+
+/usr/include/SDL/begin_code.h:
+
+/usr/include/SDL/close_code.h:
+
+cpu68k.h:
+
+mem68k.h:
+
+def68k-iibs.h:
+
+def68k-proto.h:
+
+def68k-funcs.h:

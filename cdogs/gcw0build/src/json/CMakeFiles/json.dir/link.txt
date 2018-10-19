@@ -1,0 +1,2 @@
+/opt/rs97-toolchain/usr/bin/mipsel-buildroot-linux-musl-ar qc libjson.a  CMakeFiles/json.dir/json.c.o
+/opt/rs97-toolchain/usr/bin/mipsel-buildroot-linux-musl-ranlib libjson.a

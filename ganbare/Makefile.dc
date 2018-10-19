@@ -1,0 +1,20 @@
+CC = kos-cc
+SH_DIRECTORY=/opt/toolchains/dc/sh-elf/bin/
+
+CFLAGS  = -Os -fomit-frame-pointer  -fdata-sections -ffunction-sections -Wall -DDREAMCAST -DSDL_JOYSTICK -DNOSOUND -I/usr/include/SDL
+CXXFLAGS = $(CFLAGS)
+LDFLAGS = -lSDL -lm -Wl,--as-needed -Wl,--gc-sections -flto -g
+
+OBJS  = src/ram.o src/util_snd.o src/function.o src/dconv.o src/scene.o src/title.o src/init.o src/act.o src/option.o src/ending.o src/logo.o
+SOURCES = $(patsubst %.o, %.c, $(OBJS))
+
+all: gnp scramble
+
+scramble:
+	${SH_DIRECTORY}sh-elf-objcopy -R .stack -O binary gnp GNP.BIN
+
+gnp: $(OBJS)
+	$(CC) -o $@ $(OBJS) $(LDFLAGS)
+
+clean:
+	rm $(OBJS)

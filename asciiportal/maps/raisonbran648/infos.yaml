@@ -1,0 +1,9 @@
+  # This is a YAML-formatted file designed to store informations about the given map pack.
+protocol: 1  # The protocol version used. Leave this to the default value.
+name: raisonbran648's Map Pack  # The name of the map pack. Should not exceed 30 characters.
+description: |
+  Created by rasinbran648 on the Cymon's Games forums.
+author: rasinbran648  # The author of the map pack.
+version: 1.0  # Version. You might want to provide a changelog file.
+difficulty: 5  # Difficulty range from 0 (easiest) to 10 (hardest)
+priority: 5  # This is used for official map packs only. The default should be fine.

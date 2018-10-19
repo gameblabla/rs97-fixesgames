@@ -1,0 +1,10 @@
+Caprice32 : CPC Emulator for Unix/X11 and Windows
+
+  Ulrich Doewich
+
+PSPCAP32      : Porting on PSP
+Gp2xCap32     : Porting on GP2X
+WizCap32      : Porting on Wiz
+Dingux-Cap32  : Porting on Dingoo / Dingux
+
+  Ludovic Jacomme (zx81.zx81@gmail.com)

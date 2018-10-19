@@ -1,0 +1,285 @@
+;; ======================================================================== ;;
+;;  Emu-Link Support Macros:  File I/O                                      ;;
+;;                                                                          ;;
+;;  The File I/O API provides a traditional C-style file I/O API to the     ;;
+;;  Intellivision.  jzIntv sandboxes the file I/O to a single directory     ;;
+;;  specified on jzIntv's command line.                                     ;;
+;;                                                                          ;;
+;;  Filenames can be no longer than 31 characters, and are limited to       ;;
+;;  alphanumerics, "-", "_" and ".".  The filenames may not start with      ;;
+;;  a ".", either.                                                          ;;
+;;                                                                          ;;
+;;  The file I/O API allows up to 8 files to be open simultaneously, as     ;;
+;;  long as jzIntv's host OS also permits.                                  ;;
+;;                                                                          ;;
+;;  On platforms that distinguish between binary and text files, jzIntv     ;;
+;;  attempts to open files in binary mode.                                  ;;
+;;                                                                          ;;
+;;  API SUMMARY                                                             ;;
+;;                                                                          ;;
+;;      ELFI_OPEN       Opens a file, returning a file descriptor           ;;
+;;      ELFI_CLOSE      Closes a file descriptor                            ;;
+;;      ELFI_READ       Reads bytes from a file                             ;;
+;;      ELFI_READ16     Reads words (big-endian format) from a file         ;;
+;;      ELFI_WRITE      Writes bytes to a file                              ;;
+;;      ELFI_WRITE16    Writes words (big-endian format) to a file          ;;
+;;      ELFI_LSEEK      Seeks within a file, returning new file offset      ;;
+;;      ELFI_UNLINK     Unlinks (removes) a file.                           ;;
+;;      ELFI_RENAME     Renames a file.                                     ;;
+;;                                                                          ;;
+;;  See below for details on the API.  The API macros attempt to take       ;;
+;;  their arguments either in registers or as constants.  One exception:    ;;
+;;  APIs that take a file descriptor require you to *always* pass it in     ;;
+;;  register R2.  For APIs that take filenames, give a pointer to the       ;;
+;;  ASCIIZ string, not the string itself.                                   ;;
+;;                                                                          ;;
+;;  The API documentation below comes directly from jzIntv.  If you         ;;
+;;  choose to pass in some arguments as registers, you must match the       ;;
+;;  indicated register assignments.  See special note at LSEEK.             ;;
+;;                                                                          ;;
+;; ======================================================================== ;;
+
+    IF (DEFINED _EMU_LINK_MAC) = 0
+        ERR "You must include emu_link.mac before el_fileio.mac"
+    ENDI
+
+    IF ((DEFINED _EL_FILEIO_MAC) = 0) AND ((DEFINED _EMU_LINK_MAC) <> 0)
+_EL_FILEIO_MAC  QEQU    1
+
+;; ======================================================================== ;;
+;;  Flags for ELFI_OPEN                                                     ;;
+;; ======================================================================== ;;
+O_RDONLY        QEQU    (1 SHL 0)   ; Open for read-only access
+O_WRONLY        QEQU    (2 SHL 0)   ; Open for write-only access
+O_RDWR          QEQU    (3 SHL 0)   ; Open for read-write access
+O_APPEND        QEQU    (1 SHL 2)   ; Open for append
+O_CREAT         QEQU    (1 SHL 3)   ; Allow creating a new file
+O_EXCL          QEQU    (1 SHL 4)   ; Fail if file already exists
+O_TRUNC         QEQU    (1 SHL 5)   ; Truncate existing file
+              
+;; ======================================================================== ;;
+;;  Flags for ELFI_LSEEK                                                    ;;
+;; ======================================================================== ;;
+SEEK_SET        QEQU    0           ; Seek relative to start of file
+SEEK_CUR        QEQU    1           ; Seek relative to current position
+SEEK_END        QEQU    2           ; Seek relative to end of file
+
+;; ======================================================================== ;;
+;;  Emu-Link API numbers for all the ELFI_xxx APIs.                         ;;
+;; ======================================================================== ;;
+ELFI_API        PROC
+@@open          QEQU    10
+@@close         QEQU    11
+@@read          QEQU    12
+@@read16        QEQU    13
+@@write         QEQU    14
+@@write16       QEQU    15
+@@lseek         QEQU    16
+@@unlink        QEQU    17
+@@rename        QEQU    18
+                ENDP
+;; ======================================================================== ;;
+;;  Utility macros                                                          ;;
+;; ======================================================================== ;;
+MACRO           _elfi_arg  arg, reg
+    IF _el_isreg(%arg%) = 0
+                MVII    #%arg%, R%reg%
+    ELSE
+        IF EL_CPU_REGS.%arg% <> %reg%
+                ERR     "ELFI:  %arg% used where R%reg% required"
+        ENDI
+    ENDI
+ENDM
+
+MACRO           _elfi_arg32  arg, regl, regh
+    IF _el_isreg(%arg%) = 0
+                MVII    #%arg% AND $FFFF, R%regl%
+                MVII    #%arg% SHR 16,    R%regh%
+    ELSE
+        IF EL_CPU_REGS.%arg% <> %regl%
+                ERR     "ELFI:  %arg% used where R%regl% required"
+        ENDI
+    ENDI
+ENDM
+
+;* ======================================================================== *;
+;*  ELFI_OPEN       Open a new file on behalf of the Intellivision.         *;
+;*                                                                          *;
+;*  INPUTS:                                                                 *;
+;*      R2  Pointer to ASCIIZ filename.                                     *;
+;*      R3  Flags.  Flags must come from the table above, ORed together.    *;
+;*                                                                          *;
+;*  OUTPUTS:                                                                *;
+;*      C   Clear on success, set on failure                                *;
+;*      R0  errno on failure                                                *;
+;*      R2  File descriptor on success                                      *;
+;*                                                                          *;
+;* ======================================================================== *;
+MACRO           ELFI_OPEN  fname, flags
+                _elfi_arg  %fname%, 2
+                _elfi_arg  %flags%, 3
+                EL_CALL_SC ELFI_API.open
+ENDM
+
+
+
+;* ======================================================================== *;
+;*  ELFI_CLOSE      Close the requested file.                               *;
+;*                                                                          *;
+;*  INPUTS:                                                                 *;
+;*      R2  File descriptor                                                 *;
+;*                                                                          *;
+;*  OUTPUTS:                                                                *;
+;*      C   Clear on success, set on failure                                *;
+;*      R0  errno on failure                                                *;
+;* ======================================================================== *;
+MACRO           ELFI_CLOSE 
+                EL_CALL_SC ELFI_API.close
+ENDM
+
+;* ======================================================================== *;
+;*  ELFI_READ       Read from the file into a buffer as bytes.              *;
+;*  ELFI_READ16     Read from the file into a buffer as big endian words.   *;
+;*                                                                          *;
+;*  The READ API reads in bytes, populating the lower 8 bits of the         *;
+;*  specified locations.  The READ16 API reads in words in big-endian,      *;
+;*  populating all 16 bits of the specified locations, if said locations    *;
+;*  are in 16-bit RAM.                                                      *;
+;*                                                                          *;
+;*  The buffer gets written to memory in the same manner as if the CPU      *;
+;*  wrote it, with all the same restrictions therein (ie. you can't         *;
+;*  overwrite ROM or violate STIC access windows).  The writes take zero    *;
+;*  time, however.                                                          *;
+;*                                                                          *;
+;*  INPUTS:                                                                 *;
+;*      R2  File descriptor                                                 *;
+;*      R3  Pointer to buffer                                               *;
+;*      R4  Number of bytes (READ) or words (READ16) to read.               *;
+;*                                                                          *;
+;*  OUTPUTS:                                                                *;
+;*      C   Clear on success, set on failure                                *;
+;*      R0  errno on failure                                                *;
+;*      R1  Number of bytes/words read                                      *;
+;*      @R3 Data read                                                       *;
+;*                                                                          *;
+;* ======================================================================== *;
+MACRO           ELFI_READ  buf, len
+                _elfi_arg  %buf%, 3
+                _elfi_arg  %len%, 4
+                EL_CALL_SC ELFI_API.read
+ENDM
+
+MACRO           ELFI_READ16 buf, len
+                _elfi_arg  %buf%, 3
+                _elfi_arg  %len%, 4
+                EL_CALL_SC ELFI_API.read16
+ENDM
+
+
+;* ======================================================================== *;
+;*  ELFI_WRITE, ELFI_WRITE16                                                *;
+;*                                                                          *;
+;*  The WRITE API writes out bytes, taking them from the lower 8 bits of    *;
+;*  the specified locations.  The WRITE16 API writes out words in big-      *;
+;*  endian, writing out the full 16-bit value read from the specified       *;
+;*  locations.                                                              *;
+;*                                                                          *;
+;*  The buffer gets read from memory in the same manner as if the CPU       *;
+;*  read it, with all the same restrictions therein (ie. you can't          *;
+;*  violate STIC access windows).  The reads take zero time, however.       *;
+;*                                                                          *;
+;*  INPUTS:                                                                 *;
+;*      R2  File descriptor                                                 *;
+;*      R3  Pointer to buffer                                               *;
+;*      R4  Number of bytes (WRITE) or words (WRITE16) to write             *;
+;*                                                                          *;
+;*  OUTPUTS                                                                 *;
+;*      C   Clear on success, set on failure                                *;
+;*      R0  errno on failure                                                *;
+;*      R1  Number of bytes/words written                                   *;
+;*                                                                          *;
+;* ======================================================================== *;
+MACRO           ELFI_WRITE buf, len
+                _elfi_arg  %buf%, 3
+                _elfi_arg  %len%, 4
+                EL_CALL_SC ELFI_API.write
+ENDM
+
+MACRO           ELFI_WRITE16 buf, len
+                _elfi_arg  %buf%, 3
+                _elfi_arg  %len%, 4
+                EL_CALL_SC ELFI_API.write16
+ENDM
+
+
+;* ======================================================================== *;
+;*  ELFI_LSEEK                                                              *;
+;*                                                                          *;
+;*  Changes the offset within the file, and returns the new offset.         *;
+;*  Offsets are 32 bits, signed.                                            *;
+;*                                                                          *;
+;*  INPUTS:                                                                 *;
+;*      R2  File descriptor                                                 *;
+;*      R3  Lower 16 bits of signed offset                                  *;
+;*      R4  Upper 16 bits of signed offset                                  *;
+;*      R5  "Whence":  0 == SEEK_SET, 1 == SEEK_CUR, 2 == SEEK_END          *;
+;*                                                                          *;
+;*  OUTPUTS:                                                                *;
+;*      C   Clear on success, set on failure                                *;
+;*      R0  errno on failure                                                *;
+;*      R1  Lower 16 bits of new file offset                                *;
+;*      R2  Upper 16 bits of new file offset                                *;
+;*                                                                          *;
+;*  NOTE:  When passing in the file offset in registers R4:R3, specify      *;
+;*  the argument to the macro as simply "R3".  This will tell the macro     *;
+;*  that the offset is in the register pair R4:R3.                          *;
+;*                                                                          *;
+;* ======================================================================== *;
+MACRO           ELFI_LSEEK  ofs, whence
+                _elfi_arg32 %ofs%, 3, 4
+                _elfi_arg   %whence%, 5
+                EL_CALL_SC  ELFI_API.lseek
+ENDM
+
+;* ======================================================================== *;
+;*  ELFI_UNLINK                                                             *;
+;*                                                                          *;
+;*  Tries to unlink (ie. remove) a file from the file system.  No check is  *;
+;*  made to determine if the file is currently open.  Behavior is defined   *;
+;*  by jzIntv's host OS.                                                    *;
+;*                                                                          *;
+;*  INPUTS:                                                                 *;
+;*      R2  Pointer to ASCIIZ file name                                     *;
+;*                                                                          *;
+;*  OUTPUTS:                                                                *;
+;*      C   Clear on success, set on failure                                *;
+;*      R0  errno on failure                                                *;
+;* ======================================================================== *;
+MACRO           ELFI_UNLINK fname
+                _elfi_arg   %fname%, 2
+                EL_CALL_SC  ELFI_API.unlink
+ENDM
+
+;* ======================================================================== *;
+;*  ELFI_RENAME                                                             *;
+;*                                                                          *;
+;*  Tries to rename a file in the file system.  No check is made to         *;
+;*  determine if the file is currently open.  Behavior is defined by        *;
+;*  jzIntv's host OS.                                                       *;
+;*                                                                          *;
+;*  INPUTS:                                                                 *;
+;*      R2  Pointer to ASCIIZ file name for old name                        *;
+;*      R3  Pointer to ASCIIZ file name for new name                        *;
+;*                                                                          *;
+;*  OUTPUTS:                                                                *;
+;*      C   Clear on success, set on failure                                *;
+;*      R0  errno on failure                                                *;
+;* ======================================================================== *;
+MACRO           ELFI_RENAME old, new
+                _elfi_arg   %old%, 2
+                _elfi_arg   %new%, 3
+                EL_CALL_SC  ELFI_API.rename
+ENDM
+
+    ENDI
+

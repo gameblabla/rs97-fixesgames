@@ -1,0 +1,2157 @@
+==============================================================================
+  Introduction to CP-1600 Programming on the Intellivision
+  By Joe Zbiciak  <intvnut AT gmail.com>
+==============================================================================
+
+  ----------
+   Foreword
+  ----------
+
+    Hello!  Welcome to the wonderful world of the CP-1600 assembly
+    language.
+
+    This document aims to be a gentle introduction to the CP-1600
+    processor and its assembly language.  As a result, this documentation
+    is somewhat simplistic and not necessarily a complete explanation
+    of the CP-1600.  Rather, it's meant to help bridge the gap of
+    understanding from programming languages that you may be familiar
+    with to the environment that the CP-1600 offers.  (Note:  The actual
+    chip used in the Intellivision is the CP-1610.  "CP-1600" is the
+    "generic" or "canonical" name for the processor -- "CP-1610" is a
+    specific instance.)
+
+    It does not cover the specifics of Intellivision programming, as that
+    is covered in other documentation that comes with the Intellivision
+    Development Kit.  William Moeller's "De Re Intellivision" is a good
+    source for information as well.
+
+    This document assumes that the reader is familiar with the BASIC
+    language, as provided on the machines of yore.  (My preferred language
+    is C, but BASIC seems to be more widely understood amongst my target
+    audience.)
+
+    Since BASIC (and most high-level languages) do not provide access to
+    "status bits", I begin this introduction with a quick coverage of 2s-
+    complement arithmetic and its relationship to the CP-1600's status
+    flags.  Also, since many BASIC users are not familiar with bitwise
+    boolean operators, I also include a boolean arithmetic tutorial.
+
+    Because I'm human, this document may have some minor glitches here
+    and there.  Also, there's a good chance that I'll add more material
+    and/or clarify some of the sections as I receive feedback.  I'm
+    always open to feedback.  My email address is 'intvnut AT gmail.com'.
+    I plan to keep an up-do-date copy available at my Intellivision page:
+
+                http://spatula-city.org/~im14u2c/intv/
+
+    I hope you find this document useful as you explore the world of
+    CP-1600 programming.
+
+    At this point, I'd like to offer special thanks to Shane Fell,
+    William Moeller, and Doug "Foom the Avenger" Parsons for reviewing
+    this document and generally providing me with sufficient motivation
+    to write it in the first place.  Thanks!
+
+    Enjoy,
+
+    --Joe Zbiciak
+
+
+==============================================================================
+ Table of Contents
+==============================================================================
+
+  Section 1.   General Computer Arithmetic Overview
+
+          1.1  Binary, Decimal and Hexadecimal Numbers
+          1.2  2s Complement Representation
+          1.3  Status Flags
+          1.4  Boolean Logic
+          1.5  Shift and Rotate Operators
+
+  Section 2.   Architecture Overview
+
+          2.1  System Overview
+          2.2  Registers
+          2.3  Addressing Modes
+          2.4  Double Byte Data
+
+  Section 3.   Jumps and Branches
+
+          3.1  Unconditional Jumps
+          3.2  Jumps to Subroutines
+          3.3  Conditional Branches
+
+  Section 4.   Instruction Set Reference
+
+          4.1  Legend and Notes
+          4.2  Arithmetic/Boolean Instructions
+          4.3  Shift/Rotate Instructions
+          4.4  Jump Instructions
+          4.5  Conditional Branch Instructions
+          4.6  Status Bit / CPU Control Instructions
+          4.7  Common pseudo-ops
+
+  Section 5.   Examples
+
+  Section 6.   Glossary of Terms
+
+==============================================================================
+ Section 1:  General Computer Arithmetic Overview
+==============================================================================
+
+  -----------------------------------------------
+   1.1:  Binary, Decimal and Hexadecimal Numbers
+  -----------------------------------------------
+
+    Numbers in the computer are stored as sequences of 0s and 1s, known as
+    binary numbers.  On the CP-1600, these numbers are typically integers
+    (aka. whole numbers).  The binary numbering system for integers is
+    very similar to the decimal system we all know and love.
+
+    In the decimal system, we assign values to digits based on their
+    position as counted from the right.  For instance, the rightmost digit
+    is in the "ones" place, the next is in the "tens" place, and so on.
+    The diagram below illustrates the weight given to each digit in an
+    'n' digit decimal number:  (each box is a digit)
+
+                  n-1   n-2            2     1     0
+                10    10             10    10    10
+              +-----+-----+-      -+-----+-----+-----+
+              |     |     |  ...   |     |     |     |
+              +-----+-----+-      -+-----+-----+-----+
+                                    (100)  (10)   (1)
+
+            n
+    Here, 10  means "10 raised to the nth power".  Notice how
+    systematically weights are assigned to digits.  In the 'Nth'
+                                             N-1
+    position from the right, the weight is 10   .  We say that
+    decimal is a "base-10" numbering system for this reason.
+
+    The value of a decimal number is equal to the value of each
+    digit times the weight corresponding to that digit's position.
+    For instance, the value of the decimal number "6942" is
+
+                    3           2           1           0
+            (6 *  10 ) + (9 * 10 ) + (4 * 10 ) + (2 * 10 )
+          = (6 * 1000) + (9 * 100) + (4 * 10 ) + (2 * 1  )
+          = 6000 + 900 + 40 + 2
+          = 6942
+
+
+    The binary numbering system works similarly, using powers of
+    2 instead of powers of 10.  It is a "base-2" numbering system.
+    Correspondingly, each digit may have one of two values, 0 or 1,
+    instead of 10 different values.  So, our diagram changes only
+    slightly:  (I've added a few more digits)
+
+              n-1  n-2            4    3    2    1    0
+             2    2              2    2    2    2    2
+            +----+----+-      -+----+----+----+----+----+
+            |    |    |  ...   |    |    |    |    |    |
+            +----+----+-      -+----+----+----+----+----+
+                                 16    8    4    2    1
+
+    The value of a binary number, then, can be figured out in much
+    the same manner as for decimal.  For instance, suppose we have
+    the binary number "11010".
+
+                  4          3          2          1          0
+            (1 * 2 ) + (1 * 2 ) + (0 * 2 ) + (1 * 2 ) + (0 * 2 )
+          = (1 * 16) + (1 * 8)  + (0 * 4)  + (1 * 2)  + (0 * 1)
+          = 16 + 8 + 2
+          = 26
+
+    So, the number "11010" in binary equals "26" in decimal.
+
+    There is an additional numbering system that is often encountered
+    when coding in assembly language, known as "hexadecimal", or "hex"
+    for short.  Hexadecimal is base-16, in contrast to the base-2 and
+    base-10 of binary and decimal.  That means that a hex digit can
+    take on one of 16 values.  In most places, the letters "A" through
+    "F" are used to denote digit values "10" through 15".
+
+    As you might guess, the value of a hexadecimal number can be
+    calculated in the same way as for binary and decimal numbers.
+    For example, consider the hex number "5AC4":
+
+                    3            2            1           0
+            (5 *  16 ) + (10 * 16 ) + (12 * 16 ) + (4 * 16 )
+          = (5 * 4096) + (10 * 256) + (12 * 16 ) + (4 * 1)
+          = 20480 + 2560 + 192 + 4
+          = 23236
+
+    So, the number "5AC4" in binary equals "23236" in decimal.
+
+    Hexadecimal numbering is convenient because each hex digit maps to
+    exactly four binary digits.  It serves as a convenient short-hand
+    for binary numbers.  The following table illustrates how hexadecimal
+    digits map to decimal and binary values.
+
+               Hex             Binary            Decimal
+               -----------------------------------------
+                0               0000                0
+                1               0001                1
+                2               0010                2
+                3               0011                3
+                4               0100                4
+                5               0101                5
+                6               0110                6
+                7               0111                7
+                8               1000                8
+                9               1001                9
+                A               1010               10
+                B               1011               11
+                C               1100               12
+                D               1101               13
+                E               1110               14
+                F               1111               15
+
+    Converting between hex and binary is much, much easier than converting
+    from either hex or binary to decimal or vice-versa.  Hex provides a
+    handy short-hand for expressing arbitrary binary patterns as a result.
+    Consider, for instance, FFFF vs. 65535 vs. 1111111111111111.
+
+    A short word on notation:  Hexadecimal and Binary constants are
+    usually specified via a couple different notations.  Hex, being
+    the most popular, has the most notations, with three that are still
+    commonly used.  In contrast, binary has only two popular notations.
+
+        Hex:  0ABCDh   $ABCD   0xABCD
+        Bin:  01010b           0b1010
+
+
+  ------------------------------------
+   1.2:  2s Complement Representation
+  ------------------------------------
+
+    Most computers developed within the past 25 years or so use a
+    numeric representation known as "Two's Complement", or 2s Complement
+    for short.  This includes our beloved CP-1600 CPU.
+
+    Notice that the description of binary representations above did not
+    cover negative numbers?  This is purposeful.
+
+    Humans generally keep track of the sign of a number by either
+    assuming the number is positive, or by writing a minus sign in front
+    of the number to say it is negative.  For most purposes, this works
+    just fine.  Indeed, some computers use a similar representation
+    for their numbers, by prepending a "sign bit" which serves the same
+    purpose as the minus sign we all know and love, but without making
+    any other changes to the representation.
+
+    Unfortunately, simply carrying around a sign bit and performing
+    arithmetic differently based on that bit is expensive and slow in
+    hardware.  For instance, when you go to add two numbers in this
+    form, the hardware needs to pick between addition and subtraction
+    based on the numbers being added.  Ick.
+
+    2s complement notation takes a different approach that takes
+    advantage of how addition is actually implemented in hardware.
+
+    When we add two numbers, we work from right-to-left adding
+    digits.  If the answer we get in one digit position is too big,
+    we "carry" the extra portion to the next digit position.
+
+    For instance, suppose we're adding the (decimal) numbers 456 and
+    172 (see the figure below).  First, we'd add "6 + 2", which gives
+    us 8.  Fine.  Next, we'd add "5 + 7", which gives us 12 -- oops!
+    What happens here is we write the '2' and "carry the '1'".  Then we
+    add "4 + 1" plus the "1" we carried, giving us 6.  The whole process
+    is shown below.
+
+                              (1)
+                               4    5    6
+                             + 1    7    2
+                             --------------
+                               6    2    8
+
+
+    Binary arithmetic works in the same manner, only the digits are
+    limited to 0 and 1.  Carries are also handled in the same manner.
+    For example:
+
+                            (1)
+                             0    1    1    0
+                           + 0    1    0    1
+                           -------------------
+                             1    0    1    1
+
+
+    There is one twist though:  The computer is a finite device, and
+    so our binary numbers can only get so big.
+
+    So what does that mean?  Well, what happens is that overflow occurs
+    when very large numbers are added together.  In fact, large positive
+    numbers end up acting like small negative numbers.  We can (and do)
+    use that to our advantage.
+
+    Up until now, our description of binary arithmetic has focused on
+    unsigned quantities.  To have signed quantities, we need to have
+    a means for expressing negative numbers.  What we would like in
+    our numbering system are these attributes:
+
+
+     a) There should be as much similarity between signed and unsigned
+        numbers as possible, and hopefully should be able to use the
+        same hardware.
+
+     b) The negative of some number 'x', when added to 'x', must
+        equal 0.  In other words, 'x - x = x + (-x) = 0'.
+
+     c) There should be a well defined set of positive and negative
+        numbers.
+
+     d) Each binary pattern should map to exactly one value.
+
+    The 2s complement numbering system satisfies each of these criteria.
+    Let me explain the system by using the criteria as a starting point.
+
+    The first condition is easily met, as hinted to by the statement
+    we made above:  "large positive numbers end up acting like small
+    negative numbers."  So, the first thing we do is state that only
+    "normal binary arithmetic" will be used in our system, regardless
+    of whether the numbers are signed or unsigned.
+
+    The next condition, (b), is a bit trickier.  The requirement states
+    that a number, when added to its negative, must equal zero.  Here is
+    where we make use of the fact that our machine is of finite width:
+    As long as we ensure that our final result in the machine word is
+    zero, we've satisfied the requirement.  Our device's machine word is
+    16-bits wide, so effectively all results wrap around if they get
+    bigger than "all 1s" (eg. 0xFFFF).  What this means is that results
+    bigger than 0xFFFF end up looking smaller than 0xFFFF.
+
+    Consider, for instance, "x + 0x10000".  On our 16-bit machine,
+    adding 0x10000 makes the result wrap around, and in fact, with
+    this particular value, it wraps around back to where it started.
+    So, in other words, "x + 0x10000 = x" on a 16-bit machine.  We
+    can use that bit of trivia to devise a means for negating numbers:
+
+        1.  Let x = -y.
+
+        2.  x + 0x10000 = x       Given.
+
+        3. -y + 0x10000 = -y      Substitution.
+
+        4.  0x10000 - y = -y      Commutative property.
+
+    How convenient.  On a 16-bit machine, negating a number can be
+    accomplished by subtracting it from 0x10000 and keeping the lower
+    16 bits.  You're probably wondering, "So what does this look like
+    bitwise, and does it work?"  Let's see what happens with some small
+    numbers:  (I've divided the bits into groups of four for readability
+    only -- the numbers are all 16- or 17-bit numbers.)
+
+     #  Bit Pattern           0x10000 - Number        16-bit Result
+    ---------------------------------------------------------------------
+     0  0000 0000 0000 0000   1 0000 0000 0000 0000   0000 0000 0000 0000
+     1  0000 0000 0000 0001   0 1111 1111 1111 1111   1111 1111 1111 1111
+     2  0000 0000 0000 0010   0 1111 1111 1111 1110   1111 1111 1111 1110
+     3  0000 0000 0000 0011   0 1111 1111 1111 1101   1111 1111 1111 1101
+     4  0000 0000 0000 0100   0 1111 1111 1111 1100   1111 1111 1111 1100
+     5  0000 0000 0000 0101   0 1111 1111 1111 1011   1111 1111 1111 1011
+     6  0000 0000 0000 0110   0 1111 1111 1111 1010   1111 1111 1111 1010
+     7  0000 0000 0000 0111   0 1111 1111 1111 1001   1111 1111 1111 1001
+     8  0000 0000 0000 1000   0 1111 1111 1111 1000   1111 1111 1111 1000
+
+   The first thing you might notice is that the negative of '0' is '0'
+   after we truncate back to 16 bits -- a good sign.  The next thing you
+   might notice is that as the numbers at the left count upwards, their
+   negatives at the right look like large numbers counting backwards --
+   another good sign.  So, now let's prove to ourself that, at least for
+   some of these numbers, "x + (-x)" does equal zero once the results
+   are truncated to 16 bits.
+
+       Example 1:  1 + (-1)
+
+                     0000 0000 0000 0001                1
+                 +   1111 1111 1111 1111               -1
+                -------------------------             -----
+                   1 0000 0000 0000 0000                0
+                    |<---- 16 bits ---->|
+
+
+       Example 2:  7 + (-7)
+
+                     0000 0000 0000 0111                7
+                 +   1111 1111 1111 1001               -7
+                -------------------------             -----
+                   1 0000 0000 0000 0000                0
+                    |<---- 16 bits ---->|
+
+    Notice, in both examples, the numbers add to 0x10000 (which makes
+    sense, considering how we constructed the numbering system) and
+    that the 16-bit result ends up being zero?  (Also, notice that
+    the 17th bit is always 1 -- this will be important to remember
+    in the next section, when we discuss status bits.)
+
+    The next requirement says that "There should be a well defined
+    set of positive and negative numbers."  Looking at the table above,
+    we immediately notice that small positive numbers always start
+    with zeros to the left, and small negative numbers always start
+    with ones to the left.  So, one way we can divide the numbering
+    is to say "if the left-most bit is a 0, the number is positive,
+    and if the left-most bit is a 1, the number is negative."  This
+    conveniently divides the number space in half, and allows us to
+    quickly and easily determine if a number is negative.  As a
+    result, we refer to the leftmost bit as "the sign bit."
+
+    The final requirement, "every binary pattern should map to exactly
+    one number" pretty much falls into place as a result of how
+    we've structured things.  First, for all of the numbers larger
+    than zero, we know there exists one and only one negative.  This
+    takes care of the numbers 0x0001 through 0x7FFF and their
+    negative counterparts, 0xFFFF through 0x8001.  Also, we know that
+    zero is 0x0000 is unique.  That leaves only one oddball case --
+    the number 0x8000.  This number is the largest magnitude negative
+    value, and it has the unique property that there is no positive
+    counterpart to it in the numbering system.  It is also a unique
+    number-to-binary-pattern mapping, and so it too fills this
+    requirement.
+
+    That, in a nutshell is our numbering system for signed numbers.
+    At this point, you're probably thinking "So why is it named 2s
+    Complement, then?"  The reason stems from how 2s complement is
+    implemented in hardware.  The process of inverting all of the bits in
+    a number is referred to as taking the "1s complement" of the number --
+    all of the 1s are changed to 0s and all of the 0s are changed to 1s.
+    This is mathematically equivalent to subtracting the value from
+    a number consisting of all 1's, eg.  0xFFFF, as a 16-bit binary.
+    Notice that if we add 1 to the 1s complement, we get the negation
+    we so carefully constructed above.  The 0xFFFF becomes 0x10000.
+    Since we've added 1 to the 1s complement, we refer to this as the
+    2s complement of the number.
+
+    The hardware uses the relationship of 1s complement to 2s complement
+    directly.  Since inverting bits is very inexpensive in hardware,
+    the hardware actually performs the 1s complement and adds 1, as
+    described, when it needs the 2s complement of a value.  (The CP1600
+    instruction "COM" performs a 1s complement alone.)  This makes it
+    easy to implement subtraction as addition:  "a - b" becomes 
+    "a + (-b)", which becomes "a + COM(b) + 1", which is what the hardware
+    actually performs.
+
+    The 2s complement representation effectively shifts the numerical
+    range of interest from the unsigned range 0x0000 to 0xFFFF (0 to
+    65535) down to the signed range 0x8000 to 0x7FFF (-32768 to 32767).
+    It does not change how mathematics are performed in the hardware
+    at all.
+
+    What's nice about 2s complement arithmetic is that we are free to
+    consider a number as a signed or unsigned quantity at any time --
+    general arithmetic (addition and subtraction mainly) on that number
+    works identically regardless.  Certain instructions (conditional
+    branches, etc.) are specific to signed or unsigned numbers, though.
+    The difference here lies not in the number itself, but in how
+    instructions interpret the status flags that are set when the number
+    is manipulated.
+
+  --------------------
+   1.3:  Status Flags
+  --------------------
+
+    Most traditional 8- and 16-bit CPUs offer a number of status flags
+    which are used for controlling the program.  Some or all of the status
+    flags are updated when arithmetic and logical instructions execute.
+    The CP-1600 offers four flags, a shown in the following table:
+
+                         Name       Description
+                         ----------------------
+                          S         Sign
+                          Z         Zero
+                          O         Overflow
+                          C         Carry
+
+    These bits are used primarily by the conditional branch instructions,
+    which are covered in Section 3.3.  This section focuses primarily on
+    the mathematical conditions which set and clear these bits, leaving
+    the actual discussion of their use to Section 3.3.  The status flags
+    are also used by the shift and rotate instructions, as described in
+    Section 1.5.
+
+    The Zero status bit is the simplest to explain of the four status
+    bits.  Whenever a result of an arithmetic operation is zero,
+    the zero bit gets set to 1 -- otherwise the zero bit is cleared.
+    The most common use of the Zero status bit is to test whether two
+    numbers are equal.  Since the difference between two equal numbers
+    is zero, a subtract which subtracts them will set the zero bit if
+    the numbers are equal.
+
+       Example:
+
+                     0000 0000 0000 0110
+                 +   1111 1111 1111 1010
+                -------------------------
+                     0000 0000 0000 0000  ===> Sets Z = 1
+                    |<---- 16 bits ---->|
+
+                     0110 0000 0000 0010
+                 +   0100 1111 1111 1010
+                -------------------------
+                     1010 1111 1111 1100  ===> Sets Z = 0
+                    |<---- 16 bits ---->|
+
+
+
+    The Sign status bit contains a copy of the sign bit of the result.
+    Recall, in Section 1.2 above, we said that the sign bit is
+    the left-most bit (bit 15, in our case) in the word.  In some
+    applications, it's necessary to know whether a value is positive
+    or negative.  The sign bit is perfect for these cases.
+
+       Example:
+
+                     0000 0000 0000 0110
+                 +   1111 1111 1111 1010
+                -------------------------
+                     0000 0000 0000 0000  ===> Sets S = 0
+                    |<---- 16 bits ---->|
+
+
+                     0110 0000 0000 0010
+                 +   0100 1111 1111 1010
+                -------------------------
+                     1010 1111 1111 1100  ===> Sets S = 1
+                    |<---- 16 bits ---->|
+
+
+    The Overflow status bit is a little more subtle.  The Overflow
+    status bit reports when the addition of two signed, positive
+    numbers has produced a negative-looking result, or the addition of two
+    signed, negative numbers has produced a positive-looking result.
+    (Since subtraction is implemented as addition with the second
+    operand negated, a similar description applies to subtraction.)
+    This bit is can be computed simply by looking at the sign bits of
+    the input and the output.  If the sign bits of the input are
+    equal to each other, but not equal to the result, then an overflow
+    has occurred.
+
+       Examples:
+
+                     0000 0000 0000 0110
+                 +   1111 1111 1111 1010
+                -------------------------
+                     0000 0000 0000 0000  ===> Sets O = 0
+                    |<---- 16 bits ---->|
+
+
+                     0110 0000 0000 0010
+                 +   0100 1111 1111 1010
+                -------------------------
+                     1010 1111 1111 1100  ===> Sets O = 1
+                    |<---- 16 bits ---->|
+
+
+
+    The Carry bit is a bit more straightforward.  It contains the
+    17th bit of the result after an addition or subtraction.  This can
+    be used to detect when the addition of two large unsigned numbers
+    generated a result larger than 16 bits.  In the case of subtraction,
+    the 2s complement representation causes the carry bit to act as a
+    "not borrow" bit--that is, it is set when there is no borrow, and
+    clear when there is a borrow.  The reason for this is that negative
+    numbers are defined as positive values subtracted from 0x10000
+    (see section 1.2 above).  In cases which would generate a borrow,
+    the borrow is made from the 1 in the 17th bit itself -- otherwise,
+    the 17th bit remains a 1.  An interesting consequence of this is that
+    "0 - 0" does generate a carry.
+
+       Examples:
+
+                     0000 0000 0000 0110
+                 +   1111 1111 1111 1010
+                -------------------------
+                   1 0000 0000 0000 0000  ===> Sets C = 1
+                    |<---- 16 bits ---->|
+
+
+                     0110 0000 0000 0010
+                 +   0100 1111 1111 1010
+                -------------------------
+                   0 1010 1111 1111 1100  ===> Sets C = 0
+                    |<---- 16 bits ---->|
+
+
+                     0000 0000 0000 0000
+                 -   0000 0000 0000 0000
+                ------------------------- ... becomes
+                     0000 0000 0000 0000
+                 +   1111 1111 1111 1111
+                 +                     1
+                -------------------------
+                   1 0000 0000 0000 0000  ===> Sets C = 1
+                    |<---- 16 bits ---->|
+
+
+    Notice that the Sign and Overflow bits are useful when you consider
+    the numbers to be signed.  Both of these bits imply a 2s Complement
+    representation of signed values.  In contrast, the Carry and Zero
+    bits are independent of whether the number is signed or unsigned,
+    and are most useful when the number is unsigned.  How a number is
+    treated, therefore, depends on which status bits you pay attention to
+    in your code.  The description of conditional branches and the compare
+    instruction in Section 3.3 covers this in somewhat greater detail.
+
+  ---------------------
+   1.4:  Boolean Logic
+  ---------------------
+
+    In addition to traditional arithmetic, the CP-1600 also offers
+    the bitwise boolean operators AND, XOR and COM.  These operators allow
+    manipulating bits within a word.  This is sometimes referred to
+    as "bit twiddling."
+
+    Bit twiddling is valuable in cases where the values stored
+    in registers aren't necessarily meant to represent numbers.
+    This can be the case if you're manipulating a bitmap for a graphic,
+    decoding hand-controller data, or performing other such operations.
+    The boolean operations AND, XOR, and COM work in conjunction with
+    the shift/rotate operators (Section 1.5) to provide a complete set
+    of bit-manipulation primitives.
+
+    The AND and XOR operators each accept two inputs.  Calculation
+    is performed on corresponding bits between each input, producing
+    results in the corresponding bit of the output.
+
+    In the case of AND, each bit in the output is set to 1 if both
+    of the corresponding bits in the inputs are also set to 1 -- eg.
+    the output is 1 if the first AND second inputs are 1.  In the case
+    of XOR, which stands of eXclusive OR, each bit in the output is set
+    to 1 if exactly one of the corresponding bits is set 1 in the input
+    -- eg. the output is 1 if either the first OR the second input is 1,
+    but not both.  The remaining bits in both cases are set to 0.
+
+    There is a third commonly-available boolean operator, OR, which
+    performes an inclusive-OR.  It sets the output bit to 1 if either
+    or both of the input bits is set to 1.  The CP-1600 does not provide
+    an OR instruction.  See examples 3 and 4 at the end of this section
+    below for ways to perform this operation using combinations of AND,
+    XOR and COM.
+
+    The following truth table explains the relationship between two
+    input bit, and the result that AND, XOR and OR produce:
+
+             A       B        A AND B      A XOR B      A OR B
+          -------------------------------------------------------
+             0       0           0            0            0
+             0       1           0            1            1
+             1       0           0            1            1
+             1       1           1            0            1
+
+    (Note:  I've included OR for completeness only.  The CP-1600 does not
+    provide an OR instruction, although as mentioned above, you can
+    synthesize one using other instructions.)
+
+    The following example illustrates AND and XOR applied to full 16
+    bit registers.  Remember, the truth table above is applied to each
+    corresponding pair of bits from the inputs:
+
+                    +-------+-------+-------+-------+
+                R0  |0 0 0 0|1 1 1 1|0 1 0 1|1 0 1 0|   $0F5A
+                    +-------+-------+-------+-------+
+                    +-------+-------+-------+-------+
+                R1  |1 1 1 1|0 1 1 0|1 0 1 0|0 0 0 0|   $F6A0
+                    +-------+-------+-------+-------+
+
+                    +-------+-------+-------+-------+
+         R0 AND R1  |0 0 0 0|0 1 1 0|0 0 0 0|0 0 0 0|   $0600
+                    +-------+-------+-------+-------+
+
+                    +-------+-------+-------+-------+
+         R0 XOR R1  |1 1 1 1|1 0 0 1|1 1 1 1|1 0 1 0|   $F9FA
+                    +-------+-------+-------+-------+
+
+
+    The CP-1600 also offers the unary operator "COM", which inverts
+    bits in the input.  "COM" stands for "1s COMplement", which is
+    simply the process of changing the 1s to 0s and 0s to 1s.  (2s
+    complement, described in Section 1.2 adds an additional '1' to
+    the result.)  COM's truth table is alot simpler than AND's or
+    XOR's:
+
+                            A      COM A
+                         -----------------
+                            0        1
+                            1        0
+
+
+    The following example illustrates how COM works:
+
+                    +-------+-------+-------+-------+
+                R0  |0 0 0 0|1 1 1 1|0 1 0 1|1 1 0 0|   $0F5C
+                    +-------+-------+-------+-------+
+
+                    +-------+-------+-------+-------+
+           COMR R0  |1 1 1 1|0 0 0 0|1 0 1 0|0 0 1 1|   $F0A3
+                    +-------+-------+-------+-------+
+
+
+    The boolean operators, when used together, allow a number of useful
+    actions to be performed.  For instance, the AND operator makes it
+    easy to clear bits in a word using a "mask". ("Clear" means to "set
+    to zero".)  Once a set of bits are cleared, the XOR operator can
+    then be used to set some combination of bits in the cleared area.
+    ("Set" alone means "set to 1".)
+
+    Here are some quick examples:
+
+        Example 1:  Clear the upper byte of a word
+
+        BASIC                  CP-1600             Comment
+        ---------------------------------------------------------------------
+        R0 = R0 AND 255        ANDI   #$00FF, R0   Clear lower byte of R0
+
+
+        Example 2:  Copy R2's upper byte into R1's upper byte, leaving
+                    R1's lower byte undisturbed.
+
+        BASIC                  CP-1600             Comment
+        ---------------------------------------------------------------------
+        R2 = R2 AND 65280      ANDI   #$FF00, R2   Clear lower byte of R2
+        R1 = R1 AND 255        ANDI   #$00FF, R1   Clear upper byte of R1
+        R1 = R1 XOR R2         XORR   R2, R1       Merge the values together
+
+
+        Example 3:  Set bits in R0 that are currently set to 1 in either
+                    R0 or R1.  This effectively performs "R0 = R0 OR R1",
+                    even though the CP-1600 doesn't have an OR instruction.
+                    (Uses R2 as a temp.)
+
+        BASIC                  CP-1600             Comment
+        ---------------------------------------------------------------------
+        R2 = R1                MOVR   R1, R2       Copy R1 to R2
+        R2 = R2 XOR R0         XORR   R0, R2       Find differing bits
+                                                      between R0 and R1
+        R2 = R2 AND R1         ANDR   R1, R2       Find bits that are set in
+                                                      R1 but not in R0.
+        R0 = R0 XOR R2         XORR   R2, R0       Set bits in R0 that were
+                                                      set in R1 but not R0.
+
+        Example 4:  Set bits in R0 that are currently set to 1 in either
+                    R0 or R1.  This effectively performs "R0 = R0 OR R1",
+                    even though the CP-1600 doesn't have an OR instruction.
+                    (Does not use a temporary.)  This version makes use
+                    of "De Morgan's Theorem", namely the boolean property
+                    that "A OR B = COM ((COM A) AND (COM B))".
+
+        BASIC                  CP-1600             Comment
+        ---------------------------------------------------------------------
+        R0 = R0 XOR 65535      COMR  R0            Invert bits in R0
+        R1 = R1 XOR 65535      COMR  R1            Invert bits in R1
+        R0 = R0 AND R1         ANDR  R1, R0        Clear bits in R0 that
+                                                      are clear in R0 or R1
+        R0 = R0 XOR 65535      COMR  R0            Result: R0 = R0 OR R1
+
+  ----------------------------------
+   1.5:  Shift and Rotate Operators
+  ----------------------------------
+
+    In addition to the bitwise boolean operators which operate on bits
+    "in place", the CP-1600 offers a rich variety of shift and rotate
+    instructions which move bits within a word.  (Note: Since the CP-1600
+    has some rather unique behavior with regards to its rotate and shift
+    instructions, this section is a little more CP-1600 specific than
+    Sections 1.1 through 1.4.)
+
+    Shift instructions move bits to the left or right within a word.
+    Arithmetically, this corresponds to multiplying or dividing the number
+    by a power of 2.  The bits, though, merely move to the left or right.
+    On the CP-1600, shift instructions can shift words by one or two
+    places in a single instruction.
+
+    There are three basic forms of shift:  Shift Logical Left (SLL), Shift
+    Logical Right (SLR), and Shift Arithmetic Right (SAR).  In addition,
+    some Shift instructions will store shifted bits in the Carry or
+    Overflow bits, to be used in conjunction with other instructions
+    such as conditional branches or rotates.  More on this in a moment.
+
+    The "Logical" in "Shift Logical Left" and "Shift Logical Right"
+    refers to the fact that the sign bit of the number is ignored --
+    the number is considered to be a sequence of bits that is either an
+    unsigned quantity or a non-numeric quantity such as a graphic.  When a
+    number is shifted in this manner, the sign bit is not preserved.
+    Logical shifts always bring in '0's in the bit positions being
+    "shifted in".
+
+    The "Arithmetic" in "Shift Arithmetic Right" refers to the fact
+    that the sign-bit is replicated as the number is shifted, thereby
+    preserving the sign of the number.  This is referred to as "sign
+    extension", and is useful when dividing signed numbers by powers of 2.
+
+    To illustrate, let's shift the bit pattern 1010010110100101 by
+    one bit with each of the three forms of shift.
+
+                    +-------+-------+-------+-------+
+                R0  |1 0 1 0|0 1 0 1|1 0 1 0|0 1 0 1|   $A5A5
+                    +-------+-------+-------+-------+
+                      / / / / / / / / / / / / / / /
+                    +-------+-------+-------+-------+
+         SLL R0, 1  |0 1 0 0|1 0 1 1|0 1 0 0|1 0 1 0|   $4B4A
+                    +-------+-------+-------+-------+
+
+                    +-------+-------+-------+-------+
+                R0  |1 0 1 0|0 1 0 1|1 0 1 0|0 1 0 1|   $A5A5
+                    +-------+-------+-------+-------+
+                      \ \ \ \ \ \ \ \ \ \ \ \ \ \ \
+                    +-------+-------+-------+-------+
+         SLR R0, 1  |0 1 0 1|0 0 1 0|1 1 0 1|0 0 1 0|   $52D2
+                    +-------+-------+-------+-------+
+
+                    +-------+-------+-------+-------+
+                R0  |1 0 1 0|0 1 0 1|1 0 1 0|0 1 0 1|   $A5A5
+                    +-------+-------+-------+-------+
+                      \ \ \ \ \ \ \ \ \ \ \ \ \ \ \
+                    +-------+-------+-------+-------+
+         SAR R0, 1  |1 1 0 1|0 0 1 0|1 1 0 1|0 0 1 0|   $D2D2
+                    +-------+-------+-------+-------+
+
+    As you can see, the Arithmetic and Logical shift rights differ only
+    in how they handle the sign bit.
+
+    In addition to the basic forms of the Shift instructions, the CP-1600
+    also offers "Shift through Carry" instructions, which will write the
+    shifted-away bits to the Carry bit and Overflow bits.  When shifting
+    by one bit, the shifted away bit is written to the Carry bit.
+    When shifting by two bits, the first shifted-away bit is written to
+    the Carry bit, and the second is written to the Overflow bit.
+
+    Rotate instructions behave similarly to Shift instructions.
+    The main difference between a Rotate and a Shift is that the Rotate
+    instructions bring in non-zero bits from the status bits as they
+    shift the input, thus effectively allowing you to "rotate" a bit
+    pattern through a register and a status bit.
+
+    Consider the "Rotate Left through Carry" (RLC) instruction, when
+    rotating by 1 bit.  It shifts the number left by 1, setting Bit 0
+    to the old value of the Carry bit, and then setting the carry to
+    the old value of Bit 15.  The diagram below illustrates:
+
+              +------------------------------------------------+
+              |                                                |
+              |   +---+    +-------------------------------+   |
+              +<--| C |<---|          < - - - -            |<--+
+                  +---+    +-------------------------------+
+                           15                              0
+                                RLC Rx, 1
+
+    When rotating by two bits, things become more interesting.  The
+    Carry and Overflow bits are placed in Bits 1 and 0, respectively,
+    and old Bits 15 and 14 are placed in the Carry and Overflow:
+
+          +---------------------------------------------------------+
+          |                                                         |
+          |   +---+    +---+    +-------------------------------+   |
+          +<--| C |<---| O |<---|          < - - - -            |<--+
+              +---+    +---+    +-------------------------------+
+                                15                              0
+
+                                RLC Rx, 2
+
+    The rotate-right instructions work similarly, only the direction is
+    reversed:
+
+              +------------------------------------------------+
+              |                                                |
+              |   +-------------------------------+    +---+   |
+              +-->|         - - - - >             |--->| C |-->+
+                  +-------------------------------+    +---+
+                  15                              0
+                                RRC Rx, 1
+
+          +---------------------------------------------------------+
+          |                                                         |
+          |   +-------------------------------+    +---+    +---+   |
+          +-->|          - - - - >            |--->| O |--->| C |-->+
+              +-------------------------------+    +---+    +---+
+              15                              0
+                                RRC Rx, 2
+
+    Rotate instructions can be mixed and matched with any other
+    instruction which sets or reads status bits.  For instance, Shift
+    and Rotate instructions may be used together to shift bit patterns
+    that are longer than 16 bits to the left or right.
+
+    In addition to the shifts and rotates, the CP-1600 offers a Byte
+    Swap instruction, named appropriately "SWAP".  It merely exchanges
+    the two 8-bit bytes in a 16-bit word.  This is useful when handling
+    8-bit quantities on a 16-bit machine.
+    
+    The SWAP instruction can be told to swap once or twice.  When told
+    to swap bytes once, it places the lower byte in the upper half,
+    and the upper byte in the lower half.  When told to swap twice, it
+    actually places the lower byte in *both* halves.
+
+
+==============================================================================
+ Section 2:  Architecture Overview.
+==============================================================================
+
+  -----------------------
+   2.1:  System Overview
+  -----------------------
+
+    The CP-1600 provides what's known as a Von Neumann style computer
+    architecture.  What this means is that we have a Central Processing
+    Unit which is connected by a single bus to a bunch of memories
+    and peripherals.  In our case, the Central Processing Unit is the
+    CP-1600 itself.
+
+    Conceptually, the diagram looks like so:
+
+      +-----------+ Addresses
+      |           |===========>--------+-----------+--------------+- ...
+      |  CP-1600  |                    |           |              |
+      |           |<==========><---+-----------+------------+------- ...
+      +-----------+    Data        |   |       |   |        |     |
+                                   |   |       |   |        |     |
+                                   v   v       v   v        v     v
+                                 +-------+   +-------+   +------------+
+                                 |  RAM  |   |  ROM  |   | Peripheral |
+                                 +-------+   +-------+   +------------+
+
+    In this setup, all of the devices that are outside the CPU appear
+    in a single, unified Address Space.  On the CP-1600, addresses are
+    16-bits wide, and so the address space is 64K words large.
+
+    Programs and data are stored in memory, which the CPU accesses via
+    this bus.  The CPU makes no distinction between whether a memory holds
+    program code or data, so both can be stored in the same memory (but
+    generally at different locations).  Also, memories and peripherals
+    are treated identically, so accesses to "memory" may go to either
+    RAMs, ROMs, or various peripherals.
+
+    As I've mentioned before, CP-1600 is a 16-bit CPU.  The address and
+    data bus it provides to external memories and peripherals is therefore
+    16-bits wide as well.  At the time the CP-1600 was introduced,
+    peripherals and memories were often narrower than 16 bits.  With these
+    devices, each location of the device still maps to a single location
+    in the CP-1600 memory map; however, reads from the device only
+    return meaningful data on the lower bits of the result, and writes
+    to the device ignore the upper bits.
+
+    For example, suppose we have an 256-entry, 8-bit RAM in our address
+    space, and it is mapped into memory at locations $0100 to $01FF.
+    If we read from the device, we will get an 8-bit value back in the
+    lower 8 bits of the word, and zeros will be placed in the upper 8
+    bits of the word, like so:  00000000xxxxxxxx  (x's represent the
+    data that we read from the RAM).  If we write to the device, the
+    lower 8 bits of the data we write will get stored, and the upper 8
+    bits will get ignored.
+
+    As you can imagine, this causes some interesting programming
+    challenges.  Section 2.4, which discusses Double Byte Data, explains
+    one way in which the CP-1600 copes with this.
+
+  -----------------
+   2.2:  Registers
+  -----------------
+
+    Memory accesses are slow, because they have to go "off chip"
+    for data.  As a result, most operations in the CPU operate on
+    registers.  Registers are special memory locations inside the CPU
+    which are connected directly to the CPU's arithmetic and logic units.
+    Most of these registers are so-called "General Purpose" registers,
+    although also many have additional special uses assigned to them.
+
+    The CP-1600 has 8 16-bit general purpose registers, named R0 through
+    R7.  These registers may be used for general purpose arithmetic.
+    Additionally, there is the status word, SWD, which contains the
+    status bits.  The following table describes them all.
+
+    Register           Special Purpose
+    ---------------------------------------------------------------------
+      R0               None
+      R1               Data Counter
+      R2               Data Counter
+      R3               Data Counter
+      R4               Auto-incr Data Counter, or JSR Return Address
+      R5               Auto-incr Data Counter, or JSR Return Address
+      R6               Stack Data Counter, or JSR Return Address
+      R7               Program Counter
+      SWD              Status word: Holds Sign, Zero, Carry, Over bits
+
+    Memory accesses on the CP-1600 are performed via Data Counters*.
+    These provide access to memory in a fashion similar to the PEEK
+    and POKE instructions in BASIC.  In addition to providing access to
+    memory, R4 and R5 auto-increment and R6 behaves as a stack pointer
+    when used as Data Counters.  In general, Data Counters perform memory
+    accesses for instruction arguments, using "Indirect Addressing",
+    which is described in detail in Section 2.3.
+
+    Registers R4 through R6 also may be used to hold the return-address
+    for a JSR instruction.  JSR acts very similar to BASIC's GOSUB
+    instruction.  The return address may then be saved in memory by your
+    program, thereby allowing recursion.  Alternately, this value may
+    double as an extra argument to a function, which is unlike anything
+    that BASIC would do, but is extrememly efficient and convenient.
+    All of these topics will be covered in detail in Section 3.2.
+
+    *  I know "Data Counter" is a strange name, but it is the name given
+       in the General Instruments documentation.  It is for the sake of
+       consistency that I use it.
+
+  ------------------------
+   2.3:  Addressing Modes
+  ------------------------
+
+    The CP-1600 offers a wide variety of addressing modes for its
+    instruction set.  Some of these modes operate entirely on registers
+    inside the CPU.  Others access memory, allowing access to RAMs, ROMs,
+    and peripheral devices.  Before launching into a complete description
+    of the modes, let's first look at the common instruction forms.
+
+    Single-operand instructions, such as "INCR", "DECR" and so on work
+    with a single operand that doubles as both "source" and "destination."
+    Dual-operand instructions, such as "ADDR" and "SUBR" operate on
+    two operands, where the first is a "source" and the second is both
+    "source" and "destination."
+
+    For example, consider the single operand instruction "INCR Rx".
+    ("INCR" stands for "INCrement Register".)  The BASIC equivalent
+    for this would be "Rx = Rx + 1".  Here, Rx acts both as a source
+    (input) and destination (output) for the instruction.  Now, consider
+    the two-operand instruction "ADDR Rx, Ry". ("ADDR" stands for "ADD
+    Registers".)  In this case, the BASIC equivalent would be "Ry = Ry
+    + Rx".  Now, Rx is simply a source operand, and Ry is both a source,
+    and a destination.
+
+    The simplest addressing mode is "Implied" mode, in which the
+    instruction operates on one or more operands that are not directly
+    specified.  Instructions which directly set/clear flags fall into
+    this category.
+
+        Example:
+
+        CLRC                  ; C = 0  (Clear the carry bit.)
+
+    The next simplest addressing mode is "Register" mode, in which
+    the instruction reads and writes all of its results to registers.
+    Register mode instructions generally have an "R" as the last letter
+    of their mnemonic, as in "ADDR", "COMR", etc.  "Register" instructions
+    do not access memory.
+
+        Examples:
+
+        INCR  R0              ; R0 = R0 + 1
+        ADDR  R1, R2          ; R2 = R2 + R1
+        SUBR  R3, R4          ; R4 = R4 - R3
+
+    "Immediate" mode instructions accept a constant as one of the two
+    operands.  These instructions are always dual-operand instructions,
+    and the first operand is always the constant, with exception to
+    "MVOI," which writes to its immediate operand.  (The usefulness of
+    "MVOI" is questionable.)  Immediate mode instructions generally have
+    an "I" as the last letter of the mnemonic, as in "ADDI".
+
+        Examples:
+
+        MVII  #$0042, R3      ; R3 = $0042
+        XORI  #$FF00, R6      ; R6 = R6 XOR $FF00
+
+    "Direct" mode instructions specify a fixed memory address from
+    which to read one of the operands.  As with Immediate mode, the
+    first operand is always the Direct operand, except for MVO, which
+    writes a value to the requested address.  Direct mode instructions
+    generally do not have any special mention in the mnemonic.
+
+        Examples:
+
+        MVO   R4, $01F1       ; POKE $01F1, R4
+        MVI   $01F0, R3       ; R3 = PEEK($01F0)
+        ADD   $02F0, R5       ; R5 = R5 + PEEK($02F0)
+
+    "Indirect" mode instructions access memory through a Data Counter
+    register for one of the operands.  The first operand is generally
+    the data counter, with exception to "MVO@," in which it is the second
+    operand.  Except in the case of "MVO@," Indirect mode instructions
+    read the value at the memory location pointed to by the Data Counter
+    before performing the instruction.  With "MVO@", the value is
+    written to the desired location.  Indirect mode instructions are
+    generally noted with an "@" at the end of the mnemonic.
+
+    When an Auto-Incrementing Data Counter is used with Indirect mode,
+    the Data Counter is incremented after the access.  This allows
+    loops to step through arrays very efficiently, since it is not
+    necessary to manually update the Data Counters.
+
+    The Stack Data Counter is a special case.  When writing, it is
+    incremented after the access, just as the Auto-Incrementing Data
+    Counters are.  When reading, however, it is decremented BEFORE
+    the access, thus providing a simplistic stack.  Indirect addressing
+    via the Stack Data Counter is referred to as "Stack Addressing."
+
+        Examples:
+
+        MVO@  R4, R3          ; POKE R3, R4
+        MVO@  R3, R4          ; POKE R4, R3 : R4 = R4 + 1     (Auto-incr)
+        MVO@  R3, R6          ; POKE R6, R3 : R6 = R6 + 1     (Stack)
+
+        MVI@  R3, R4          ; R4 = PEEK(R3)
+        MVI@  R4, R3          ; R3 = PEEK(R4) : R4 = R4 + 1   (Auto-incr)
+        MVI@  R6, R3          ; R6 = R6 - 1 : R3 = PEEK(R6)   (Stack)
+
+        XOR@  R3, R2          ; R2 = R2 XOR PEEK(R3)
+
+  ------------------------
+   2.4:  Double Byte Data
+  ------------------------
+
+    As I'm fond of mentioning, the CP-1600 is a 16-bit wide machine.
+    However, at the time of its inception, 16-bit wide memory systems
+    were expensive, and so the CP-1600 provides mechanisms for dealing
+    with "narrow" memories.  (Any memory whose width is less than 16
+    bits is referred to as a "narrow memory" in this document.)
+
+    On the Intellivision, for instance, most programs are stored in
+    10-bit wide ROMs.  This causes some problems, because Immediate
+    mode stores its constant in the word immediately following the
+    instruction word.  As a result, a 10-bit wide ROM would restrict
+    constants to 10 bits wide.  It also causes problems for Indirect
+    accesses to narrow memory, since quantities wider than the memory
+    cannot be stored or read from these memories by default.
+
+    Fortunately, the CP-1600 provides an answer with the "Set Double
+    Byte Data" (SDBD) instruction, which allows reading data in "Double
+    Byte Data" format.  Double Byte Data format stores 16-bit quantities
+    as you'd expect -- as two 8-bit bytes.  In memory, the low byte is
+    stored first, and the high byte is stored second.  (This is referred
+    to as "Little Endian" data ordering, because the "little" end
+    is stored first.  And yes, the terms "Little Endian" and "Big Endian"
+    are borrowed from Gulliver's Travels and are in common use in the
+    computing industry today.)
+
+    SDBD acts as a modifier instruction which tells the CP-1600 that the
+    next instruction accesses "Double Byte Data".  The SDBD instruction
+    only modifies the instruction that immediately follows it.  It only
+    modifies reads, and it works only with Indirect and Immediate
+    addressing modes.
+
+    When using SDBD with Immediate mode, the Immediate constant is stored
+    in the two bytes immediately after the instruction rather than in
+    one word.  This lengthens the instruction's encoding from two words
+    to three words.  In Indirect mode, two accesses are performed through
+    the same Data Counter.  If an Auto-incrementing Data Counter is used,
+    the counter is incremented twice.  If a non-auto-incrementing Data
+    Counter is used, though, the same memory location is accessed twice.
+    Note that SDBD is not allowed with Stack Addressing or with MVO.
+
+        Examples:
+
+        ; This shows how to handle large constants that don't fit into
+        ; 10-bit words.
+        SDBD                 ; Set Double-Byte-Data
+        ADDI   #$5A3C,  R0   ; R0 = R0 + $5A3C
+
+        ; This reads both hand-controllers (at locations $1FE, $1FF)
+        MVII   #$01FE,  R4   ; R4 = $1FE
+        SDBD                 ; Set Double-Byte-Data
+        MVI@   R4, R0        ; R0 = PEEK($1FE) + PEEK($1FF)*256 : R4 = R4 + 2
+
+
+    The SDBD instruction provides a fine way to read 16-bit values stored 
+    in narrow memory.  It does not, however, provide a way to write 16-bit
+    values, since SDBD may not be used with MVO.  Instead, one may use
+    the SWAP instruction in conjunction with two MVOs to store a 16-bit
+    value to narrow memory.  The first MVO can be used to store the
+    lower half of the value.  One then SWAPs the data, and uses a second
+    MVO to store the upper half.  This works especially well with indirect
+    addressing modes, although there is no restriction on addressing mode
+    as there is with SDBD.
+
+        Example:
+
+        ; This shows how to store a 16-bit value in 8-bit RAM.  In
+        ; this case, the value in R0 is stored starting at the location
+        ; pointed to by R4.
+        MVII   #$1EE, R4     ; R4 = $1EE
+        MVO@   R0, R4        ; POKE R4, R0 : R4 = R4 + 1
+        SWAP   R0, 1         ; Swap the bytes in R0
+        MVO@   R0, R4        ; POKE R4, R0 : R4 = R4 + 1
+       
+        ; Now read the value back in using SDBD and MVI:
+        SUBI   #2, R4        ; R4 = R4 - 2    ' rewind the pointer
+        SDBD                 ; Set Double-Byte-Data
+        MVI@   R4, R0        ; R0 = PEEK($1EE) + PEEK($1EF)*256 : R4 = R4 + 2
+
+    
+    Advanced tip:  The MVO and SWAP instructions on the CP-1600 are marked
+    as Non-Interruptible, which means a sequence of MVOs and SWAPs cannot
+    be interrupted until it completes.  This allows one to update 16-bit
+    values in 8-bit memory "atomically", such that interrupt handlers cannot
+    see the partially updated value.  This is especially useful for setting
+    values that will be used by an interrupt handler, or for changing the
+    interrupt vector address.  
+
+        Example:
+
+        ; Change the interrupt vector address to point to MYISR.
+        ; The interrupt vector is stored as double-byte-data at $100 and $101.
+        ; The MVO/SWAP/MVO is non-interruptible, thus making this "safe."
+        MVII   #MYISR, R0    ; Point R0 to my interrupt handler
+        MVO    R0, $100      ; Store out lower byte of address
+        SWAP   R0, 1         ; Exchange bytes
+        MVO    R0, $101      ; Store out upper byte of address
+
+==============================================================================
+ Section 3:  Jumps and Branches
+==============================================================================
+
+  ---------------------------
+   3.1:  Unconditional Jumps
+  ---------------------------
+
+    Unconditional Jumps provide the equivalent of BASIC's GOTO statement.
+    They allow a program to be laid out in a non-linear fashion, with
+    control passing from one point to another.
+
+    The CP-1600 provides four forms of unconditional jump:  Absolute
+    Jumps, Absolute Jumps to Subroutines, Relative Branches, and
+    Arithmetic Jumps.  We will cover all of these except Jumps to
+    Subroutines (JSRs) here.  JSRs are covered in Section 3.2.
+
+    Absolute Jumps are the simplest to understand.  These are provided
+    by the instructions J, JE, and JD.  They essentially tell the CP-1600
+    "Go here, immediately."  The Jump instructions accept a label which
+    can be anywhere in the address space.  They are encoded in such a
+    way that they never require an SDBD prefix.  JE and JD optionally
+    enable or disable interrupts during the branch.  Because the address
+    being jumped to is hard-coded in the instruction, a given Jump
+    instruction will always branch to the same location, regardless of
+    where the Jump instruction is placed in memory.
+
+        Examples:
+
+        J   foo        ; GOTO foo
+        JE  bar        ; Interrupts = ON : GOTO bar
+        JD  baz        ; Interrupts = OFF : GOTO baz
+
+    Relative Branches are very similar to Absolute Branches, in that
+    they instruct the CPU to go to a particular label.  The main
+    difference is that Relative Branches specify an offset from the
+    current location to branch to.  This allows relative branches
+    to be "relocated" in memory, so that a piece of code might be
+    moved around if needed.  It also means that relative branches
+    stored in a narrow ROM have limited range.  (SDBD is not supported
+    with relative branch offsets.)
+
+        Example:
+
+        B   foo        ; GOTO foo
+
+    Arithmetic Jumps provide a means for branching to a computed location.
+    This is similar to the "ON x GOTO" in BASIC.   More commonly, however,
+    Arithmetic Jumps provide a means for returning from a function.
+    These jumps differ from other types of jumps, because they are
+    performed using the regular arithmetic instructions, instead of
+    specific Jump or Branch instructions.  Most typically, a MOVR or
+    MVI@ is used to set R7, the Program Counter, to a specific location.
+    Sometimes, INCR is used to branch over a single-word instruction.
+
+        Examples:
+
+        INCR   R7     ; Skip next instruction
+        ADDR   R0,R1  ; Skipped by INCR
+        ...
+
+        MVI@   R6,R7  ; Return to address stored on stack
+
+  ----------------------------
+   3.2:  Jumps to Subroutines
+  ----------------------------
+
+    In order to support structured programming, the CP-1600 provides
+    instructions for jumping to subroutines.  The Jump to Subroutine
+    instructions, JSR, JSRE, JSRD, behave similarly to their absolute
+    Jump counterparts, J, JE, JD.  But in addition to jumping, these
+    instructions also store a return address in a user-specified
+    register, either R4, R5, or R6.
+
+    Because the return address is stored in a register, returns from
+    short subroutines can be made fairly quickly, by merely moving
+    the return address back into the program counter.  For instance,
+    in the following, the subroutine "foo" does some trivial operation,
+    and merely moves the return address back to R7 to return.
+    following.
+
+        Example:
+
+              MVII  #2,  R0      ; R0 = 2
+              MVII  #2,  R1      ; R1 = 2
+              JSR   R5, foo      ; Call subroutine foo:  Put 2 + 2 together.
+              ...                ; R1 = 2 + 2 = 4
+
+
+        foo:  ADDR  R0, R1       ; Add R0 to R1
+              MOVR  R5, R7       ; Return to caller
+
+    Note that to support recursion, it becomes necessary to store the
+    return address on the stack.  Consider, for instance, a recursive
+    function that adds numbers 1 .. N together (not the greatest use
+    of recursion, but definitely simple to understand).  The BASIC code
+    might look like so:
+
+             10  SUM = SUM + N
+             20  N = N - 1
+             30  IF N <= 0 GOTO 50
+             40  GOSUB 10
+             50  RETURN
+
+    The assembly code for this might go like this, then:  (See Section
+    3.3 for more information on the conditional branch.)
+
+             ; SUM is in R0
+             ; N is in R1
+
+       foo:  MVO@  R5, R6        ; Remember return address on stack
+             ADDR  R1, R0        ; R0 = R0 + R1
+             DECR  R1            ; R1 = R1 - 1
+             BLE   done          ; IF R1 <= 0 GOTO DONE
+             JSR   R5, foo       ; GOSUB foo
+       done: MVI@  R6, R7        ; Pop return address from stack and return
+
+
+    Another consequence of placing the return address in a register is
+    that it can act as an extra function argument.  This encourages a
+    paradigm where complex blocks of parameters are passed to a function
+    as a data-block immediately after the function call.  There is nothing
+    in BASIC which corresponds to this directly, except possibly the
+    "RESTORE line_no" statement.  Imagine, for instance, a function
+    which initializes a chunk of memory to a desired pattern.  Suppose
+    the BASIC code looks like so:
+
+        5000 REM  Init Memory
+        5010 REM  The first data value we read will contain the address
+        5020 REM  to poke data into.  The second contains the length of
+        5030 REM  the data.  The rest is the data itself.
+        5040 READ addr
+        5050 READ len
+        5060 FOR I = 1 to len
+        5070 READ data
+        5080 POKE addr, data : addr = addr + 1
+        5090 NEXT I
+        5100 RETURN
+
+    It might be invoked like so:
+
+        100  RESTORE 120
+        110  GOSUB 5000
+        120  DATA 1024, 5, 10, 20, 30, 40, 50
+        130  REM Code resumes here
+
+    The corresponding CP-1600 assembly might look like so:  (Again,
+    refer to Section 3.3 for information on the conditional branches.)
+
+        init_mem:  SDBD
+                   MVI@  R5,  R4     ;  Read address
+                   MVI@  R5,  R1     ;  Read length
+
+        loop:      MVI@  R5,  R0     ;  Read a piece of data
+                   MVO@  R0,  R4     ;  Write it out
+                   DECR  R1          ;  Decrement loop count
+                   BPL   loop        ;  Iterate until we're done
+
+                   MOVR  R5,  R7     ;  Return to the caller
+
+    The function would then be invoked with a JSR, followed by a "DCW"
+    (Define Control Word) directive that has the data for the subroutine.
+    (DCW is an assembler directive which tells the assembler to place data
+    values in memory directly.  It's roughly similar to BASIC's "DATA"
+    instruction, only a little less mystical and a lot less subtle.)
+    Example:
+
+                   JSR   R5, init_mem
+           data:   WORD  1024         ; "WORD" gives us Double Byte Data
+                   DECLE 5, 10, 20, 30, 40, 50
+           rtrn:   ; Code resumes here
+
+    Note that at the start of our init_mem function, R5 will be set to
+    point at its data block (labeled "data" above for clarity), and at the
+    end of init_mem, it'll be set to point to the next actual instruction
+    (labeled "rtrn" above, again for clarity).
+
+    Most systems adopt a default convention for the register they'll
+    use for the return address on most JSRs.  On the Intellivision,
+    for instance, most JSRs place their return address in R5.
+    For this reason, some CP-1600 assemblers define the following
+    pseudo-operations as synonyms for other CP-1600 instructions:
+    
+        Pseudo-Op       CP-1600 Instruction    Operation
+        --------------------------------------------------------------
+         CALL label     JSR  R5, label         Call subroutine
+         BEGIN          MVO@ R5, R6            Save return addr.
+         RETURN         MVI@ R6, R7            Return to saved addr.
+         JR Rx          MOVR Rx, R7            Jump to address in Rx.
+
+    As you can see, the CP-1600's JSR instruction and related instructions
+    provide an interesting set of programming opportunities. 
+
+  ----------------------------
+   3.3:  Conditional Branches
+  ----------------------------
+
+    Conditional branches are one of the Swiss Army Knives of assembly
+    language programming.  In their simplest uses, paired with the "CMP"
+    (Compare) instruction, they provide "IF .. THEN GOTO" capability
+    in the language.  This makes varied program behavior possible.
+    When combined with other instructions, much more subtle and powerful
+    control flow can be devised.
+
+    (Note:  The CP-1600 also provides a special flavor of conditional
+    branch that allows branching on one of 16 external conditions.
+    The external condition inputs are not wired in the Intellivision,
+    and so this is not discussed here.)
+
+    All of the conditional branch instructions work by testing some
+    combination of status bits, and deciding whether or not to jump based
+    on that test.  The CP-1600 provides 16 different conditional branch
+    opcodes, although two of them map to "Branch Always" and "Branch
+    Never".  (These two are given the mnemonics B and NOPP, respectively.)
+    The complete set of conditional branches are listed in Section 4.5.
+
+    The most easily explained use of conditional branches is in
+    relationship to the "CMP" (Compare) instruction.  "CMP" performs a
+    subtraction between two numbers, and sets the status bits accordingly.
+    The result of the subtract is discarded, however.  The reason a
+    subtract is performed is that it allows us to learn many things
+    about the relative values between two numbers.  The following table
+    illustrates the relationship between comparisons, subtraction, and
+    status bits that get set.  (In this table, x and y are considered
+    to be signed.  Note that for the relative compares, there are two
+    cases since the subtract might overflow if one input is positive
+    and the other is negative and the two are far apart.)
+
+        If this      Then so                      And these
+        is true...   is this...                   status bits are set.
+        -----------------------------------------------------------------
+         x = y        x - y = 0                   S = 0, Z = 1, O = 0
+
+         x < y        x - y < 0  (no overflow)    S = 1, Z = 0, O = 0
+                      x - y > 0  (overflow)       S = 0, Z = 0, O = 1
+
+         x > y        x - y > 0  (no overflow)    S = 0, Z = 0, O = 0
+                      x - y < 0  (overflow)       S = 1, Z = 0, O = 1
+
+    The CP-1600 provides several conditional branches which are geared
+    around these conditions, as well as branches which test for overflow.
+    Note that the compare/branch effectively form a signed comparison.
+
+        Mnemonic    Branch if...                  Test
+        --------------------------------------------------------------
+         BEQ        Equal                         Z = 1
+         BNEQ       Equal                         Z = 0
+         BLT        Less Than                     S <> O
+         BLE        Lesser or Equal               S <> O OR Z = 1
+         BGT        Greater Than                  (S = O) AND Z = 0
+         BGE        Greater or Equal              S = O
+         BOV        Overflow occurred             O = 1
+
+        Alternate
+        Mnemonics   Branch if...             Test
+        --------------------------------------------------------------
+         BNGE       Not Greater or Equal          S <> O
+         BNGT       Not Greater Than              S <> O OR Z = 1
+         BNLE       Not Lesser or Equal           (S = O) AND Z = 0
+         BNLT       Not Less Than                 S = O
+         BNOV       No Overflow occurred          O = 0
+
+    As you can see, these mnemonics are fairly straightforward,
+    particularly when comparing signed numbers.  Now for some examples
+    relating BASIC IF statements to some actual assembly code.  Note the
+    ordering of operands in the compare -- it's backwards to what you
+    may be used to.
+
+        Examples Using Signed Numbers:
+
+        BASIC code                               CP-1600 Assembly Code
+        -----------------------------------------------------------------
+
+        IF R0 > R1 THEN GOTO foo                       CMPR  R1, R0
+                                                       BGT   foo
+
+        IF R2 <= R3 THEN GOTO foo ELSE GOTO bar        CMPR  R3, R2
+                                                       BLE   foo
+                                                       B     bar
+
+        FOR R0 = 5 TO 10                               MVII  #5,  R0
+        POKE R4, R0                              loop: MVO@  R0,  R4
+        R4 = R4 + 1                                    INCR  R0
+        NEXT R0                                        CMPR  #10, R0
+                                                       BLE   loop
+
+
+    To perform unsigned comparsions, the situation is a little simpler,
+    since we don't care about overflows.  Since the numbers are unsigned,
+    though, the sign bit doesn't contain the information we're interested
+    in.  Instead we can look directly at the carry and zero bits.
+
+        If this      Then so                      And these
+        is true...   is this...                   status bits are set.
+        -----------------------------------------------------------------
+         x < y        x - y < 0                   C = 0, Z = 0, O = ?
+         x > y        x - y > 0                   C = 1, Z = 0, O = ?
+         x = y        x - y = 0                   C = 1, Z = 1, O = ?
+
+    We can then use the branches that look at the carry bit and zero
+    bit to handle greater-than, less-than, and equals on unsigned numbers:
+
+        Mnemonic    Branch if...                  Test
+        --------------------------------------------------------------
+         BC         Carry is set                  C = 1
+         BNC        Carry is not set              C = 0
+         BEQ        Zero is set                   Z = 1
+
+    Notice that "BC" is effectively "Branch if Greater or Equal", and
+    "BNC" is "Branch if Less Than."  We can use "BEQ" before a "BC"
+    to sort out the "Equals" cases from the "Greater" cases.
+
+    Although compares with branches are probably the most easily explained
+    use of conditional branches, another common use is to test the result
+    of other arithmetic, as hinted to by the "BPL", "BMI", "BOV", and
+    "BNOV" instructions we've already covered.
+
+    Most of the CP-1600 instructions set some or all of the status bits.
+    Logical instructions (AND, XOR, COMR) and increment/decrement
+    instructions (INCR, DECR) tend to set the Sign and Zero bits.  Other
+    arithmetic instructions (ADD, SUB, CMP, etc.) as well as the shift
+    and rotate instructions set all four status bits.
+
+    Probably the most common use of conditional branches is to control
+    loops.  Typically, loops are rewritten so that their loop counters
+    starts out positive and works towards zero.  Then, a "DECR" and "BPL"
+    or "BNEQ" combination actually form the loop.
+
+    In BASIC, this transformation might look like so:
+
+        Original:
+        10 FOR I = 1 TO 99
+        20 NEXT I
+
+        Both versions:
+        10  I = 99                    10  I = 99
+        20  I = I - 1                 20  I = I - 1
+        30  IF I >= 0 THEN 20         30  IF I <> 0 THEN 20
+
+    In assembly code, the code is about as simple:
+
+            MVII  #99,  R0                MVII  #99, R0
+        xx: DECR  R0                  xx: DECR  R0
+            BPL   xx                      BNEQ  xx
+
+    The difference between the two for most loop trip counts is mostly
+    academic.  For trip counts that are too large to fit into a signed
+    variable, the version at the right is required, though.
+
+    Another use of conditional branches is to branch based on the bits
+    stored in a word.  This can be done by using the shift instructions
+    in conjunction with conditional branches.  One use of this is to
+    provide a compact, efficient encoding for multi-way "case" statements.
+    (BASIC lacks 'case' statements, so in BASIC, we use multiple IF
+    statements instead.)
+
+       Example:
+
+       BASIC Code
+       --------------------------------
+        IF (R0 AND 128) <> 0 GOTO opt7
+        IF (R0 AND  64) <> 0 GOTO opt6
+        IF (R0 AND  32) <> 0 GOTO opt5
+        IF (R0 AND  16) <> 0 GOTO opt4
+        IF (R0 AND   8) <> 0 GOTO opt3
+        IF (R0 AND   4) <> 0 GOTO opt2
+        IF (R0 AND   2) <> 0 GOTO opt1
+        IF (R0 AND   1) <> 0 GOTO opt0
+
+       CP-1600 Code
+       ----------------------------------------------------------
+        MOVR   R0,  R1      ; Do all of our work on a copy of R0
+        SWAP   R1           ; Put lower byte in upper half
+        SLLC   R1,  2       ; Set C, O to bits 7, 6 of R0
+        BC     opt7
+        BOV    opt6
+        SLLC   R1,  2       ; Set C, O to bits 5, 4 of R0
+        BC     opt5
+        BOV    opt4
+        SLLC   R1,  2       ; Set C, O to bits 3, 2 of R0
+        BC     opt3
+        BOV    opt2
+        SLLC   R1,  2       ; Set C, O to bits 1, 0 of R0
+        BC     opt1
+        BOV    opt0
+
+
+
+==============================================================================
+ Section 4:  Instruction Set Reference
+==============================================================================
+
+  ------------------------
+   4.1:  Legend and Notes
+  ------------------------
+
+    The tables below describe the core instruction set of in the CP-1600.
+    Each table attempts to relate CP-1600 instructions to their
+    BASIC equivalent where it can.  Note that in the case of Indirect
+    instructions, the update that is performed on Auto-incrementing
+    or Stack Data Counters is not shown in the table, although a short
+    explanation is given below for reference purposes.  See Section 2.3
+    and 2.4 for a more detailed explanation.
+
+    Table Legend
+    ------------
+
+        Rx, Ry     Registers -- one of R0, R1, R2, R3, R4, R5, R6, R7
+        #x         Constants.
+        x, y       Addresses.
+        [, 2]      Optional ", 2" argument for shifts and rotates.
+
+        S          Sign bit
+        Z          Zero bit
+        O          Overflow bit
+        C          Carry bit
+        I          Interrupt bit
+        D          Double-byte Data bit
+        2          Overflow bit if second argument is 2.
+
+    Auto-Incrementing Data Counters
+    -------------------------------
+
+    R4 and R5 are "incrementing data counters".  Their values are incremented
+    after every memory access (eg. PEEK or POKE) via these registers.  For
+    instance:
+
+        MVI@  R4, R5       ;  R5 = PEEK(R4) : R4 = R4 + 1
+        MVO@  R4, R5       ;  POKE R5, R4   : R5 = R5 + 1
+
+    Stack Data Counter
+    ------------------
+
+    R6 is the "stack pointer".  It is incremented after every write,
+    and decremented before every read, thus providing an upward-growing Stack.
+
+        MVO@  R5, R6       ;  POKE R6, R5 : R6 = R6 + 1
+        MVI@  R6, R5       ;  R6 = R6 - 1 : R5 = PEEK(R6)
+
+
+  ---------------------------------------
+   4.2:  Arithmetic/Boolean Instructions
+  ---------------------------------------
+
+    CP-1600             Description                Flags        Type
+    ------------------------------------------------------------------------
+    INCR    Rx          Rx = Rx + 1                S Z          Register
+    DECR    Rx          Rx = Rx - 1                S Z          Register
+    COMR    Rx          Rx = - Rx - 1              S Z          Register
+    NEGR    Rx          Rx = - Rx                  S Z O C      Register
+    ADCR    Rx          Rx = Rx + C                S Z O C      Register
+
+    MOVR    Rx, Ry      Ry = Rx                    S Z          Register
+    ADDR    Rx, Ry      Ry = Ry + Rx               S Z O C      Register
+    SUBR    Rx, Ry      Ry = Ry - Rx               S Z O C      Register
+    CMPR    Rx, Ry           Ry - Rx               S Z O C      Register
+    ANDR    Rx, Ry      Ry = Ry AND Rx             S Z          Register
+    XORR    Rx, Ry      Ry = Ry XOR Rx             S Z          Register
+
+    MVO     Rx, y       POKE y, Rx                              Direct
+    MVI     x, Ry       Ry = PEEK(x)                            Direct
+    ADD     x, Ry       Ry = Ry + PEEK(x)          S Z O C      Direct
+    SUB     x, Ry       Ry = Ry - PEEK(x)          S Z O C      Direct
+    CMP     x, Ry            Ry - PEEK(x)          S Z O C      Direct
+    AND     x, Ry       Ry = Ry AND PEEK(x)        S Z          Direct
+    XOR     x, Ry       Ry = Ry XOR PEEK(x)        S Z          Direct
+
+    MVO@    Rx, Ry      POKE Ry, Rx                             Indirect
+    MVI@    Rx, Ry      Ry = PEEK(Rx)                           Indirect
+    ADD@    Rx, Ry      Ry = Ry + PEEK(Rx)         S Z O C      Indirect
+    SUB@    Rx, Ry      Ry = Ry - PEEK(Rx)         S Z O C      Indirect
+    CMP@    Rx, Ry           Ry - PEEK(Rx)         S Z O C      Indirect
+    AND@    Rx, Ry      Ry = Ry AND PEEK(Rx)       S Z          Indirect
+    XOR@    Rx, Ry      Ry = Ry XOR PEEK(Rx)       S Z          Indirect
+
+    MVII    #x, Ry      Ry = #x                                 Immediate
+    ADDI    #x, Ry      Ry = Ry + #x               S Z O C      Immediate
+    SUBI    #x, Ry      Ry = Ry - #x               S Z O C      Immediate
+    CMPI    #x, Ry           Ry - #x               S Z O C      Immediate
+    ANDI    #x, Ry      Ry = Ry AND #x             S Z          Immediate
+    XORI    #x, Ry      Ry = Ry XOR #x             S Z          Immediate
+
+  ---------------------------------
+   4.3:  Shift/Rotate Instructions
+  ---------------------------------
+
+    See Section 1.5 for more info on shift/rotate instructions.
+
+    CP-1600             Description                Flags        Type
+    ------------------------------------------------------------------------
+    SLL     Rx[, 2]     Shift Logical Left         S Z          Register
+    SLR     Rx[, 2]     Shift Logical Right        S Z          Register
+    SAR     Rx[, 2]     Shift Arithmetic Right     S Z          Register
+    SWAP    Rx[, 2]     Swap bytes                 S Z          Register
+    SLLC    Rx[, 2]     SLL into Carry             S Z 2 C      Register
+    SARC    Rx[, 2]     SAR into Carry             S Z 2 C      Register
+    RLC     Rx[, 2]     Rotate Left thru Carry     S Z 2 C      Register
+    RRC     Rx[, 2]     Rotate Right thru Carry    S Z 2 C      Register
+
+  -------------------------
+   4.4:  Jump Instructions
+  -------------------------
+
+    CP-1600             Description                Flags        Type
+    ------------------------------------------------------------------------
+    J       label       Jump to Label                           Jump
+    JE      label       Jump, Enable Interrupts            I    Jump
+    JD      label       Jump, Disable Interrupts           I    Jump
+    JSR     Rx, label   Jump to Subroutine                      Jump/Reg
+    JSRE    Rx, label   JSR, Enable Interrupts             I    Jump/Reg
+    JSRD    Rx, label   JSR, Disable Interrupts            I    Jump/Reg
+
+  ---------------------------------------
+   4.5:  Conditional Branch Instructions
+  ---------------------------------------
+
+    CP-1600             Description
+    ------------------------------------------------------------------------
+    B       label       IF 1 = 1 GOTO label
+    BC      label       IF C = 1 GOTO label
+    BOV     label       IF O = 1 GOTO label
+    BPL     label       IF S = 0 GOTO label
+    BZE     label       IF Z = 1 GOTO label
+    BEQ     label       IF Z = 1 GOTO label
+    BLT     label       IF S <> O GOTO label
+    BNGE    label       IF S <> O GOTO label
+    BLE     label       IF Z = 1 OR S <> O GOTO label
+    BNGT    label       IF Z = 1 OR S <> O GOTO label
+    BUSC    label       IF S <> C GOTO label
+
+    NOPP                IF 1 = 0 GOTO label
+    BNC     label       IF C = 0 GOTO label
+    BNOV    label       IF O = 0 GOTO label
+    BMI     label       IF S = 1 GOTO label
+    BNZE    label       IF Z = 0 GOTO label
+    BNEQ    label       IF Z = 0 GOTO label
+    BGE     label       IF S = O GOTO label
+    BNLT    label       IF S = O GOTO label
+    BGT     label       IF Z = 0 AND S = O GOTO label
+    BNLE    label       IF Z = 0 AND S = O GOTO label
+    BESC    label       IF S = C GOTO label
+
+  ---------------------------------------------
+   4.6:  Status Bit / CPU Control Instructions
+  ---------------------------------------------
+
+    CP-1600             Description                Flags        Type
+    ------------------------------------------------------------------------
+    SETC                C = 1                            C      Implied
+    CLRC                C = 0                            C      Implied
+
+    SDBD                Set Double Byte Data                 D  Implied
+
+    EIS                 Enable Interrupts                  I    Implied
+    DIS                 Disable Interrupts                 I    Implied
+    TCI                 Terminate Interrupt                     Implied
+    SIN                 Software Interrupt                      Implied
+
+    GSWD    Rx          Rx = SZOC0000SZOC0000                   Register
+    RSWD    Rx          Set S,Z,O,C from Rx        S Z O C      Register
+
+  -------------------------
+   4.7:  Common Pseudo-Ops
+  -------------------------
+
+    These "instructions" are really just renamed versions of the 
+    instructions listed above.  That is why they're called "pseudo-ops".
+    Here's a listing of the various pseudo-ops that are commonly supported.
+    
+    Pseudo-Operation    Description                Actual Instruction 
+    ------------------------------------------------------------------------
+    TSTR    Rx          Test reg. for neg/zero     MOVR    Rx, Rx
+    CLRR    Rx          Set register to 0          XORR    Rx, Rx
+    PSHR    Rx          Push register on stack     MVO@    Rx, R6
+    PULR    Rx          Pull register from stack   MVI@    R6, Rx
+    JR      Rx          Jump to Register           MOVR    Rx, R7
+    CALL    label       Call a function            JSR     R5, label
+    BEGIN               Push R5 on stack           MVO@    R5, R6
+    RETURN              Pull PC from stack         MVI@    R6, R7
+
+==============================================================================
+ Section 5:  Examples
+==============================================================================
+
+    I need to put examples here.  If anyone is willing to write examples
+    to go here, please contact Joe Zbiciak at <intvnut AT gmail.com>.
+    Thank you!
+
+==============================================================================
+ Section 6:  Glossary of Terms
+==============================================================================
+
+    1s complement   See "one's complement."
+
+    2s complement   See "two's complement."
+
+    AND             Boolean operation involving two input bits, producing
+                    a single output.  The output bit is 1 if both input
+                    bits are 1.  Otherwise the output is 0.  When applied
+                    to two registers, AND is performed to pairs of
+                    corresponding bits from each input, and the result
+                    is written to the corresponding bit in the output.
+                    AND is covered in Section 1.4.  Compare to OR and XOR.
+
+    arithmetic      A shift instruction which treats the number being
+    shift           shifted as a signed quantity.  In the case of a right-
+                    shift, the sign bit is duplicated in the number.
+                    Shifts are covered in Section 1.5.  See also "shift"
+                    and "logical shift".
+
+    base-2          See binary.
+
+    base-10         See decimal.
+
+    base-16         See hexadecimal.
+
+    BASIC           Beginner's All-purpose Symbolic Instruction Code.
+                    BASIC is a simple programming language that was
+                    extremely popular in the early days of home computers,
+                    and lives on at the heart of Microsoft-based products
+                    in the form of Visual BASIC.
+
+    bidecle         Two 10-bit numbers together.  Although bidecles are
+                    20 bits long, they are most often used to store
+                    16 bit numbers as two bytes.  See also "decle".
+
+    binary          Numbering system in which the only available
+                    digits are 0 and 1.  Also referred to as "base 2".
+                    The binary numbering system is used by computers,
+                    since the two states "0" and "1" correspond directly
+                    to the circuit states "off" and "on", making it easy
+                    to directly relate the state of digital circuits
+                    to numbers.  Section 1.1 discusses binary numbers.
+
+    bit             BInary digiT.  A bit is a single 0 or 1 in a number.
+                    Inside a computer, numeric values are made up of
+                    one or more bits.
+
+    branch          An interruption in the linear flow of a program.
+                    Under normal circumstances, the instructions
+                    in a program are executed in a linear order.
+                    Branches cause the flow of the program to be
+                    continued elsewhere.  See also "conditional branch".
+                    When unconditional, this is sometimes referred to as a
+                    "jump".  Jumps and Branches are covered in Section 3.
+
+    byte            A collection of bits.  On most computers, a byte
+                    is 8 bits.  See also "word".
+
+    carry           In arithmetic, the portion of an addition result that
+                    is too big to fit in a single digit.  (For instance,
+                    when adding '9 + 8', the '1' in '17' is the carry.)
+
+    Carry Bit       The Carry Bit is a bit in the machine's Status Word.
+                    When adding two numbers in a computer, the final
+                    "carry" at the left end of an addition is remembered
+                    in the Carry Bit.  Also, certain other operations
+                    (such as shifts) use the Carry Bit for storage.
+                    The Carry Bit is part of the computer's Status
+                    Word, and is covered in sections 1.3, 1.5 and 3.3.
+                    See also "Sign Bit", "Overflow Bit", "Zero Bit",
+                    "Status Word", "shift" and "rotate".
+
+    clear           Set a number's value to zero.
+
+    conditional     A conditional branch is a program branch occurs only
+    branch          if a particular condition is met.  This allows the
+                    program's behavior to vary.  The BASIC construct
+                    "IF ... THEN ..." is a form of conditional branch.
+                    Conditional Branches are covered in Section 3.3.
+
+    CP-1600         The CP-1600 is a 16-bit processor family that was
+                    produced by General Instruments in the late 70s and
+                    early 80s.  The CP-1610, which is a member of this
+                    family, was the processor used in the Intellivision
+                    video game system.
+
+    CPU             Central Processing Unit, also referred to simply as
+                    a "processor".  CPUs are the brains of computers.
+                    They perform the computational tasks of the system.
+                    The CP-1600 is a CPU.
+
+    decimal         Numbering system which uses 10 digits numbered 0, 1,
+                    2, 3, 4, 5, 6, 7, 8, 9.  Also referred to as base-10.
+                    Decimal is the most common numbering system in
+                    use amongst humans, but is not very natural for
+                    computers.  Section 1.1 discusses how the decimal
+                    numbering system is related to the more computer-
+                    oriented binary numbering system.
+
+    decle           A 10-bit number.  Rhymes with "heckle".  Decles are
+                    common on the Intellivision since most Intellivision
+                    game ROMs are 10 bits wide.
+
+    EXEC ROM        The EXEC ROM is the built-in set of program routines
+                    inside the Intellivision.  The EXEC contains routines
+                    for sound effects, manipulating graphics, reading
+                    hand controllers, and so on.  See also "Read Only
+                    Memory".
+
+    integer         A number having no fractional portion.  Similar to
+                    a "whole number", only integers are allowed to be
+                    negative, whereas whole numbers start at 0.
+
+    Intellivision   The world's first 16-bit video game system.  :-)
+                    'Nuff said.
+
+    GRAM            Graphics RAM.  The GRAM in the Intellivision is a RAM
+                    that is dedicated to holding programmable graphics
+                    information for the STIC.  See also "GROM", "STIC"
+                    and "RAM".
+
+    GROM            Graphics ROM.  The GROM in the Intellivision is a
+                    ROM that is dedicated to holding fixed graphics
+                    information for the STIC.  (For instance, the
+                    Intellivision text font is stored in the GROM.)
+                    See also "GRAM", "STIC" and "ROM".
+
+    hex             Abbrev: hexadecimal.
+
+    hexadecimal     Numbering system which uses 16 digits numbered
+                    0, 1, 2, 3, 4, 5, 6, 7, 8, 9, A, B, C, D, E, F.
+                    Also referred to as base-16, and usually abbreviated
+                    as "hex".  Hexadecimal is often used by humans
+                    working with computers, because it represents a
+                    useful shorthand for describing binary numbers.
+                    There is a one-to-one correspondence between
+                    each hexadecimal digit and a 4-bit binary pattern.
+                    Section 1.1 discusses hexadecimal numbering.  See also
+                    "binary" and "decimal".
+
+    jump            A branch in a program.  See "branch".
+
+    jump to         A branch in a program which remembers the address
+    subroutine      of the instruction after the "jump" instruction.
+                    These are useful for calling routines in a program
+                    or in the EXEC ROM.  Jumps to Subroutines are
+                    covered in Section 3.2.  See also "EXEC ROM".
+
+    logical shift   A shift instruction which treats the number being
+                    shifted as an unsigned or non-numeric quantity.
+                    In the case of right shifts, the Sign Bit receives
+                    no special treatment.  Shifts are covered in
+                    Section 1.5.  See also "shift" and "arithmetic
+                    shift".
+
+    memory          In general, memory refers to anyplace values may
+                    be stored.  In a computer, the available forms of
+                    memory include Read-Only Memory (ROM), Random
+                    Access Memory (RAM), and CPU Registers.
+
+    octal           Numbering system which uses 8 digits numbered 0, 1,
+                    2, 3, 4, 5, 6, 7.  Octal is constructed similarly
+                    to hexadecimal, providing a 1-to-1 mapping between
+                    3-bit values and digits.  Octal was much more popular
+                    30 years ago than today.  See also "binary", "decimal",
+                    and "hexadecimal".
+
+    one's           The one's complement for a number is the value
+    complement      given when all of the 1 bits are changed to a 0
+                    and all of the 0 bits are changed to a 1.  See also
+                    "two's complement".
+
+    OR              Boolean operation involving two input bits, producing
+                    a single output.  The output bit is 1 if at least
+                    one input bit is 1.  Otherwise the output is 0.
+                    When applied to two registers, OR is performed to
+                    pairs of corresponding bits from each input, and
+                    the result is written to the corresponding bit in
+                    the output.  Boolean logic is covered in Section 1.4.
+                    Compare to AND and XOR.
+
+    Overflow Bit    The Overflow Bit is a bit in the Status Word which
+                    records whether a computation involving two signed
+                    numbers returned a result of the expected sign.
+                    For example, the addition of two positive numbers
+                    is expected to return a positive result.  If a
+                    computation did not return a result with the
+                    expected sign, the Overflow Bit is set; otherwise
+                    the Overflow Bit is cleared.  Also, certain shift and
+                    rotate operations use the Overflow Bit for storage.
+                    The Overflow Bit is covered in Section 1.3, and shifts
+                    and rotates are covered in Section 1.5.  See also
+                    "Carry Bit", "Sign Bit", "Zero Bit", "Status Word",
+                    "shift" and "rotate".
+
+    peripheral      In this context of this document, a peripheral is a
+                    device other than RAM or ROM that can be accessed
+                    directly by the CPU.  Peripherals include things
+                    like the Sound Chip, hand-controllers, the STIC
+                    (display) chip, etc.  See also "STIC".
+
+    pop             Retrieves the top element (eg. the most recently
+                    pushed item) from a stack.  On the CP-1600, this is
+                    performed by decrementing R6, and then reading from
+                    the location pointed to by R6 after the decrement.
+                    If more elements are popped than are pushed, then the
+                    stack "underflows".  Also, pop is a synonym for pull.
+                    See also "push", "stack", and "stack underflow".
+
+    pull            Synonym for pop.
+
+    push            Places an element onto the stack.  The most recently
+                    pushed item will be the next item popped.  On the
+                    CP-1600, items are pushed on the stack by storing
+                    them to the location pointed to by R6, and then
+                    incrementing R6's value.  If more elements are pushed
+                    on the stack than the stack has room to hold, then the
+                    stack "overflows".  By default, the Intellivision's
+                    memory map leaves room for 39 words of stack space,
+                    from $02F1 - $0318.  See also "pop", "stack", and
+                    "stack overflow."
+
+    RAM             See "Random Access Memory".
+
+    Random Access   Memory which can be read or written arbitrarily.
+    Memory          This is where most variable data is stored.  See
+                    also "Read Only Memory."
+
+    Read Only       Memory which can only be read.  Most game-program
+    Memory          data is stored in ROM.  See also "Random Access
+                    Memory."
+
+    register        A special memory location inside the CPU which is
+                    used for holding numbers and computation results.
+                    Registers are special because they are inside the
+                    CPU and can be accessed quickly.  Section 2.2 covers
+                    the registers that are in the CP-1600.  See also
+                    "Data Counter", "Status Word", and "Memory".
+
+    ROM             See "Read Only Memory".
+
+    rotate          An operation on a binary number, in which all of the
+                    bits in the number are moved to the left or right,
+                    and a new bit is brought in on the end being moved
+                    away from.  The Carry Bit (and the Overflow Bit,
+                    in the case of 2-bit rotates) are used both for the
+                    bits being rotated in, as well as for storage of
+                    the bits being rotated out.  Section 1.5 discusses
+                    rotates in detail.  See also "shift", "Carry Bit"
+                    and "Overflow Bit".
+
+    set             Change a number's value to a new value.  The new
+                    value is implied to be '1' when used in reference to
+                    a bit without stating the new value.  eg. "set the
+                    carry bit" means the same as "set the carry bit to 1".
+                    See also "clear".
+
+    shift           An operation on a binary number, in which all of the
+                    bits in the number are moved to the left or right.
+                    Numerically, shifts correspond to multiplying or
+                    ividing a number by 2.  There are three basic kinds
+                    of shifts:  left shifts, arithmetic right shifts,
+                    and logical right shifts.  (Left shifts are neither
+                    specifically logical or arithmetic -- they could be
+                    considered as either.)  Some shifts use the Carry
+                    Bit (and the Overflow Bit, in the case of 2-bit
+                    shifts) to store the bits that were "shifted away."
+                    Section 1.5 discusses shifts in detail.  See also
+                    "arithmetic shift", "logical shift", "rotate",
+                    "Carry Bit" and "Overflow Bit".
+
+    Sign Bit        When referring to a number, the sign bit is the
+                    left-most bit within the number, and is used to denote
+                    the sign of the number.  When referring to the bit
+                    in the Status Word, the Sign Bit is the status bit
+                    which refers to the sign of a computation result.
+                    In both cases, 0 == positive, 1 == negative.
+                    Sections 1.2 and 1.3 cover numerical representation
+                    and status bits.  See also "Carry Bit", "Zero Bit",
+                    "Overflow Bit" and "Status Word".
+
+    stack           A data structure in memory in which the last item
+                    placed ("pushed") on the stack is the first item later
+                    retreived from the stack ("popped" or "pulled").
+                    This is referred to as a LIFO arrangement -- Last
+                    In, First Out.  Hardware stacks are implemented
+                    in a special memory which can only be accessed in
+                    stack order.  Software stacks are implemented as an
+                    array, with a pointer which moves within that array
+                    as the stack grows and shrinks.  The CP-1600 uses a
+                    software stack and R6 serves as the stack pointer.
+                    Section 2.3 covers addressing modes.  See also
+                    "stack overflow", "stack underflow", "push",
+                    "pull" and "pop".
+
+    stack overflow  Stack overflow occurs when too many items are pushed
+                    onto a stack.  Software stacks are stored as simple
+                    arrays in memory.  As elements are pushed on the
+                    stack, the pointer moves through memory.  (On the
+                    CP-1600, it starts at low numbered addresses and
+                    moves towards higher numbered addresses as items are
+                    pushed.  Therefore, we say the stack "grows upwards".)
+                    If too many elements are pushed onto the stack, the
+                    stack pointer may end up pointing into other data
+                    structures, or into invalid memory areas, resulting
+                    in incorrect program behavior.  See also "stack",
+                    "stack underflow", "push", and "pop".
+
+    stack           Stack underflow occurs when too many items are popped
+    underflow       from a stack.  Stacks are "Last-In, First-Out" data
+                    structures, meaning that the last item placed on a
+                    stack is the first item retrieved.  Popping from
+                    a stack returns the elements that were pushed on
+                    the stack in the opposite order from which they
+                    were pushed.  If more pops are issued on a stack
+                    than pushes, then the stack "underflows" since there
+                    is no corresponding "previously pushed value" to
+                    return, and it instead returns a meaningless value.
+                    In the case of software stacks, such as what the
+                    CP-1600 provides, the stack pointer may end up
+                    pointing to other data structures or invalid memory.
+                    (In the default configuration provided by the EXEC,
+                    the stack is placed just after the display memory,
+                    so a stack underflow might result in the stack
+                    pointer pointing to the display.)  See also "stack",
+                    "stack overflow", "push", and "pop".
+
+    Status Word     A special register in the CPU which records
+                    information about the results of computations.
+                    On the CP-1600, the Status Word contains four bits:
+                    the Sign Bit, Zero Bit, Overflow Bit, and Carry Bit.
+
+    STIC            Standard Television Interface Chip.   The STIC chip
+                    is the device in the Intellivision which produces
+                    the display.  It is responsible for reading the
+                    display information from the GRAM, GROM, and system
+                    RAM, and producing the game display.  See also "GRAM"
+                    and "GROM".
+
+    two's           The two's complement of a number is mathematically
+    complement      equivalent to its negative on a machine with a
+                    finite word width.  The two's complement of a
+                    number is generated by taking the one's complement
+                    of the number and adding 1.  This is mathematically
+                    equivalent to subtracting the number from a value that
+                    is one larger than the largest unsigned value that can
+                    be represented in a machine word.  Two's complement
+                    arithmetic is discussed in Section 1.2.  See also
+                    "one's complement" and "word".
+
+    word            A collection of bits usually equal to the computation
+                    width of the machine.  In the case of the CP-1600,
+                    words are 16 bits (2 bytes) wide.  See also "byte"
+                    and "decle".
+
+    XOR             (Also, Exclusive OR.) Boolean operation involving two
+                    input bits, producing a single output.  The output
+                    bit is 1 if exactly one input bit is 1.  Otherwise
+                    the output is 0.  When applied to two registers,
+                    XOR is performed to pairs of corresponding bits
+                    from each input, and the result is written to the
+                    corresponding bit in the output.  Boolean logic is
+                    covered in Section 1.4.  Compare to AND and OR.
+
+    Zero Bit        The Zero Bit records whether a calculation result
+                    was zero or not.  If a result was zero, the Zero
+                    Bit is set.  If a result was non-zero, the Zero
+                    Bit is cleared.  Section 1.3 covers the Zero Bit as
+                    well as other status bits.  See also "Carry Bit",
+                    "Zero Bit", "Overflow Bit" and "Status Word".

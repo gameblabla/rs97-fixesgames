@@ -1,0 +1,247 @@
+Audio file format
+
+An excellent adlib documentation is available at
+http://web.archive.org/web/20100425014332/http://www.shipbrook.com/jeff/sb.html
+
+All multibyte values have little endian byte order.
+
+
+
+[header] (offset 0)
+
+0-13:	magic string 14B ("OPENTITUSAUDIO")
+14:	version 1B (0x01 = version 1)
+15:	type 1B (0x01 = original adlib audio)
+16:	global metadata offset 2B (titus/moktar = 37 = 0x0025)
+
+[type 0x01 (original adlib audio)]
+18:	data offset 2B unsigned integer (titus/moktar = 1576 = 0x0628)
+20:	data size 2B unsigned integer (titus = 18749 = 0x493D, moktar = 18184 = 0x4708)
+22:	identification 1B (0x01 = original TTF, 0x02 = original moktar, 0x03 = new)
+23:	pointer difference 2B signed (titus = -1301 = 0xFAEB, moktar = -1345 = 0xFABF)
+25:	music offset 2B unsigned (titus/moktar = 0 = 0x0000), disable adlib with 0xFFFF
+27:	instrument offset 2B unsigned (titus/moktar = 352 = 0x0160)
+29:	sound effects offset 2B unsigned (titus/moktar = 1950 = 0x079E)
+31:	pc speaker offset 2B unsigned (titus/moktar = 1133 = 0x046D), disable pc speaker with 0xFFFF
+33:	song count 1B unsigned (titus/moktar = 16)
+34:	sound effects count 1B unsigned (titus/moktar = 14)
+35:	sub metadata offset 2B (titus/moktar = 113 = 0x0071)
+
+(hardcoded settings: 10 music channels for each song, (max) 19 instruments for each song)
+(original songs have the last 4 instruments reserved for percussion instruments)
+
+
+
+
+
+
+
+
+[global metadata] (offset 37)
+37:	metadata type 1B (0x01 = one line zero terminated ascii comment, 0x02 = MFL-style meta tags)
+
+[metadata type 0x01 (one line zero terminated ascii comment)]
+38:	comment size 2B unsigned integer
+40:	comment
+
+[metadata type 0x02 (MFL-style meta tags)]
+38:	metadata size 2B unsigned integer (titus = 73 = 0x0049, moktar = 66 = 0x0042)
+40:	metadata (see below)
+
+
+Metadata for original data files:
+
+
+comment (ttf): Original audio extracted from Titus the Fox.
+comment (moktar): Original audio extracted from Moktar.
+
+writeprotection: 1
+
+TTF:
+comment\0\0Original audio extracted from Titus the Fox.\0writeprotection\0\01\0
+
+Moktar:
+comment\0\0Original audio extracted from Moktar.\0writeprotection\0\01\0
+
+
+
+
+
+
+
+
+[sub metadata] (offset 113)
+113:	metadata type 1B (0x02 = MFL-style meta tags)
+
+[metadata type 0x02 (MFL-style meta tags)]
+114:	metadata size 2B unsigned integer (titus/moktar = 1460 = 0x05B4)
+116:	metadata (see below)
+
+
+
+
+Metadata for original data files:
+
+
+
+songdata:
+Pre-level;prelevel
+Death;death
+Game over;gameover
+Level music 1;levelmusic1
+Finish a level;finish
+Bonus: Padlock;padlock
+Bonus: Life;life
+Bonus: Password;password
+Flying carpet (not in use);carpet
+Credits;credits
+Level music 2;levelmusic2
+Level music 3;levelmusic3
+Level music 4;levelmusic4
+Level music 5;levelmusic5
+The end;theend
+Intro;intro
+
+sfxdata:
+Sfx 0 (not in use);sfx_0
+Sfx 1: Hit enemy;sfx_hitenemy
+Sfx 2 (not in use);sfx_2
+Sfx 3: Throw;sfx_throw
+Sfx 4: Enemy hits player;sfx_enemyhitsplayer
+Sfx 5: Object hits player;sfx_objecthitsplayer
+Sfx 6 (not in use);sfx_6
+Sfx 7 (not in use);sfx_7
+Sfx 8 (not in use);sfx_8
+Sfx 9: Pick up an object;sfx_pickup
+Sfx 10 (not in use);sfx_10
+Sfx 11 (not in use);sfx_11
+Sfx 12: Bounce;sfx_bounce
+Sfx 13 (not in use);sfx_13
+
+firstins: 1573
+
+(insdata: type (1: melodic (11 bytes), 2: percussion (6 bytes)) ; description ; short description
+
+insdata:
+1;MYBIZAR2;MYBIZAR2
+1;MYEFF3;MYEFF3
+1;MYSNTH11;MYSNTH11
+1;MYSNTH13;MYSNTH13
+2;HHOPEN2;HHOPEN2
+2;CHARL1;CHARL1
+1;MYBASS1;MYBASS1
+1;MYSYNT5;MYSYNT5
+1;ORGAN4;ORGAN4
+2;RKSNARE1;RKSNARE1
+2;LOGDRUM2;LOGDRUM2
+2;SFX_STOP;SFX_STOP
+1;MARIMBA1;MARIMBA1
+1;PIANO1;PIANO1
+1;PIANO3;PIANO3
+1;PIANOBEL;PIANOBEL
+1;VIBRA3;VIBRA3
+1;HARP1;HARP1
+1;HARP2;HARP2
+1;HARP3;HARP3
+1;JAPAN4;JAPAN4
+1;GUITAR1;GUITAR1
+1;SAX2;SAX2
+1;JAVAICAN;JAVAICAN
+1;MYBANJ1;MYBANJ1
+1;MYSTRG1;MYSTRG1
+1;SNAKEFL2;SNAKEFL2
+1;SNAKEFL3;SNAKEFL3
+1;MYMOOG2;MYMOOG2
+1;SITAR12;SITAR12
+1;MYFLUTE2;MYFLUTE2
+1;VIOLIN1;VIOLIN1
+1;VIOLIN2;VIOLIN2
+1;SYNBASS5;SYNBASS5
+1;SYNBASS6;SYNBASS6
+2;TAMB3;TAMB3
+1;MYBIZAR1;MYBIZAR1
+
+
+
+Data:
+songdata\0\0Pre-level;prelevel,Death;death,Game over;gameover,Level music 1;levelmusic1,Finish a level;finish,Bonus: Padlock;padlock,Bonus: Life;life,Bonus: Password;password,Flying carpet (not in use);carpet,Credits;credits,Level music 2;levelmusic2,Level music 3;levelmusic3,Level music 4;levelmusic4,Level music 5;levelmusic5,The end;theend,Intro;intro\0sfxdata\0\0Sfx 0 (not in use);sfx_0,Sfx 1: Hit enemy;sfx_hitenemy,Sfx 2 (not in use);sfx_2,Sfx 3: Throw;sfx_throw,Sfx 4: Enemy hits player;sfx_enemyhitsplayer,Sfx 5: Object hits player;sfx_objecthitsplayer,Sfx 6 (not in use);sfx_6,Sfx 7 (not in use);sfx_7,Sfx 8 (not in use);sfx_8,Sfx 9: Pick up an object;sfx_pickup,Sfx 10 (not in use);sfx_10,Sfx 11 (not in use);sfx_11,Sfx 12: Bounce;sfx_bounce,Sfx 13 (not in use);sfx_13\0firstins\0\01573\0insdata\0\01;MYBIZAR2;MYBIZAR2,1;MYEFF3;MYEFF3,1;MYSNTH11;MYSNTH11,1;MYSNTH13;MYSNTH13,2;HHOPEN2;HHOPEN2,2;CHARL1;CHARL1,1;MYBASS1;MYBASS1,1;MYSYNT5;MYSYNT5,1;ORGAN4;ORGAN4,2;RKSNARE1;RKSNARE1,2;LOGDRUM2;LOGDRUM2,2;SFX_STOP;SFX_STOP,1;MARIMBA1;MARIMBA1,1;PIANO1;PIANO1,1;PIANO3;PIANO3,1;PIANOBEL;PIANOBEL,1;VIBRA3;VIBRA3,1;HARP1;HARP1,1;HARP2;HARP2,1;HARP3;HARP3,1;JAPAN4;JAPAN4,1;GUITAR1;GUITAR1,1;SAX2;SAX2,1;JAVAICAN;JAVAICAN,1;MYBANJ1;MYBANJ1,1;MYSTRG1;MYSTRG1,1;SNAKEFL2;SNAKEFL2,1;SNAKEFL3;SNAKEFL3,1;MYMOOG2;MYMOOG2,1;SITAR12;SITAR12,1;MYFLUTE2;MYFLUTE2,1;VIOLIN1;VIOLIN1,1;VIOLIN2;VIOLIN2,1;SYNBASS5;SYNBASS5,1;SYNBASS6;SYNBASS6,2;TAMB3;TAMB3,1;MYBIZAR1;MYBIZAR1\0
+
+
+
+
+
+[data] (offset 1576)
+
+[music offset]
+for each song {
+  for each music channel {
+    music channel offset 2B unsigned (offset + pointer difference)
+  }
+  no more channels: 0xFFFF
+}
+
+[instrument offset]
+for each song {
+  for each instrument {
+    instrumentdata offset 2B unsigned (offset + pointer difference)
+      (if instrumentdata = 0: instrument not in use)
+  }
+  skip delay (to modify the song's tempo) 2B unsigned
+  no more instruments: 0xFFFF
+}
+
+[sound effects offset]
+for each sound effect {
+  for each operator (always 2) {
+    Attack Rate / Decay Rate 1B (sent to address 0x60 + op channel)
+    Sustain Level / Release Rate 1B (sent to address 0x80 + op channel)
+    Key scaling level / Operator output level 1B (sent to address 0x40 + op channel)
+    Amp Mod / Vibrato / EG type / Key Scaling / Multiple 1B (sent to address 0x20 + op channel)
+    Wave type 1B (sent to address 0xE0 + op channel)
+  }
+  Feedback algorithm 1B (sent to address 0xC0 + channel)
+}
+
+[instrumentdata offset]
+for each operator (always 2) {
+  Attack Rate / Decay Rate 1B (sent to address 0x60 + op channel)
+  Sustain Level / Release Rate 1B (sent to address 0x80 + op channel)
+  Key scaling level / Operator output level 1B (sent to address 0x40 + op channel)
+  Amp Mod / Vibrato / EG type / Key Scaling / Multiple 1B (sent to address 0x20 + op channel)
+  Wave type 1B (sent to address 0xE0 + op channel)
+}
+Feedback algorithm 1B (sent to address 0xC0 + channel)
+
+[music data]
+new byte:
+load 1 byte from channel offset
+bits: abbbcccc
+cccc: Frequence/note (0-11: C-C#-D-D#...A-A#-B, 12: pause) (percussion: 0-11: not pause, 12: pause)
+bbb: Octave (percussion (0-3): instrument + 15)
+a: If not set, play the note and continue to next channel, if set, escape
+
+[escape]
+bbb: function
+0: Change note duration, new duration: cccc
+1: Change volume, new volume: cccc
+2: Change tempo, new tempo: cccc (appearently not in use)
+3: Change triple duration: new tr.d: cccc (duration must be 7 to use tr.d. 3 tr.d. equals 2 duration)
+4: Change "lie", new "lie": cccc (will silence the channel if not 1)
+5: Change "vox", new "vox": cccc (channel number, 0-8)
+6: Change instrument:
+  if cccc = 1: new percussion instrument: 15 + last octave
+  if cccc > 1: new instrument: cccc - 1
+  if cccc = 0: new instrument: 0
+7: Extra functions (load extra bytes for arguments)
+
+  cccc: function2
+  0: Call a sub (2 bytes: new offset). Jump to new offset + pointer difference, store old pointer.
+  1: Update loop counter (1 byte)
+  2: Loop (2 bytes: new offset). Reduce loop counter. If not 0, jump back to new offset + pointer
+     difference.
+  3: Return from sub. Jump to pointer stored when the sub was called.
+  4: Jump (2 bytes: new offset). Jump to new offset + pointer difference.
+  15: Finish. Close the channel. Level music will restart when all channels are closed. Continue
+      to next channel.
+
+After escape, jump back to new byte

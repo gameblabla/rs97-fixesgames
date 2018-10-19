@@ -1,0 +1,14 @@
+
+ Windows
+---------
+
+On some systems, full-screen comes up in "portrait mode", and thus jzIntv's
+output is rotated 90 degrees.  Try using a larger resolution (640x480)
+to avoid this issue.
+
+Not all Win keybindings are available because Windows intercepts them.
+Win-M and Win-R are known to be affected. 
+
+jzIntv's help output (jzintv --help) cannot be redirected to a file or
+to a pager (e.g. "more").
+

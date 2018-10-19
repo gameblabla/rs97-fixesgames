@@ -1,0 +1,86 @@
+============================================================================
+ JZINTV  -- Joe Zbiciak's Portable Intellivision Emulator 
+============================================================================
+
+(Note:  This file applies to the pre-MacOS X port.)
+
+Welcome to jzIntv.
+
+First be sure to read the main README for this project.
+
+WARNING:  This documentation was whipped together in a hurry.  Email
+me (tlindner@ix.netcom.com) if I leave something out.
+
+Important Info
+--------------
+
+ jzintv homepage:   http://spatula-city.org/~im14u2c/intv
+ Author:            Joe Zbiciak (intvnut@yahoo.com)
+ Credits:           Lots and lots.  See the home page!
+ Macintosh Port:    tim lindner (tlindner@ix.netcom.com)
+
+Quick Start
+-----------
+
+I set up this port using Metrowerks CodeWarrior Pro 4. It shouldn't 
+be difficult to change to Pro 5 if you want to.
+
+This is a multi-step build process so bear with me.
+
+1) Get the AsgardESS source from Aaron Giles:
+
+         http://www.sirius.com/~agiles/
+     
+   Unstuff and move the two files:
+   
+         AsgardESS.c
+         AsgardESS.h
+      
+   Into the :src:plat:Asgard: folder.
+   
+   AsgardESS is the sound library I use to push the samples from the emulator
+   into the Macintosh Sound Manager. This library is not under the GPL so I
+   can not distribute it in source form.
+   
+2) Compile the MakeTable program. The project file is located in the src folder.
+After you build the application it is moved in to :src:cp1600:
+Now run the application "MakeTable" 10 times with 10 different argument lines:
+
+   fn_cond_br.tbl :tbl:fn_cond_br.c
+   fn_dir_2op.tbl :tbl:fn_dir_2op.c
+   fn_imm_2op.tbl :tbl:fn_imm_2op.c
+   fn_impl_1op_a.tbl :tbl:fn_impl_1op_a.c
+   fn_impl_1op_b.tbl :tbl:fn_impl_1op_b.c
+   fn_ind_2op.tbl :tbl:fn_ind_2op.c
+   fn_reg_1op.tbl :tbl:fn_reg_1op.c
+   fn_reg_2op.tbl :tbl:fn_reg_2op.c
+   fn_rot_1op.tbl :tbl:fn_rot_1op.c
+   formats.tbl :tbl:formats.tbl.c
+
+3) Build "Makefile.CodeWarrior.mcp" (located in the src folder). Open
+   the file in CodeWarrior and choose "Make" from the project menu. It
+   will then build an application in the ":src:bin:" folder.
+
+Documentation
+-------------
+
+The 'jzintv/doc' directory contains all the documentation the jzIntv
+project has to share at the moment.
+
+Warning:  jzintv/doc/jzintv/source.txt is very, very, very, very out of date.
+
+
+ROM Binaries
+------------
+
+You don't have any?  Go buy an Intellivision Lives! CD, you cheapskate!
+Go get it at http://www.intellivisionlives.com/ , ok?  Or better yet,
+build a ROM dumper.  In any case, we're not going to encourage ROM piracy.
+
+
+A note about Joe
+----------------
+
+There is no way this port could not have been done if it were not for Joe
+Zbiciak.  His expertise and his code is what made this possible.  His is
+truly an excellent emulator which my port does not (yet) do justice to.

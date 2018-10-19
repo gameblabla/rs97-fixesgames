@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=Triple Trapled
+Comment=Arcade puzzle game
+Exec=tt.elf
+Terminal=false
+Type=Application
+StartupNotify=true
+Icon=tt
+X-OD-Manual=README.md
+Categories=games;

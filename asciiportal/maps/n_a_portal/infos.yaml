@@ -1,0 +1,9 @@
+  # This is a YAML-formatted file designed to store informations about the given map pack.
+protocol: 1  # The protocol version used. Leave this to the default value.
+name: N/ApOrtal  # The name of the map pack. Should not exceed 30 characters.
+description: |
+  An alternate ASCIIpOrtal story. Fun levels. Not too challenging.
+author: Leiche  # The author of the map pack.
+version: 1.0  # Version. You might want to provide a changelog file.
+difficulty: 2  # Difficulty range from 0 (easiest) to 10 (hardest)
+priority: 5  # This is used for official map packs only. The default should be fine.

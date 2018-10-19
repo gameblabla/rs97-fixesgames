@@ -164,7 +164,7 @@ void       g_fenetreAfficher(G_fenetre* fenetre)
   //SDL_Flip(g_fenetreLireSurface(fenetre));
 /*  SDL_FillRect(g_fenetreLireSurface(fenetre), &rect, 0);*/
             {
-              if(SDL_MUSTLOCK(ScreenSurface)) SDL_LockSurface(ScreenSurface);
+              /*if(SDL_MUSTLOCK(ScreenSurface)) SDL_LockSurface(ScreenSurface);
               int x, y;
               uint32_t *s = (uint32_t*)g_fenetreLireSurface(fenetre)->pixels;
               uint32_t *d = (uint32_t*)ScreenSurface->pixels;
@@ -174,7 +174,8 @@ void       g_fenetreAfficher(G_fenetre* fenetre)
                 }
                 d+= 160;
               }
-              if(SDL_MUSTLOCK(ScreenSurface)) SDL_UnlockSurface(ScreenSurface);
+              if(SDL_MUSTLOCK(ScreenSurface)) SDL_UnlockSurface(ScreenSurface);*/
+              SDL_SoftStretch(g_fenetreLireSurface(fenetre), NULL, ScreenSurface, NULL);
               SDL_Flip(ScreenSurface);
             }
 

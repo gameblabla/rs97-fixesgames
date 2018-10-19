@@ -1,0 +1,14 @@
+message:Design an "elevator for boulders" without using switches.
+message1:Solution by zugz
+&N>NNNNNNNNNNN
+=N=NNNN@1QNNNN
+&>>NNNNNNNNNNN
+)&NNNNNNNNNNNN
+N>NNNNNNNNNNNN
+N&          "N
+N&NNNNNNNNNNNN
+N&NNN       <N
+N&NNN=NNNNNNNN
+N&N   NNNNNNNN
+N&N NNNNNNNNNN
+"&  "NNNNNNNNN

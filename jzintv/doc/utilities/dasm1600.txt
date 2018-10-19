@@ -1,0 +1,55 @@
+==============================================================================
+ Quickstart on DASM1600
+==============================================================================
+
+Usage:  dasm1600  objectfile [symfile]
+        dasm1600o objectfile [symfile]
+
+        objectfile   -- ROM image that you're interested in disassembling
+        symfile      -- Command file which controls dasm1600. 
+
+
+The 'objectfile' is just a generic, flat CP-1600 ROM image, such as
+what as1600 produces.  The ROM image is expected in Big Endian format
+by default.  Currently, DASM1600 can handle ROM images with either no
+holes, or exactly one hole in them.  This means that cartridge images
+larger than 8K can be handled directly, but images larger than 12K
+(eg. with ROM at $5000, $D000, and $F000) cannot.
+
+The optional 'symfile' contains commands which inform dasm1600 about
+the ROM image you're inspecting.  It accepts the following commands:
+
+     revbytes           -- Says that the ROM image is in little endian.
+
+     org XXXX           -- Sets the origin for the ROM image to XXXX
+
+     data XXXX [YYYY]   -- Says that location XXXX is data.  If two
+                           numbers are given, then locations XXXX-YYYY
+                           are marked as being data.
+
+     dbdata XXXX [YYYY] -- Like 'data', only it says that the data is
+                           in "Double Byte Data" format.
+
+     skip XXXX YYYY     -- Defines a hole in the ROM image where the
+                           ROM does NOT exist.  
+
+
+DASM1600's output is (usually) suitable for reassembly, which is also
+convenient.
+
+
+==============================================================================
+ Miscellaneous
+==============================================================================
+
+Also included in this package is "DASM1600o", which is an older version
+of DASM1600 from Frank P.  It does not support the "skip" or "dbdata"
+directives in the symfile, and its output is not suitable for direct
+reassembly.  It's included for completeness.
+
+==============================================================================
+ Credits
+==============================================================================
+
+DASM1600 was written by Frank Palazzolo and hacked on a bit by Joe Zbiciak.
+

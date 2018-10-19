@@ -1,0 +1,2 @@
+/opt/rs97-toolchain/usr/bin/mipsel-buildroot-linux-musl-ar qc libhqx.a  CMakeFiles/hqx.dir/common.c.o CMakeFiles/hqx.dir/hq2x.c.o CMakeFiles/hqx.dir/hq3x.c.o CMakeFiles/hqx.dir/hq4x.c.o CMakeFiles/hqx.dir/init.c.o
+/opt/rs97-toolchain/usr/bin/mipsel-buildroot-linux-musl-ranlib libhqx.a

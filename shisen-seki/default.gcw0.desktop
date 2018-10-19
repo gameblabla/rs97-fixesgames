@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=Shisen-Seki
+Comment=A game of Shisen-Sho
+Exec=shisen.elf
+Terminal=false
+Type=Application
+StartupNotify=true
+Icon=shisen
+X-OD-Manual=gcw0.man.txt
+Categories=games;

@@ -1,0 +1,26 @@
+TARGET 		= rockbot.dge
+CFLAGS   	= -G0 -Wall -O3 -DDINGUX -DHANDHELD -g -I. `/opt/mipsel-linux-gcc/usr/bin/sdl-config --cflags` -I/opt/mipsel-linux-gcc/usr/include/
+CXXFLAGS 	= $(CFLAGS) -fexceptions -fno-rtti
+LDFLAGS 	= -lm -lc -lstdc++ -lc -lSDL -lSDL_mixer -lvorbisidec -logg -lmikmod -lSDL_ttf -lfreetype -lSDL_image -ljpeg -lpng -lz `/opt/mipsel-linux-gcc/usr/bin/sdl-config --libs` -L/opt/mipsel-linux-gcc/lib --sysroot=/opt/mipsel-linux-gcc/
+
+HOST    	= mipsel-linux-
+OBJS   		= main.o options/key_map.o inputlib.o timerlib.o soundlib.o file/file_io.o collision_detection.o graphicslib.o \
+sceneslib.o stage_select.o graphic/option_picker.o classmap.o objects/object.o character/character.o projectilelib.o \
+graphic/animation.o stage.o class_config.o scenes/dialogs.o game.o character/classplayer.o \
+character/classnpc.o character/artificial_inteligence.o aux_tools/trajectory_parabola.o file/convert.o \
+graphic/draw.o graphic/gfx_sin_wave.o character/movement/jump.o character/movement/inertia.o scenes/sceneshow.o \
+game_mediator.o ports/psp/psp_ram.o strings_map.o file/fio_strings.o file/fio_common.o \
+file/fio_scenes.o aux_tools/stringutils.o aux_tools/fps_control.o docs/game_manual.o
+
+$(TARGET): $(OBJS)
+	$(HOST)g++ $(OBJS) -o $@ $(LDFLAGS)
+
+%.o: %.c
+	$(HOST)gcc $(CFLAGS) -c $< -o $@
+
+%.o: %.cpp
+	$(HOST)g++ $(CXXFLAGS) -c $< -o $@
+
+clean:
+	rm -f $(TARGET) $(OBJS)
+ 

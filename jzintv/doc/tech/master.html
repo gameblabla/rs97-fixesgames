@@ -1,0 +1,1519 @@
+<HTML>
+<HEAD>
+<TITLE>
+    Intellivision Master Component Hardware
+</TITLE>
+</HEAD>
+<BODY BGCOLOR=#BBCCDD>
+
+<H1> Intellivision Master Component Hardware </H1>
+
+<HR>
+<H2> Figures </H2>
+
+
+<TABLE BORDER=1 ALIGN=center BGCOLOR=#CCDDEE>
+    <CAPTION>
+        <B>Slightly Simplified Block Diagram</B>
+    </CAPTION>
+    <TR>
+        <TD><A HREF="images/block.png"><IMG SRC="thumb/t_block.png" 
+                                        ALT="Intellivision Block Diagram"></A></TD>
+    </TR>
+</TABLE>
+
+<BR><BR>
+
+<TABLE BORDER=1 ALIGN=center BGCOLOR=#CCDDEE>
+    <CAPTION>
+        <B>Intellivision I Schematic (from Sylvania Service Manual)</B>
+    </CAPTION>
+    <TR>
+        <TD>
+            <CENTER>
+            <A HREF="images/schematic.png"><IMG SRC="thumb/t_schematic.png"
+                                            ALT="Intellivision Schematic"></A>
+            </CENTER>
+        </TD>
+    </TR>
+    <TR>
+        <TD>
+            <CENTER>Note:  This image is courtesy of 
+                    <A HREF="http://www.dsplib.com/">
+                    Frank Palazzolo's 2bits website</A>
+            </CENTER>
+        </TD>
+    </TR>
+</TABLE>
+
+<HR>
+<H2> Component Overview </H2>
+<TABLE BORDER=1 WIDTH=100% BGCOLOR=#CCDDEE>
+    <CAPTION>
+        Chips present in the Master Component (aside from misc
+        discrete logic).  These are taken in left-to-right, top-to-bottom
+        order from the Intellivision schematics.
+    </CAPTION>
+    
+    <TR>
+        <TH>
+            Part Number
+        </TH>
+        <TH>
+            Description
+        </TH>
+        <TH>
+            Notes
+        </TH>
+    </TR>
+
+    <TR>
+        <TD>
+            CP-1610
+        </TD>
+        <TD>
+            CPU
+        </TD>
+        <TD>
+            This is the main CPU.
+        </TD>
+    </TR>
+
+    <TR>
+        <TD>
+            RA-3-9600
+        </TD>
+        <TD>
+            16-bit System RAM
+        </TD>
+        <TD>
+            Contains 352 words of 16-bit memory.
+            Also contains a second bus for interfacing to
+            the STIC and its memory bus.  The System RAM
+            includes a special 20-word FIFO for shifting
+            characters out to the STIC, and logic for 
+            interfacing the STIC and CPU to each other.
+        </TD>
+    </TR>
+
+    <TR>
+        <TD>
+            RO-3-9504
+        </TD>
+        <TD>
+            One-half of EXEC ROM (Intellivision 1 only)
+        </TD>
+        <TD>
+            The EXEC ROM is stored in two 2Kx10-bit ROMs.  This is one
+            of them.  On the Intellivision 2, these two ROMs are combined
+            into a single ROM.
+        </TD>
+    </TR>
+
+    <TR>
+        <TD>
+            AY-3-8900
+        </TD>
+        <TD>
+            Standard Television Interface Circuit
+        </TD>
+        <TD>
+            This chip generates the display signals from the card
+            information stored in System RAM, and the graphics patterns
+            stored in the Graphics ROM and Graphics RAM.  It does
+            not generate NTSC directly; rather it drives the 
+            "Color Processor" chip to generate the NTSC line levels.
+        </TD>
+    </TR>
+
+    <TR>
+        <TD>
+            RO-3-9503
+        </TD>
+        <TD>
+            Graphics ROM
+        </TD>
+        <TD>
+            This 2048 x 8-bit ROM stores the built-in graphics for the
+            Intellivision.  The ROM provides special control signals
+            for controlling the graphics RAM.  This includes address
+            decode, read strobe and write strobe signals.
+        </TD>
+    </TR>
+
+    <TR>
+        <TD>
+            two GTE 3539
+        </TD>
+        <TD>
+            Graphics RAM
+        </TD>
+        <TD>
+            These two RAMs combine together to provide 512 bytes of
+            programmable graphics patterns for games.  They are
+            controlled by special hardware in the Graphics ROM which
+            performs a decode of the STIC's memory bus.
+        </TD>
+    </TR>
+
+    <TR>
+        <TD>
+            RO-3-9502
+        </TD>
+        <TD>
+            One-half of EXEC ROM (Intellivision 1 only).
+        </TD>
+        <TD>
+            This ROM provides the other half of the EXEC.
+            It also provides address and bus signal decoding
+            for the 8-bit scratchpad RAM and the Programmable
+            Sound Generator.  On the Intellivision 2, this ROM
+            is combined with the RO-3-9504 (above) into a single
+            4.25K ROM.
+        </TD>
+    </TR>
+
+    <TR>
+        <TD>
+            GTE-3539
+        </TD>
+        <TD>
+            8-bit Scratchpad RAM
+        </TD>
+        <TD>
+            This provides 240 usable words of scratchpad RAM.  In 
+            order to simplify the address decoding logic, the upper
+            16 bytes of this RAM's address space have been replaced
+            with the Programmable Sound Generator's address space
+            instead.
+        </TD>
+    </TR>
+
+    <TR>
+        <TD>
+            AY-3-8915
+        </TD>
+        <TD>
+            Color Processor Chip
+        </TD>
+        <TD>
+            This device takes the pixel-rate 5-bit input from
+            the STIC and converts it into an NTSC rate signal.
+            It outputs four I/Q phases for every STIC pixel
+            (eg. +I, +Q, -I, -Q).  The lower 4 bits specify one
+            of the Inty's familiar 16 colors.  The 5th bit is
+            used to specify other NTSC signal states such as
+            blanking, colorburst, etc.
+        </TD>
+    </TR>
+
+    <TR>
+        <TD>
+            AY-3-8914
+        </TD>
+        <TD>
+            Programmable Sound Generator
+        </TD>
+        <TD>
+            This is the sound chip.  It provides 3 tone voices and
+            one noise channel that can be mixed into the tone channels.
+            It also provides two 8-bit bidirectional ports which are
+            used for the Intellivision's controller pads.
+        </TD>
+    </TR>
+
+</TABLE>
+
+<HR>
+<H2> System Architecture </H2>
+
+<P>
+    The Intellivision Master Component is built around two main data 
+    busses, the CPU Address/Data bus and the STIC Address/Data bus.
+    Both busses are time-multiplexed between address and data, and
+    both have a number of specialized control signals associated with
+    them.
+</P>
+
+<H3> System Architecture :: The CPU Bus </H3>
+<P>
+    The CPU Address/Data bus has 16 Address/Data Lines named <TT>DB0</TT>
+    through DB15, and three control lines named <TT>BDIR</TT>,
+    <TT>BC2</TT>, and <TT>BC1.</TT> (Additionally, the active low signals
+    <TT>~BUSRQ</TT> and <TT>~BUSAK</TT> are available for Direct Memory
+    Access requests.  These are discussed later.)
+</P>
+<P>
+    The CPU Bus originates at the CP-1600 CPU, and is
+    directly connected to the 16-bit System RAM, 8-bit Scratchpad
+    RAM, the PSG, the STIC, and the various program ROMs in the system.
+    It does not connect directly to the GRAM or GROM, as these are
+    controlled via the STIC.  (Communication between the STIC bus and
+    the CPU bus is described later.)
+</P>
+<P>
+    Because the CPU Bus is time-multiplexed between Address and Data
+    values, it relies on external devices to latch addresses during
+    one bus phase before performing the access in a later bus phase.
+    The value on the <TT>BDIR/BC2/BC1</TT> control lines designates the
+    current phase for the CPU bus.  As there are 3 control lines, there
+    are 8 bus phases defined.  These are described in the following table:
+</P>
+
+<TABLE BORDER=1 BGCOLOR=#CCDDEE>
+    <CAPTION>
+        <B>General Instruments Bus Protocol</B>
+    </CAPTION>
+    <TR>
+        <TH>
+            <TT>BDIR</TT>
+        </TH>
+        <TH>
+            <TT>BC2</TT>
+        </TH>
+        <TH>
+            <TT>BC1</TT>
+        </TH>
+        <TH>
+            Mnemonic
+        </TH>
+        <TH>
+            Name
+        </TH>
+        <TH>
+            Description
+        </TH>
+    </TR>
+    <TR>
+        <TH>0</TH><TH>0</TH><TH>0</TH><TH><TT>NACT</TT></TH>
+        <TD>
+            <B>N</B>o <B>ACT</B>ion
+        </TD>
+        <TD>
+            During this stage, no device is active on the bus.
+            DB0 through DB15 are allowed to float, with their
+            previous driven value fading away during this phase.
+        </TD>
+    </TR>
+    <TR>
+        <TH>0</TH><TH>0</TH><TH>1</TH><TH><TT>ADAR</TT></TH>
+        <TD>
+            <B>A</B>ddress <B>D</B>ata to <B>A</B>ddress <B>R</B>egister
+        </TD>
+        <TD>
+            This bus phase is issued by the CPU during a Direct Addressing
+            Mode instruction.  Prior to this phase, an address will
+            have been latched in a device by a prior <TT>BAR</TT>
+            or <TT>ADAR</TT> bus phase.  Then, during this phase,
+            the currently selected device responds with its data on
+            the bus, and at the end of this phase, all devices should
+            latch this address as the address for the next memory access
+            (<TT>DTB</TT>, <TT>DW</TT>, or <TT>DWS</TT> phases).  The CPU
+            asserts nothing during this phase -- rather, it expects the
+            currently addressed device to inform the rest of the machine
+            of the address for the next access.
+
+        </TD>
+    </TR>
+    <TR>
+        <TH>0</TH><TH>1</TH><TH>0</TH><TH><TT>IAB</TT></TH>
+        <TD>
+            <B>I</B>nterrupt <B>A</B>ddress to <B>B</B>us
+        </TD>
+        <TD>
+            This bus phase is entered during interrupt processing, after
+            the current program counter has been written to the stack.
+            It's also entered into on the first cycle after coming out
+            of RESET.  During this phase, an external device should assert
+            the address of the Interrupt or RESET vector as appropriate.
+            The CPU then moves this address into the program counter
+            and resumes execution.
+        </TD>
+    </TR>
+    <TR>
+        <TH>0</TH><TH>1</TH><TH>1</TH><TH><TT>DTB</TT></TH>
+        <TD>
+            <B>D</B>ata <B>T</B>o <B>B</B>us
+        </TD>
+        <TD>
+            This phase is entered during a read cycle.  During this
+            phase, the currently addressed device should assert its
+            data on the bus.  The CPU then reads this data.
+        </TD>
+    </TR>
+    <TR>
+        <TH>1</TH><TH>0</TH><TH>0</TH><TH><TT>BAR</TT></TH>
+        <TD>
+            <B>B</B>us to <B>A</B>ddress <B>R</B>egister
+        </TD>
+        <TD>
+            During this phase, the CPU asserts the address for the current
+            memory access.  All devices on the bus are expected to latch
+            this address and perform address decoding at this time.
+        </TD>
+    </TR>
+    <TR>
+        <TH>1</TH><TH>0</TH><TH>1</TH><TH><TT>DW</TT></TH>
+        <TD>
+            <B>D</B>ata <B>W</B>rite
+        </TD>
+        <TD ROWSPAN=2>
+            The <TT>DW</TT> and <TT>DWS</TT> bus phases initiate a write
+            cycle.  They always occur together on adjacent cycles, with
+            data remaining stable on the bus across the transition from
+            <TT>DW</TT> to <TT>DWS.</TT>  During these phases, the data
+            being written is available for external memories to latch.
+            The CP-1600 allows two full CPU cycles for external RAM to
+            latch the data.
+        </TD>
+    </TR>
+    <TR>
+        <TH>1</TH><TH>1</TH><TH>0</TH><TH><TT>DWS</TT></TH>
+        <TD>
+            <B>D</B>ata <B>W</B>rite <B>S</B>trobe
+        </TD>
+    </TR>
+    <TR>
+        <TH>1</TH><TH>1</TH><TH>1</TH><TH><TT>INTAK</TT></TH>
+        <TD>
+            <B>INT</B>errupt <B>A</B>c<B>K</B>nowledge
+        </TD>
+        <TD>
+            The CPU enters this bus phase on the first cycle of interrupt
+            processing.  During the phase, the CPU places the current
+            stack pointer value on the bus as it prepares to "push" the
+            current program counter on the stack.  Devices are expected to
+            treat <TT>INTAK</TT> similarly to a BAR bus phase.  Indeed,
+            on the Intellivision Master Component, only the 16-bit
+            System RAM sees the <TT>INTAK</TT> bus phase.  It uses this
+            bus phase to trigger a special bus-copy mode as well as for
+            latching the current address.  For all other devices in the
+            system, <TT>INTAK</TT> is remapped to <TT>BAR</TT> by some
+            discrete logic, and so is processed as a normal addressing
+            cycle elsewhere.
+
+        </TD>
+    </TR>
+</TABLE>
+
+<P>
+    While the table is well and good as a reference, it would be
+    useful to illustrate how these phases are used.  Also, the <A
+    HREF="state_flow_diag.html">CPU state-flow diagram</A>
+    is very useful for understanding how these bus phases work.
+</P>
+<P>
+    The CP-1600's bus transactions typically last between 4 and 7 CPU
+    cycles.  Half of these cycles are <TT>NACT</TT> cycles, inserted as
+    spacing cycles between the activity cycles.  As a general rule, there
+    is a <TT>NACT</TT> cycle inserted after every cycle EXCEPT in two
+    specific cases.  The first is between <TT>DW</TT> and <TT>DWS,</TT>
+    which always occur back-to-back.  The second is during an indirect
+    access after an <TT>SDBD</TT> instruction, where the CPU omits
+    <TT>NACT</TT> states after both <TT>DTB</TT>s.
+</P>
+<P>
+    The tables below illustrate the various bus transations, complete
+    with a cycle-by-cycle description of the transaction.
+</P>
+
+<TABLE BORDER=1 WIDTH=100%>
+    <TR>
+        <TH COLSPAN=3 BGCOLOR=#EEEEEE>
+            Instruction Fetch or Indirect/Immediate-Mode Data Read
+        </TH>
+        <TD ROWSPAN=8 BGCOLOR=#99AABB> &nbsp; </TD>
+        <TD ROWSPAN=8 BGCOLOR=#99AABB> &nbsp; </TD>
+        <TH COLSPAN=3 BGCOLOR=#EEEEEE>
+            Indirect/Immediate-Mode Data Write
+        </TH>
+    </TR>
+    <TR>
+        <TH BGCOLOR=#CCDDEE>Cycle</TH>
+        <TH BGCOLOR=#CCDDEE>Phase</TH>
+        <TH BGCOLOR=#CCDDEE>Description</TH>
+
+        <TH BGCOLOR=#CCDDEE>Cycle</TH>
+        <TH BGCOLOR=#CCDDEE>Phase</TH>
+        <TH BGCOLOR=#CCDDEE>Description</TH>
+    </TR>
+    <TR>
+        <TH BGCOLOR=#EEEEEE>1</TH>
+        <TH BGCOLOR=#EEEEEE><TT>BAR</TT></TH>
+        <TD BGCOLOR=#EEEEEE>
+            CPU asserts address of the Instruction or Data to read.
+            Devices should latch the address at this time and
+            perform address decoding.
+        </TD>
+
+        <TH BGCOLOR=#EEEEEE>1</TH>
+        <TH BGCOLOR=#EEEEEE><TT>BAR</TT></TH>
+        <TD BGCOLOR=#EEEEEE>
+            CPU asserts address of the Data to write.
+            Devices should latch the address at this time and
+            perform address decoding.
+        </TD>
+    </TR>
+    <TR>
+        <TH BGCOLOR=#CCDDEE>2</TH>
+        <TH BGCOLOR=#CCDDEE><TT>NACT</TT></TH>
+        <TD BGCOLOR=#CCDDEE>
+            The CPU deasserts the bus, and no other bus activity occurs 
+            during this cycle.
+        </TD>
+
+        <TH BGCOLOR=#CCDDEE>2</TH>
+        <TH BGCOLOR=#CCDDEE><TT>NACT</TT></TH>
+        <TD BGCOLOR=#CCDDEE>
+            The CPU deasserts the bus, and no other bus activity occurs 
+            during this cycle.
+        </TD>
+    </TR>
+    <TR>
+        <TH BGCOLOR=#EEEEEE ROWSPAN=2>3</TH>
+        <TH BGCOLOR=#EEEEEE ROWSPAN=2><TT>DTB</TT></TH>
+        <TD BGCOLOR=#EEEEEE ROWSPAN=2>
+            The addressed device asserts its data on the bus.
+            The CPU then reads this data.
+        </TD>
+
+        <TH BGCOLOR=#EEEEEE>3</TH>
+        <TH BGCOLOR=#EEEEEE><TT>DW</TT></TH>
+        <TD BGCOLOR=#EEEEEE>
+            The CPU asserts the data to be written. 
+            The addressed device can latch the data at this time,
+            although it is not necessary yet, as the data is stable
+            through the next phase.
+        </TD>
+    </TR>
+    <TR>
+        <TH BGCOLOR=#DDDDDD>4</TH>
+        <TH BGCOLOR=#DDDDDD><TT>DWS</TT></TH>
+        <TD BGCOLOR=#DDDDDD>
+            The CPU continues to assert the data to be written. 
+            The addressed device can latch the data at this time
+            if it hasn't already.
+        </TD>
+    </TR>
+    <TR>
+        <TH BGCOLOR=#CCDDEE>4</TH>
+        <TH BGCOLOR=#CCDDEE><TT>NACT</TT></TH>
+        <TD BGCOLOR=#CCDDEE>
+            The device deasserts the bus, and no other bus activity occurs 
+            during this cycle.
+        </TD>
+        <TH BGCOLOR=#CCDDEE>5</TH>
+        <TH BGCOLOR=#CCDDEE><TT>NACT</TT></TH>
+        <TD BGCOLOR=#CCDDEE>
+            The CPU deasserts the bus, and no other bus activity occurs 
+            during this cycle.
+        </TD>
+    </TR>
+    <TR>
+        <TD COLSPAN=3 BGCOLOR=#BBCCDD>&nbsp;</TD>
+        <TD COLSPAN=3 BGCOLOR=#EEEEEE>
+<P>
+    <FONT SIZE=-1>
+    [Aside: Yes, the CP-1600 does have an "Immediate Mode Write", where
+    it writes the contents of a register to an immediate operand. The
+    reason for this is that "Immediate Mode" is really "Indirect Mode",
+    using the program counter as the pointer register. Cute.]
+    </FONT>
+</P>
+        </TD>
+    </TR>
+<!-- -------------------------------------------------------------------- -->
+    <TR><TD COLSPAN=8 BGCOLOR=#99AABB> &nbsp; </TD></TR>
+<!-- -------------------------------------------------------------------- -->
+    <TR>
+        <TH COLSPAN=3 BGCOLOR=#EEEEEE>
+            Direct Addressing Mode Read
+        </TH>
+        <TD ROWSPAN=9 BGCOLOR=#99AABB> &nbsp; </TD>
+        <TD ROWSPAN=9 BGCOLOR=#99AABB> &nbsp; </TD>
+        <TH COLSPAN=3 BGCOLOR=#EEEEEE>
+            Direct Addressing Mode Write
+        </TH>
+    </TR>
+    <TR>
+        <TH BGCOLOR=#CCDDEE>Cycle</TH>
+        <TH BGCOLOR=#CCDDEE>Phase</TH>
+        <TH BGCOLOR=#CCDDEE>Description</TH>
+
+        <TH BGCOLOR=#CCDDEE>Cycle</TH>
+        <TH BGCOLOR=#CCDDEE>Phase</TH>
+        <TH BGCOLOR=#CCDDEE>Description</TH>
+    </TR>
+    <TR>
+        <TH BGCOLOR=#EEEEEE>1</TH>
+        <TH BGCOLOR=#EEEEEE><TT>BAR</TT></TH>
+        <TD BGCOLOR=#EEEEEE>
+            CPU asserts address of the Instruction or Data to read.
+            Devices should latch the address at this time and
+            perform address decoding.
+        </TD>
+
+        <TH BGCOLOR=#EEEEEE>1</TH>
+        <TH BGCOLOR=#EEEEEE><TT>BAR</TT></TH>
+        <TD BGCOLOR=#EEEEEE>
+            CPU asserts address of the Data to write.
+            Devices should latch the address at this time and
+            perform address decoding.
+        </TD>
+    </TR>
+    <TR>
+        <TH BGCOLOR=#CCDDEE>2</TH>
+        <TH BGCOLOR=#CCDDEE><TT>NACT</TT></TH>
+        <TD BGCOLOR=#CCDDEE>
+            The CPU deasserts the bus, and no other bus activity occurs 
+            during this cycle.
+        </TD>
+
+        <TH BGCOLOR=#CCDDEE>2</TH>
+        <TH BGCOLOR=#CCDDEE><TT>NACT</TT></TH>
+        <TD BGCOLOR=#CCDDEE>
+            The CPU deasserts the bus, and no other bus activity occurs 
+            during this cycle.
+        </TD>
+    </TR>
+    <TR>
+        <TH BGCOLOR=#EEEEEE>3</TH>
+        <TH BGCOLOR=#EEEEEE><TT>ADAR</TT></TH>
+        <TD BGCOLOR=#EEEEEE>
+            The addressed device asserts the data that is at the
+            location addressed during <TT>BAR.</TT>  This data is
+            then latched as an address by all devices for a 
+            subsequent <TT>DTB</TT> bus phase.  The CPU remains
+            off the bus during this cycle.
+        </TD>
+        <TH BGCOLOR=#EEEEEE>3</TH>
+        <TH BGCOLOR=#EEEEEE><TT>ADAR</TT></TH>
+        <TD BGCOLOR=#EEEEEE>
+            The addressed device asserts the data that is
+            at the location addressed during <TT>BAR.</TT>
+            This data is then latched as an address by
+            all devices for subsequent <TT>DW</TT> and
+            <TT>DWS</TT> bus phase.  The CPU remains off
+            the bus during this cycle.
+        </TD>
+    </TR>
+    <TR>
+        <TH BGCOLOR=#CCDDEE>4</TH>
+        <TH BGCOLOR=#CCDDEE><TT>NACT</TT></TH>
+        <TD BGCOLOR=#CCDDEE>
+            The device deasserts the bus, and no other bus activity occurs 
+            during this cycle.
+        </TD>
+        <TH BGCOLOR=#CCDDEE>4</TH>
+        <TH BGCOLOR=#CCDDEE><TT>NACT</TT></TH>
+        <TD BGCOLOR=#CCDDEE>
+            The device deasserts the bus, and no other bus activity occurs 
+            during this cycle.
+        </TD>
+    </TR>
+    <TR>
+        <TH BGCOLOR=#EEEEEE ROWSPAN=2>5</TH>
+        <TH BGCOLOR=#EEEEEE ROWSPAN=2><TT>DTB</TT></TH>
+        <TD BGCOLOR=#EEEEEE ROWSPAN=2>
+            The newly-addressed device (the one whose address was given
+            during <TT>ADAR</TT>) asserts its data on the bus.
+            The CPU then reads this data.
+        </TD>
+
+        <TH BGCOLOR=#EEEEEE>5</TH>
+        <TH BGCOLOR=#EEEEEE><TT>DW</TT></TH>
+        <TD BGCOLOR=#EEEEEE>
+            The CPU asserts the data to be written. 
+            The newly-addressed device (the one whose address was given
+            during <TT>ADAR</TT>) can latch the data at this time,
+            although it is not necessary yet, as the data is stable
+            through the next phase.
+        </TD>
+    </TR>
+    <TR>
+        <TH BGCOLOR=#DDDDDD>6</TH>
+        <TH BGCOLOR=#DDDDDD><TT>DWS</TT></TH>
+        <TD BGCOLOR=#DDDDDD>
+            The CPU continues to assert the data to be written. 
+            The addressed device can latch the data at this time
+            if it hasn't already.
+        </TD>
+    </TR>
+    <TR>
+        <TH BGCOLOR=#CCDDEE>6</TH>
+        <TH BGCOLOR=#CCDDEE><TT>NACT</TT></TH>
+        <TD BGCOLOR=#CCDDEE>
+            The device deasserts the bus, and no other bus activity occurs 
+            during this cycle.
+        </TD>
+
+        <TH BGCOLOR=#CCDDEE>7</TH>
+        <TH BGCOLOR=#CCDDEE><TT>NACT</TT></TH>
+        <TD BGCOLOR=#CCDDEE>
+            The CPU deasserts the bus, and no other bus activity occurs 
+            during this cycle.
+        </TD>
+    </TR>
+<!-- -------------------------------------------------------------------- -->
+    <TR><TD COLSPAN=8 BGCOLOR=#99AABB> &nbsp; </TD></TR>
+<!-- -------------------------------------------------------------------- -->
+    <TR>
+        <TH COLSPAN=3 BGCOLOR=#EEEEEE>
+            Indirect/Immediate Addressing Mode Read with <TT>SDBD</TT>
+        </TH>
+        <TD ROWSPAN=9 BGCOLOR=#99AABB> &nbsp; </TD>
+        <TD ROWSPAN=9 BGCOLOR=#99AABB> &nbsp; </TD>
+        <TH COLSPAN=3 BGCOLOR=#EEEEEE>Interrupt Processing</TH>
+    </TR>
+    <TR>
+        <TH BGCOLOR=#CCDDEE>Cycle</TH>
+        <TH BGCOLOR=#CCDDEE>Phase</TH>
+        <TH BGCOLOR=#CCDDEE>Description</TH>
+
+        <TH BGCOLOR=#CCDDEE>Cycle</TH>
+        <TH BGCOLOR=#CCDDEE>Phase</TH>
+        <TH BGCOLOR=#CCDDEE>Description</TH>
+    </TR>
+    <TR>
+        <TH BGCOLOR=#EEEEEE>1</TH>
+        <TH BGCOLOR=#EEEEEE><TT>BAR</TT></TH>
+        <TD BGCOLOR=#EEEEEE>
+            CPU asserts address of the lower byte of Data to read.
+            Devices should latch the address at this time and perform
+            address decoding.
+        </TD>
+
+        <TH BGCOLOR=#EEEEEE>1</TH>
+        <TH BGCOLOR=#EEEEEE><TT>INTAK</TT></TH>
+        <TD BGCOLOR=#EEEEEE>
+            The CPU asserts the current Stack Pointer address
+            (the value in R6), and increments the stack pointer
+            internally.  Devices are expected to latch this address
+            and decode it internally.  Also, devices are expected
+            to take any special interrupt-acknowledgement steps
+            at this time.  (On the Intellivision, this bus phase
+            is remapped to <TT>BAR</TT> for most devices.  The only 
+            device that sees <TT>INTAK</TT> is the 16-bit System RAM.)
+        </TD>
+    </TR>
+    <TR>
+        <TH BGCOLOR=#CCDDEE>2</TH>
+        <TH BGCOLOR=#CCDDEE><TT>NACT</TT></TH>
+        <TD BGCOLOR=#CCDDEE>
+            The CPU deasserts the bus, and no other bus activity occurs 
+            during this cycle.
+        </TD>
+
+        <TH BGCOLOR=#CCDDEE>2</TH>
+        <TH BGCOLOR=#CCDDEE><TT>NACT</TT></TH>
+        <TD BGCOLOR=#CCDDEE>
+            The CPU deasserts the bus, and no other bus activity occurs 
+            during this cycle.
+        </TD>
+    </TR>
+    <TR>
+        <TH BGCOLOR=#EEEEEE>3</TH>
+        <TH BGCOLOR=#EEEEEE><TT>DTB</TT></TH>
+        <TD BGCOLOR=#EEEEEE>
+            The addressed device asserts its data on the bus.
+            The CPU then reads this data.
+        </TD>
+
+        <TH BGCOLOR=#EEEEEE>3</TH>
+        <TH BGCOLOR=#EEEEEE><TT>DW</TT></TH>
+        <TD BGCOLOR=#EEEEEE>
+            The CPU outputs the current program counter address.
+            The device addressed during <TT>INTAK</TT> should latch
+            the data either now or during the next cycle (<TT>DWS</TT>).
+        </TD>
+    </TR>
+    <TR>
+        <TH BGCOLOR=#EEEEEE>4</TH>
+        <TH BGCOLOR=#EEEEEE><TT>BAR</TT></TH>
+        <TD BGCOLOR=#EEEEEE>
+            The device deasserts the bus during the first quarter
+            of this cycle, and the CPU asserts a new address for the
+            upper byte of Data during the latter half of this cycle.
+            Notice that there is no <TT>NACT</TT> spacing cycle before
+            this <TT>BAR</TT>!
+        </TD>
+
+        <TH BGCOLOR=#DDDDDD>4</TH>
+        <TH BGCOLOR=#DDDDDD><TT>DWS</TT></TH>
+        <TD BGCOLOR=#DDDDDD>
+            The CPU continues to assert the current program counter address.
+            If the addressed device hasn't done so already, it should
+            latch the data now.
+        </TD>
+    </TR>
+    <TR>
+        <TH BGCOLOR=#CCDDEE>5</TH>
+        <TH BGCOLOR=#CCDDEE><TT>NACT</TT></TH>
+        <TD BGCOLOR=#CCDDEE>
+            The CPU deasserts the bus, and no other bus activity occurs 
+            during this cycle.
+        </TD>
+
+        <TH BGCOLOR=#CCDDEE>5</TH>
+        <TH BGCOLOR=#CCDDEE><TT>NACT</TT></TH>
+        <TD BGCOLOR=#CCDDEE>
+            The CPU deasserts the bus, and no other bus activity occurs 
+            during this cycle.
+        </TD>
+    </TR>
+    <TR>
+        <TH BGCOLOR=#EEEEEE ROWSPAN=2>6</TH>
+        <TH BGCOLOR=#EEEEEE ROWSPAN=2><TT>DTB</TT></TH>
+        <TD BGCOLOR=#EEEEEE ROWSPAN=2>
+            The addressed device asserts its data on the bus.
+            The CPU then reads this data.  As with cycle 3,
+            there is no <TT>NACT</TT> spacing cycle after this cycle!
+        </TD>
+
+        <TH BGCOLOR=#EEEEEE>6</TH>
+        <TH BGCOLOR=#EEEEEE><TT>IAB</TT></TH>
+        <TD BGCOLOR=#EEEEEE>
+            An external device asserts the new program counter address
+            (the address of the interrupt service routine) on the bus.
+            The CPU latches this address and transfers it to the program
+            counter.  On the Intellivision, one of the EXEC ROMs handles
+            the program counter address assertion.
+        </TD>
+    </TR>
+    <TR>
+        <TH BGCOLOR=#CCDDEE>7</TH>
+        <TH BGCOLOR=#CCDDEE><TT>NACT</TT></TH>
+        <TD BGCOLOR=#CCDDEE>
+            The device deasserts the bus, and no other bus activity occurs 
+            during this cycle.
+        </TD>
+    </TR>
+</TABLE>
+
+<H3> System Architecture :: The STIC Bus </H3>
+<P>
+    The STIC bus is somewhat simpler than the CPU bus.  The STIC bus
+    originates at the STIC and extends to the 16-bit System RAM,
+    the 8-bit Graphics ROM, and the 8-bit Graphics RAM.  The bus
+    itself is a 14-bit bus which multiplexes address and data in
+    a manner similar to the CP-1600.  What's interesting about the
+    STIC bus is that it's used directly by the STIC during active
+    display and indirectly by the CPU during vertical retrace.
+    This will be covered in greater detail in the next section.
+</P>
+<P>
+    The STIC's bus protocol is an extreme subset of the CP-1600's.
+    Rather than provide a 3-wire set of encoded bus controls, the STIC
+    provides 3 decoded bus phase lines, <TT>BAR'</TT>, <TT>DTB'</TT>,
+    and <TT>DWS'</TT>.  Only one of these three lines is asserted at
+    a time, to designate which bus phase the STIC is executing.  (The
+    <TT>NACT</TT> bus state exists when all three lines are de-asserted.)
+    In addition to the bus control lines, the STIC provides three timing
+    lines, <TT>SR1</TT>, <TT>SR2</TT> and <TT>SR3</TT> which are used
+    to synchronize various events with respect to display time.
+
+</P>
+<P>
+    Transactions by the STIC are initiated by cycling the <TT>BAR'</TT>,
+    <TT>DTB'</TT> and <TT>DWS'</TT> lines in approximately the same way
+    that the CPU would do so.  This is largely due to the fact that the
+    STIC actually can act as intermediary for the CPU in some cases
+    (as covered in the next section.)  Nonetheless, there are some
+    important differences:
+</P>
+<P>
+<UL>
+    <LI><P>
+        There aren't as many <TT>NACT</TT> cycles introduced
+        by the STIC as there are by the CPU.  Rather, <TT>DTB'</TT>
+        is asserted as soon as <TT>BAR'</TT> is deasserted.
+        </P>
+
+    <LI><P>
+        During a write cycle, <TT>DTB'</TT> is momentarily asserted
+        after <TT>BAR'</TT> until the STIC figures out that it's
+        performing a write cycle.  <TT>DTB'</TT> is deasserted and
+        the STIC goes back to the <TT>NACT</TT> state before finally
+        asserting <TT>DWS</TT> for a write.
+        </P>
+</UL>
+<P>
+    The STIC bus itself is largely boring.  During active display,
+    the STIC is grabbing bits of display data from the System RAM, 
+    GRAM and GROM.  During vertical retrace, the STIC bus serves
+    as an extension of the CPU bus.  This leads us to the
+    next section.
+</P>
+
+<H3> System Architecture :: Bridging the CPU and STIC busses </H3>
+<P>
+    The System RAM is the key component which glues the STIC and CPU
+    worlds together.  Both the STIC and the CPU are bandwidth hogs,
+    requiring unfettered access to large amounts of data.  Yet they also
+    need to communicate a great deal.  The System RAM makes this possible
+    by acting both as a bridge and as an isolator for the two busses.
+</P>
+<P>
+    The System RAM itself has two busses -- a 16-bit data/address bus
+    on the CPU side and a 14-bit data/address bus on the STIC side.
+    The CPU side bus speaks normal GI bus protocol, using <TT>BC1</TT>,
+    <TT>BC2</TT> and <TT>BDIR</TT> control signals.  The STIC side is
+    much less flexible, serving alternately as a passthrough for the CPU
+    bus in CPU-controlled mode, and as a state-machine-driven character
+    output in STIC-controlled mode.
+</P>
+<P>
+    Outside of active display time, the STIC and System RAM work
+    together to open the STIC bus up to CPU accesses.  Upon seeing
+    an <TT>INTAK</TT> bus cycle, the System RAM enters the so-called
+    CPU controlled mode.  In this mode, the System RAM acts as a
+    bidirectional buffer, copying the lower 14 bits of the CPU bus
+    over to the STIC bus in most cases, or from the STIC bus back
+    to the CPU bus during a read.  This bridges the two data/address
+    buses.  It does not handle the control signals, however.
+</P>
+<P>
+    During the CPU-controlled mode, the STIC performs bus decoding on
+    behalf of the CPU bus, converting the 3-wire GI bus protocol into
+    the decoded signals <TT>BAR'</TT>, <TT>DTB'</TT> and <TT>DWS'</TT>
+    mentioned previously.  These signals are fed on behalf of the CPU
+    to the GRAM and GROM, thereby allowing the CPU access during
+    this time to all of the peripherals that are on the STIC bus, 
+    namely the GRAMs, the GROM, and the STIC itself.
+</P>
+<P>
+    At the start of active display, the STIC issues a <TT>~BUSRQ</TT> to
+    the CPU, requesting access to the bus.  (<TT>~BUSRQ</TT> is tied to
+    the <TT>SR2</TT> timing signal on the STIC.)  The CPU responds after
+    the first interruptible instruction by bringing <TT>~BUSAK</TT> low.
+    The System RAM switches to STIC-controlled mode upon seeing the
+    first <TT>~BUSAK</TT> high-to-low transition, thereby ending the
+    bus-copying behavior of CPU-controlled mode.  
+</P>
+<P>
+    [Note that it is certainly possible that the CPU will <I>not</I>
+    see this <TT>~BUSRQ</TT> phase if it is executing too many
+    non-interruptible instructions in a row.  In that scenario, the
+    System RAM will remain in bus-copy mode, although the STIC has
+    stopped decoding the bus-control signals for the CPU.  The result
+    is that the CPU still cannot access the STIC bus.  If the CPU 
+    continues to ignore <TT>~BUSRQ</TT> during active display, the
+    System RAM will remain in bus-copy mode and CPU will fight with
+    the STIC over the bus.  This is bad, as the System RAM and the STIC
+    will both attempt to drive the STIC bus, leading to hardware fights
+    and potential physical hardware failure.  Not to mention that the
+    display will be totally garbaged up.]
+</P>
+<P>
+    In STIC controlled mode, the STIC bus side of the System RAM becomes
+    a timing driven entity that is controlled through the <TT>SR2</TT>
+    and <TT>SR3</TT> timing signals.  While in STIC-controlled mode,
+    the System RAM nearly completely isolates the CPU bus from the STIC
+    bus, except when the STIC needs to access the System RAM.  This is
+    where <TT>~BUSRQ</TT> and <TT>~BUSAK</TT> come in to play.  It only
+    makes sense, then that the <TT>~BUSAK</TT> high-to-low transition
+    (which is essentially a slightly time-delayed <TT>SR2</TT> transition)
+    is what causes the System RAM to exit CPU-controlled mode and enter
+    "buffer fill mode" for the STIC.
+</P>
+<P>
+    While <TT>~BUSRQ</TT> is active, the <TT>SR3</TT> signal is pulsed 20
+    times to trigger 20 reads to the display memory to read the next row
+    of cards.  (The STIC asserts <TT>~BUSRQ</TT> for this, because the
+    System RAM is single-ported and can only be read by one device at a
+    time.)  This row's worth of values are read onto the STIC bus and
+    into a separate 20 word buffer.  Once the row is read into these
+    buffer registers, <TT>~BUSRQ</TT> is released and the CPU is allowed
+    to resume calculation.  The row buffer is then subsequently read up
+    to 15 more times (again, by pulsing <TT>SR3</TT>) for each of the
+    scan-lines of the display in order to generate the row of cards on
+    the screen, without disrupting the CPU's progress at all.
+</P>
+<P>
+    It's important to note:  <TT>~BUSRQ</TT> does steal cycles from the
+    CPU during active display.  Some measurements place this penalty at
+    almost 10% during active display.  Altogether, there are between 13
+    and 14 <TT>~BUSRQ</TT>'s per frame (depending on the setting of the
+    vertical delay register), with each lasting for approximately 110
+    CPU cycles.  A minimum of 60 CPU cycles are required to read the 20
+    cards from System RAM, based on experimental evidence, which means
+    that a correct program should have no more than about 40 cycles of
+    non-interruptible instructions in a row.  The figure below illustrates
+    what a typical frame time looks like.
+</P>
+
+<TABLE BORDER=1 ALIGN=center BGCOLOR=#CCDDEE>
+    <CAPTION>
+        <B>Timing Diagram Showing <TT>SR1</TT> (<TT>~INTRM</TT>) and 
+           <TT>~BUSRQ</TT> Timing</B>
+    </CAPTION>
+    <TR>
+        <TD><A HREF="images/intrm_busrq.png"><IMG SRC="thumb/t_intrm_busrq.png"
+                    ALT="Timing Figure for INTRM and BUSRQ"></A></TD>
+    </TR>
+</TABLE>
+
+<P>
+    Using some simple timing that consist mostly of non-interruptible
+    code, I've measured the following cycle counts for an NTSC Intellivision:
+</P>
+<TABLE BORDER=1 ALIGN=center BGCOLOR=#CCDDEE>
+    <CAPTION>
+        <B>NTSC Intellivision Timing Parameters</B>
+    </CAPTION>
+    <TR>
+        <TH>
+            Parameter
+        </TH>
+        <TH COLSPAN=3>
+            Measurement
+        </TH>
+    </TR>
+    <TR>
+        <TD>
+            NTSC Clock Rate
+        </TD>
+        <TD ALIGN=right COLSPAN=2>
+            <TT>3579545</TT>
+        </TD>
+        <TD ALIGN>
+            <TT>Hz</TT>
+        </TD>
+    </TR>
+    <TR>
+        <TD>
+            STIC Scanlines per Frame
+        </TD>
+        <TD ALIGN=right COLSPAN=2>
+            <TT>262</TT>
+        </TD>
+        <TD ALIGN>
+            <TT>scanlines</TT>
+        </TD>
+    </TR>
+    <TR>
+        <TD>
+            Active Scanlines per Frame
+        </TD>
+        <TD ALIGN=right COLSPAN=2>
+            <TT>192</TT>
+        </TD>
+        <TD>
+            <TT>scanlines</TT>
+        </TD>
+    </TR>
+    <TR>
+        <TD>
+            Actual Effective Frame Rate
+        </TD>
+        <TD ALIGN=right COLSPAN=2>
+            <TT>59.92</TT>
+        </TD>
+        <TD>
+            <TT>Hz</TT>
+        </TD>
+    </TR>
+    <TR>
+        <TD>
+            CP-1600 Clock Rate (NTSC/4)
+        </TD>
+        <TD ALIGN=right COLSPAN=2>
+            <TT>894886.25 Hz</TT>
+        </TD>
+        <TD ALIGN>
+            <TT>Hz</TT>
+        </TD>
+    </TR>
+    <TR>
+        <TD ROWSPAN=3>
+            CPU Cycles per Frame<BR>
+        </TD>
+        <TD>
+            Display disabled:
+        </TD>
+        <TD ALIGN=right>
+            <TT>14934</TT>
+        </TD>
+        <TD>
+            <TT>cycles</TT>
+        </TD>
+    </TR>
+    <TR>
+        <TD>
+            Display enabled, vertical delay == 0: 
+        </TD>
+        <TD ALIGN=right>
+            <TT>~13518</TT>
+        </TD>
+        <TD>
+            <TT>cycles</TT>
+        </TD>
+    </TR>
+    <TR>
+        <TD>
+            Display enabled, vertical delay &gt; 0: 
+        </TD>
+        <TD ALIGN=right>
+            <TT>~13572</TT>
+        </TD>
+        <TD>
+            <TT>cycles</TT>
+        </TD>
+    </TR>
+    <TR>
+        <TD>
+            CPU Cycles per Scanline
+        </TD>
+        <TD ALIGN=right COLSPAN=2>
+            <TT>57</TT>
+        </TD>
+        <TD>
+            <TT>cycles</TT>
+        </TD>
+    </TR>
+    <TR>
+        <TD>
+            CPU Cycles available in Bus Copy mode
+        </TD>
+        <TD ALIGN=right COLSPAN=2>
+            <TT>3780 - 3790</TT>
+        </TD>
+        <TD>
+            <TT>cycles</TT>
+        </TD>
+    </TR>
+</TABLE>
+
+<P>
+    Additionally, I've worked out (with Kyle Davis' help) the
+    following formulas for describing when various events (eg. 
+    <TT>~BUSRQ</TT> asserted) occur relative to the start of frame.
+    All of these quantities are expressed in raw CPU cycles.
+</P>
+
+<TABLE BORDER=1 ALIGN=center BGCOLOR=#CCDDEE>
+    <CAPTION>
+        <B>NTSC Intellivision Timing Equations</B>
+    </CAPTION>
+    <TR>
+        <TH>
+            Event
+        </TH>
+        <TH>
+            Equation
+        </TH>
+    </TR>
+    <TR>
+        <TD>
+            Switch from CPU-controlled to STIC-controlled
+        </TD>
+        <TD>
+            <TT>3790</TT> (approx)
+        </TD>
+    </TR>
+    <TR>
+        <TD>
+            Assert<TT> ~BUSRQ </TT> to fetch display row
+            0 through 11.
+        </TD>
+        <TD>
+            <TT>3933 + 114*vertical_delay + 912*row_number</TT>
+        </TD>
+    </TR>
+    <TR>
+        <TD>
+            De-assert<TT> ~BUSRQ </TT> after fetching display row
+            0 through 11.
+        </TD>
+        <TD>
+            <TT>4043 + 114*vertical_delay + 912*row_number</TT>
+        </TD>
+    </TR>
+    <TR>
+        <TD>
+            Assert<TT> ~BUSRQ </TT> to "fetch" extra row
+            (occurs only if<TT> vertical_delay == 0</TT>).
+        </TD>
+        <TD>
+            <TT>14877</TT>
+        </TD>
+    </TR>
+    <TR>
+        <TD>
+            De-assert<TT> ~BUSRQ </TT> after extra "fetch"
+            (occurs only if<TT> vertical_delay == 0</TT>).
+        </TD>
+        <TD>
+            <TT>14934</TT>
+        </TD>
+    </TR>
+    <TR>
+        <TD>
+            Assert<TT> ~INTRM </TT> (aka.<TT> SR1</TT>)
+        </TD>
+        <TD>
+            <TT>14934</TT>
+        </TD>
+    </TR>
+</TABLE>
+            
+
+<HR>
+
+<H2> Interfacing </H2>
+
+<P>
+    The Master Component interfaces to a variety of external devices,
+    primarily through two sets of external links:  the cartridge
+    port and the hand controller ports.  Game cartridges and most
+    peripherals connect via the cartridge port, whereas the two
+    hand controllers connect via the hand controller ports.
+</P>
+
+<H3> Interfacing :: The Cartridge Port </H3>
+
+<P>
+    The Master Component's cartridge port consists of a single
+    44-pin 0.1" spacing edge-card connector.  A number of essential
+    bus signals are brought out on this connector.  The following
+    figures illustrate which of these signals corresponds to each
+    of the various cartridge pins.  The table afterwards lists what
+    each signal does.
+</P>
+
+<TABLE BORDER=1 ALIGN=center BGCOLOR=#CCDDEE>
+    <CAPTION>
+        <B>Pin Mapping On Intellivision Cartridges</B>
+    </CAPTION>
+    <TR>
+        <TD><A HREF="images/cart_top.png"><IMG SRC="thumb/t_cart_top.png"
+                                           ALT="Cartridge Top View"></A></TD>
+        <TD><A HREF="images/cart_bot.png"><IMG SRC="thumb/t_cart_bot.png"
+                                           ALT="Cartridge Bottom View"></A></TD>
+    </TR>
+</TABLE>
+
+<TABLE BORDER=1 ALIGN=center BGCOLOR=#CCDDEE>
+    <CAPTION>
+        <B>Pin Assignments</B>
+    </CAPTION>
+    <TR>
+        <TH COLSPAN=3 BGCOLOR=#EEEEEE WIDTH=49%> Component Side (Top) </TH>
+        <TD ROWSPAN=24 BGCOLOR=#99AABB WIDTH=2%> &nbsp; </TD>
+        <TH COLSPAN=3 BGCOLOR=#EEEEEE WIDTH=49%> Solder Side (Bottom) </TH>
+    </TR>
+    <TR>
+        <TH>Description</TH> 
+        <TH>Name</TH>
+        <TH>Pin</TH>
+        <TH>Pin</TH>
+        <TH>Name</TH>
+        <TH>Description</TH> 
+    </TR>
+    <TR>
+        <TD ALIGN=right>
+            Ground.
+        </TD>
+        <TD><TT>    GND    </TT></TD> <TD>         2          </TD> 
+        <TD>         1          </TD> <TD><TT>    GND    </TT></TD> 
+        <TD>
+            Ground.
+        </TD>
+    </TR>
+    <TR>
+        <TD ALIGN=right>
+            Character BLaNK
+        </TD>
+        <TD><TT>   CBLNK   </TT></TD> <TD>         4          </TD> 
+        <TD>         3          </TD> <TD><TT>  ~MSYNC   </TT></TD> 
+        <TD>
+            Master SYNC.  
+        </TD>
+    </TR>
+    <TR>
+        <TD ALIGN=right>
+            External Audio Input.  
+        </TD>
+        <TD><TT> Ext. AUDIO</TT></TD> <TD>         6          </TD> 
+        <TD>         5          </TD> <TD><TT>    DB7    </TT></TD> 
+        <TD>
+            Bit 7 of the Address / Data Bus.
+        </TD>
+    </TR>
+    <TR>
+        <TD ALIGN=right>
+            External Video Input.  
+        </TD>
+        <TD><TT> Ext. VIDEO</TT></TD> <TD>         8          </TD> 
+        <TD>         7          </TD> <TD><TT>    DB8    </TT></TD> 
+        <TD>
+            Bit 8 of the Address / Data Bus.
+        </TD>
+    </TR>
+    <TR>
+        <TD ALIGN=right>
+            Master CLocK.  
+        </TD>
+        <TD><TT>   MCLK    </TT></TD> <TD>        10          </TD> 
+        <TD>         9          </TD> <TD><TT>    DB6    </TT></TD> 
+        <TD>
+            Bit 6 of the Address / Data Bus.
+        </TD>
+    </TR>
+    <TR>
+        <TD ALIGN=right>
+            Reset input.  
+        </TD>
+        <TD><TT>   RESET   </TT></TD> <TD>        12          </TD> 
+        <TD>        11          </TD> <TD><TT>    DB9    </TT></TD> 
+        <TD>
+            Bit 9 of the Address / Data Bus.
+        </TD>
+    </TR>
+    <TR>
+        <TD ALIGN=right>
+            Timing signal from the STIC.  
+        </TD>
+        <TD><TT>    SR1    </TT></TD> <TD>        14          </TD> 
+        <TD>        13          </TD> <TD><TT>    DB5    </TT></TD> 
+        <TD>
+            Bit 5 of the Address / Data Bus.
+        </TD>
+    </TR>
+    <TR>
+        <TD ROWSPAN=2 ALIGN=right>
+            Intellivoice special purpose.  
+        </TD>
+        <TD><TT>    ???    </TT></TD> <TD>        16          </TD> 
+        <TD>        15          </TD> <TD><TT>    DB10   </TT></TD> 
+        <TD>
+            Bit 10 of the Address / Data Bus.
+        </TD>
+    </TR>
+    <TR>
+        <TD><TT>    ???    </TT></TD> <TD>        18          </TD> 
+        <TD>        17          </TD> <TD><TT>    DB4    </TT></TD> 
+        <TD>
+            Bit 4 of the Address / Data Bus.
+        </TD>
+    </TR>
+    <TR>
+        <TD ROWSPAN=5 ALIGN=right> Ground </TD>
+        <TD><TT>    GND    </TT></TD> <TD>        20          </TD> 
+        <TD>        19          </TD> <TD><TT>    DB11   </TT></TD> 
+        <TD>
+            Bit 11 of the Address / Data Bus.
+        </TD>
+    </TR>
+    <TR>
+        <TD><TT>    GND    </TT></TD> <TD>        22          </TD> 
+        <TD>        21          </TD> <TD><TT>    DB3    </TT></TD> 
+        <TD>
+            Bit 3 of the Address / Data Bus.
+        </TD>
+    </TR>
+    <TR>
+        <TD><TT>    GND    </TT></TD> <TD>        24          </TD> 
+        <TD>        23          </TD> <TD><TT>    DB12   </TT></TD> 
+        <TD>
+            Bit 12 of the Address / Data Bus.
+        </TD>
+    </TR>
+    <TR>
+        <TD><TT>    GND    </TT></TD> <TD>        26          </TD> 
+        <TD>        25          </TD> <TD><TT>    DB13   </TT></TD> 
+        <TD>
+            Bit 13 of the Address / Data Bus.
+        </TD>
+    </TR>
+    <TR>
+        <TD><TT>    GND    </TT></TD> <TD>        28          </TD> 
+        <TD>        27          </TD> <TD><TT>    DB2    </TT></TD> 
+        <TD>
+            Bit 2 of the Address / Data Bus.
+        </TD>
+    </TR>
+    <TR>
+        <TD ALIGN=right>
+            BUS AcKnowledge.  
+        </TD>
+        <TD><TT>  ~BUSAK   </TT></TD> <TD>        30          </TD> 
+        <TD>        29          </TD> <TD><TT>    DB14   </TT></TD> 
+        <TD>
+            Bit 14 of the Address / Data Bus.
+        </TD>
+    </TR>
+    <TR>
+        <TD ALIGN=right>
+            This is an <I>input</I>.  This <TT>BC1</TT> drives the
+            EXEC ROMs, the PSG, and the 8-bit RAMs. 
+        </TD>
+        <TD><TT>   BC1     </TT></TD> <TD>        32          </TD> 
+        <TD>        31          </TD> <TD><TT>    DB1    </TT></TD> 
+        <TD>
+            Bit 1 of the Address / Data Bus.
+        </TD>
+    </TR>
+    <TR>
+        <TD ALIGN=right>
+            This is an <I>input</I>.  This <TT>BC2</TT> drives the
+            EXEC ROMs, the PSG, and the 8-bit RAMs. 
+        </TD>
+        <TD><TT>   BC2     </TT></TD> <TD>        34          </TD> 
+        <TD>        33          </TD> <TD><TT>    DB0    </TT></TD> 
+        <TD>
+            Bit 0 of the Address / Data Bus.
+        </TD>
+    </TR>
+    <TR>
+        <TD ALIGN=right>
+            This is an <I>input</I>.  This <TT>BDIR</TT> drives the
+            EXEC ROMs, the PSG, and the 8-bit RAMs. 
+        </TD>
+        <TD><TT>   BDIR    </TT></TD> <TD>        36          </TD> 
+        <TD>        35          </TD> <TD><TT>    DB15   </TT></TD> 
+        <TD>
+            Bit 15 of the Address / Data Bus.
+        </TD>
+    </TR>
+    <TR>
+        <TD ALIGN=right>
+            This is an <I>output</I>.  This <TT>BDIR</TT> is usually
+            looped back by the cartridge on pin 36.
+        </TD>
+        <TD><TT>   BDIR    </TT></TD> <TD>        38          </TD> 
+        <TD>        37          </TD> <TD><TT>    BDIR   </TT></TD> 
+        <TD>
+            This is an <I>output</I>.  This <TT>BDIR</TT> usually
+            provides the current bus phase to the cartridge ROMs.
+        </TD>
+    </TR>
+    <TR>
+        <TD ALIGN=right>
+            This is an <I>output</I>.  This <TT>BC2</TT> is usually
+            looped back by the cartridge on pin 34.
+        </TD>
+        <TD><TT>   BC2     </TT></TD> <TD>        40          </TD> 
+        <TD>        39          </TD> <TD><TT>    BC2    </TT></TD> 
+        <TD>
+            This is an <I>output</I>.  This <TT>BC2</TT> usually
+            provides the current bus phase to the cartridge ROMs.
+        </TD>
+    </TR>
+    <TR>
+        <TD ALIGN=right>
+            This is an <I>output</I>.  This <TT>BC1</TT> is usually
+            looped back by the cartridge on pin 32.
+        </TD>
+        <TD><TT>   BC1     </TT></TD> <TD>        42          </TD> 
+        <TD>        41          </TD> <TD><TT>    BC1    </TT></TD> 
+        <TD>
+            This is an <I>output</I>.  This <TT>BC1</TT> usually
+            provides the current bus phase to the cartridge ROMs.
+        </TD>
+    </TR>
+    <TR>
+        <TD ALIGN=right>
+            Ground
+        </TD>
+        <TD><TT>   GND     </TT></TD> <TD>        44          </TD> 
+        <TD>        43          </TD> <TD><TT>    Vcc    </TT></TD> 
+        <TD>
+            +5v power.
+        </TD>
+    </TR>
+</TABLE>
+
+<P>
+    The following meanings are assigned to the cartridge port signals:
+</P>
+
+<UL>
+    <LI><B><TT>Vcc</TT></B> -- +5v Power<BR><BR>
+    <LI><B><TT>GND</TT></B> -- Ground<BR><BR>
+    <LI><B><TT>RESET</TT></B> -- System Reset<BR>
+        <P>
+            Pulling this line low will send a short
+            reset pulse to the STIC.  This will result in <TT>~MSYNC</TT>
+            being brought low by the STIC, thereby resetting the machine.
+        </P>
+
+    <LI><B><TT>~MSYNC</TT></B> -- Master Sync<BR>
+        <P>
+            This signal goes low for at least 10ms during
+            Reset.  It is generated by the STIC as soon as the STIC
+            recognizes a low pulse on its RESET line.
+        </P>
+
+    <LI><B><TT>MCLK</TT></B> -- Master Clock<BR>
+        <P>
+            This pin provides the 3.579545MHz 
+            master clock signal that drives the Master Component.
+        </P>
+
+    <LI><B><TT>BC1</TT>, <TT>BC2</TT>, <TT>BDIR</TT></B> -- Bus Control<BR>
+        <P>
+            These are the bus control signals as described in the CPU
+            sections above.  The outputs on pins 38, 40, and 42 come
+            directly from the<TT> INTAK </TT>remapping circuitry.  
+            Cartridges generally loop these signals back on pins 36, 
+            34, and 32.  The outputs on pins 37, 39, and 41 are also
+            directly connected to the<TT> INTAK </TT>remapping circuitry,
+            and are the signals that most Mattel cartridges use for 
+            determining the bus phaase.
+        </P>
+
+    <LI><B><TT>DB0</TT> thru <TT>DB15</TT></B> -- Address/Data Bus<BR>
+        <P>
+            This is the 16-bit multiplexed address/data bus.
+        </P>
+
+    <LI><B><TT>~BUSAK</TT></B> -- BUS AcKnowledge<BR>
+        <P>
+            This signal goes low when the CPU has relinquished the bus
+            during a DMA access by the STIC.  It appears possible that
+            external devices can access the PSG, EXEC, and 8-bit RAM
+            during the time <TT>~BUSAK</TT> is low, but it's unclear
+            whether this is the case.  In all likelihood, it is <I>not</I>
+            the case.
+        </P>
+
+    <LI><B><TT>SR1</TT></B> -- STIC Timing Signal<BR>
+        <P>
+            This signal is tied to the CPU's <TT>~INTRM</TT> input,
+            triggering an interrupt when the STIC goes into the vertical
+            refresh phase.
+        </P>
+
+    <LI><B><TT>CBLNK</TT></B> -- "Character BLaNK" / Horizontal Retrace<BR>
+        <P>
+            Used for genlocking the Keyboard Component's TMS9927 to 
+            the Master Component's AY8900 STIC.
+        </P>
+
+    <LI><B><TT>EXT AUDIO</TT></B> -- External Audio Input<BR>
+        <P>
+            The Intellivoice and ECS's second 
+            Programmable Sound Generator provide audio input via
+            this pin.  I'd imagine if the Keyboard Component
+            can generate Audio, it also provides it on this pin.
+        </P>
+
+    <LI><B><TT>EXT VIDEO</TT></B> -- External Video Input<BR>
+        <P>
+            This was originally designed
+            to accept the genlocked video from the Keyboard
+            Component.  The Intellivision II changed the circuit
+            external video output slightly to accept the non-genlocked
+            video from the System Changer.  It also moved this to 
+            a different pin.
+        </P>
+
+    <LI><B><TT> ??? </TT></B> -- Intellivision special purpose<BR>
+        <P>
+            These pins are tied to
+            ground on non-Intellivoice cartridges, and left open
+            on Intellivoice-aware cartridges.
+        </P>
+
+</UL>

@@ -1,0 +1,68 @@
+# Copyright (C) 2010 Amf
+#
+# Regression tests for Enigma
+#
+# Expected result:
+#
+# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+# %                               %
+# %                   v       v   %
+# % >v<    >v<      >v^v<   >v^v< %
+# % >^<    >^<       ^ ^     ^ ^  %
+# %  ><     ><                    %
+# %                               %
+# %                               %
+# %     ><     ><                 %
+# %    >v<    >v<                 %
+# %     ><     ><       E         %
+# %     ^      ^                  %
+# %                               %
+# %               >vvv<   >vvv<   %
+# % >v<    >v<     ^^^     ^^^    %
+# % ><     ><                     %
+# %  ><     ><                    %
+# %  ^      ^         v       v   %
+# %                  v>v<    v>v< %
+# %                  ^^^     ^^^  %
+# %    >v<    >v<                 %
+# %     ><     ><   v       v     %
+# %     ><     >< >v<v    >v<v    %
+# %     ^      ^   ^^^     ^^^    %
+# %                               %
+# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+chroma level
+
+mode: enigma
+
+title: Enigma regression tests
+size: 33 26
+
+data:
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                               %
+%  d      d        ddd     ddd  %
+% c.a    c.a      c.D.a   c.B.a %
+% cAa    cCa       b.b     b b  %
+% c.a d  c.a d      *       *   %
+%  *  d   *  d      b       b   %
+%  b  *   b  *      b       b   %
+%  b c.a  b c.a                 %
+%    cAa    cCa   d   1   d     %
+%    c.a    c.a   d   /   d     %
+%     b      b    *       *     %
+%                d d     d.d    %
+%  d      d     c.D.a   c.B.a   %
+% c.a    c.a     bbb     bbb    %
+% cA *aa cC.*aa                 %
+% c.a    c.a                    %
+%  b      b        ddd     ddd  %
+%               cc*.D.a cc*.B.a %
+%     d      d     bbb     bbb  %
+%    c.a    c.a                 %
+% cc*.Aa cc* Ca  ddd     ddd    %
+%    c.a    c.a c.D.*aa c.B.*aa %
+%     b      b   bbb     bbb    %
+%                               %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+

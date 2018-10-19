@@ -1,0 +1,382 @@
+
+------------------------------------------------------------------------------
+1: Why don't we begin by having you share a brief synopsis of your
+   background with programming and entertainment software.
+
+Basically, I figure I've been an electrical-engineer-in-training
+most of my life.  (Well, at least, starting with the Radio Shack
+"25-in-1 Lab Kit" that I got for my 5th birthday.)  
+
+Some of the earliest videogames I played were the classic Pong 
+(two potentiometers on a plastic black cabinet with a built-in
+speaker), the "6-in-1-Pong-on-Steriods" type games, and of course
+the occasional Atari 2600 game when visiting relatives.
+
+My dad got an Intellivision around 1981, as I recall.  It was a gigantic
+leap forward compared to the other video games I had played (basically
+"Pong with a slight twist" games).  I had a blast playing the Inty
+games, and in the back of my mind, I always wondered how they worked.
+
+I first started programming when I was about 6, hammering out CBM BASIC
+programs on the babysitter's husband's VIC-20, and later on the Commodore
+PETs at school.  I wasn't a real accomplished programmer, but I was
+definitely a rather avid spelunker into the wonders of "making it
+do things."  
+
+Fast-forward a couple years, to the great crash of 1983.  The depressed
+computer prices finally allowed me to get my own computer, a TI-99/4A.
+There, my love of programming and my love of video games were cemented
+together in perpetuity.  The TI sports the wonderful TMS9918A VDP,
+and with TI Extended BASIC plugged in, it actually makes a reasonable
+system for writing simple games.  And believe me, I did (and they
+all sucked, but who cares?).
+
+From that point on, video gaming for me has been a combination of enjoying
+the game play and wondering how it was done.  Throw a healthy hardware
+interest in on the side, and you have me in a nutshell.
+
+------------------------------------------------------------------------------
+2: Why your love for the Intellivision, and which Intellivision games are
+   your personal favorites?
+
+The Intellivision had a consistent style all it's own, and a certain
+charm that other machines lacked.  The times I played the Atari 2600,
+for instance, just never seemed as satisfying.  There just seemed
+to be something missing -- a lack of real depth.
+
+My dad's Intellivision itself still sees somewhat regular use.  It's
+never been decommissioned.  He keeps it up at his cabin, and we'll
+play games on it if the weather's crummy or if the mosquitos are 
+just too obnoxious.  (The Mosquito is the Michigan State Bird.)
+
+My personal favorite Inty games from "back then" included Astrosmash
+(top score ~830,000 on 'hard', at one sitting), Bomb Squad, Snafu
+(dig that music!) and Utopia.  I was also fairly good at Worm
+Whomper.
+
+Utopia was especially cool, because Alex (my brother) and I would sit for
+hours filling up the screen with fishing boats, PT boats and everything
+we could buy.  It was the ultimate "keep ahead of the Joneses" type
+of game in that respect.  Also, it had some neat bugs where you could
+push ships off the lower right corner and "sail on the islands" after
+coming back onscreen.  A world of wonder crammed in 4K.
+
+In recent years, Space Spartans has become one of my favorites.  I
+was too young to appreciate the relatively rich gameplay it 
+provided back when I was younger, but now I really enjoy the
+strategy elements.
+
+------------------------------------------------------------------------------
+3: You created the Intellivision emulator, jzIntv. What technical problems
+   and/or difficulties did you encounter while programming jzIntv?
+
+The biggest problem I ran into was in finding reliable documentation.
+When you combine that with the fact that I didn't have an actual
+Intellivision handy (I was in Texas, my dad's Intellivision gear
+is in northern Michigan) kept my aspirations of writing an Inty
+emulator on hold for a couple years.  I basically gave up on the
+idea before even starting.
+
+Then, I stumbled onto the Blue Sky Ranger's website, and that really
+got the nostalgia stirred.  After some poking around, I then stumbled 
+onto Frank Palazzolo's 2-Bits site and found interesting tid-bits
+such as "De Re Intellivision" as well as scans from an old Osborne 
+book.  That really got me stoked.  After a couple of false starts,
+I finally got rolling on jzIntv.
+
+My emulator really owes alot to the fine work that Carl Mueller, Jr.
+did in developing INTVEM (later INTVPC) and documenting what he
+found along the way via William Moeller and De Re Intellivision.
+Truly, without that source, I would be very far behind where I am
+today.
+
+Presently, the main difficulty I run into now is lack of time.  :-)
+That's partly because I want to do a thorough job, and partly because
+I try to do a thorough job at my actual, paying day job.  :-)
+
+Carl's emulator broke new ground, providing the world with its first
+Intellivision Emulator.  He did a fantastic job, but his emulator
+isn't perfect.  It's very, very good, but not perfect.  Currently, I'm
+investigating some of the darker corners of the Inty and am discovering
+rather interesting details, such as the fact that the STIC actually
+steals cycles from the CPU, and so on.  I'm very interested in accurate
+emulation, rather than simply adequate emulation.
+
+An emulator is adequate if it plays all (or most of) the existing games.
+However, if you want to make new games, such an emulator might let you get
+away with things that the real hardware would not allow.  Carl's emulator
+falls into the "adequate" category, because it allows certain things
+(such as accessing the STIC registers and GRAM during active display)
+that the real hardware doesn't let you do.  That doesn't matter if
+you're just playing already written games.  However, I'd like to write
+a few new ones, so I need a bit more accuracy.  :-)
+
+------------------------------------------------------------------------------
+4: What differences are there between your Intellivision emulator, and other
+   Intellivision emulators that have been released.
+
+The main difference, I think, is in the generality of the implementation.
+INTVPC is written as a DOS program, complete with hand-coded assembler
+for some pieces, and direct accesses to the hardware.  It's not very
+portable, but it runs great even on minimal hardware.
+
+The Mac INTV emulator that comes on the Intellivision Lives! CD leaves
+me wanting more.  It has the nice GUI wrapped around it, but overall
+it's nowhere near the level of quality of Carl's emulator.  I'd say
+more, but I'm following the maxim "If you can't say something nice...."
+
+Then there's jzIntv.  From the beginning, I wanted jzIntv to be a fairly
+portable, clean, well documented Intellivision emulator.  I wanted
+this partly so that others could learn about the Inty from it and write
+their own emulators.  I also wanted a free emulator that anyone could
+use, so that nobody would be bound to the Intellivision Lives! CD-ROM.
+And most importantly, I wanted something that'd run under Linux.  :-)
+
+Currently, I feel jzIntv's strong points are its portability and its
+debugging functionality.  (Also, I'm very proud of its sound emulation.
+Carl Mueller, Jr is borrowing some ideas from it for a future INTVPC
+revision, as well.)  I'd like jzIntv to be the "programmer's emulator",
+one that's suitable for developing new games on in a timely fashion.
+
+Already it has one feature in it that I only dream of seeing in gdb.
+The current development version has a "crash trace", which dumps
+out the last several thousand instructions (complete with register
+history!) leading up to the crash.  Very useful.
+
+------------------------------------------------------------------------------
+5: You've included a Linux kernel driver within jzIntv to use
+   Intellivision controllers as regular joysticks via the Hand Controller
+   Interface.  Now's your chance to boast, anything to contribute on
+   the subject?
+
+Actually, I can only boast on behalf of Linux in general.  What made
+this small feat possible was the fact that I can get the other 
+joystick drivers for Linux, make a few modifications to one of the
+source files, and voila! I have a complete, robust, stable joystick
+driver of my own.
+
+Try that with Windows sometime.
+
+Vojtech Pavlik did a very good job of structuring the Joystick driver
+and providing great examples to work from.
+
+------------------------------------------------------------------------------
+6: Tim Lindner has been porting your jzIntv code to the Macintosh.  Any
+   other contributors to the project?
+
+Currently, nobody other than Tim and myself are contributing directly to
+the code-base.  Frank Palazzolo donated his disassembler to the project
+early on, but that's about it for direct code contributions.
+
+I'm very thankful that Tim has pitched in on this project.  I think
+it's a great example of the Good Things that can happen when you throw
+something like this out to the world to see.  At the time he ported
+jzIntv to the Macintosh, I didn't even have access to a Mac, let alone
+one with a compiler.  (Now, my fiancee has a iBook, but we still have
+no development tools.)
+
+Tim sends me an email one day saying, basically "Hey, I got your
+emulator to run on my Mac."  I about fell out of my chair with surprise.
+It was awesome.  I've never met Tim in person, but I hope to someday.
+He seems like a great guy, and I'm glad he's helping out.
+
+On the indirect side, the list is alot larger.  Carl Mueller, Jr., 
+William Moeller, and Scott Nudds all provided the base from which I
+worked.  Doug Parsons has provided valuable feedback by running
+various tests for me from his Foomboard.  And of course, there's
+always the interesting tidbit here or there from the BSR's site.
+
+I'm sure I'm forgetting alot of people in this list, but these
+are the main ones.
+
+------------------------------------------------------------------------------
+7: What motivated you to start creating new titles for the Intellivision?
+
+One piece of motivation was Mike Hayes' Programming Contest.  (I felt
+kinda bad after taking 2nd place in his last contest with "SIMON SEZ".)
+
+Another was the fact that while I was growing up, I could never work
+out how to write a Tetris clone of my own.  The main problem was that
+I was thinking too linearly, when really Tetris has some decoupled 
+elements.  Also I was thinking too hard about the problem... there's
+no real need to get clever with Tetris.
+
+Looking back, I was a bit silly programming-wise back then, but that's what
+happens when an 7-yr-old teaches himself programming.  ;-)
+
+------------------------------------------------------------------------------
+8: How did you approach creating a new Intellivision title?
+
+Well, the first step was to get my feet wet writing some routines and
+short demos.  I took a vacation at my dad's cabin last summer, which was
+when I got the idea to do a Tetris clone.  So, I sketched out some rough
+ideas, and wrote out some real basic routines for getting and putting
+pixels.  Over the next week, I fumbled around with Carl's assembler and
+manage to put together my first couple demos -- Maze Demo and Bouncing
+Pixels.  The main reason I was able to do that then was that I had with
+me a laptop computer that I had borrowed, so I had access to DOS so I
+could use Carl's tools.  (At the time, I only had Linux boxen at home.)
+
+Once I got home, though, I didn't do much programming on anything Inty
+for awhile -- it sat on the back burner.  I did do development on jzIntv,
+but no Inty-native code.
+
+I finally got frustrated by the lack of tools, and so I went and found
+a portable cross-assembler, the Frankenstein assembler, and hacked
+a new target into it, the CP-1600.  (The CP-1600 is the Inty's CPU.)
+With this new assembler available, I was able to resume programming on
+Tetris and related efforts.
+
+Most of the Tetris development occured while I was on vacation over
+Thanksgiving and Christmas.  The first step was to instantiate a small
+framework -- get the cartridge header in place, get a couple small
+init-routines in place, and then think about how to structure the rest.
+
+The first piece I built was a mini Real-Time Operating System (RTOS).
+It was pretty simple and could only barely be called an OS (it was
+really just a task scheduler), but it was fairly fundamental to
+the overall structure.  The next bit of coding then revolved around
+writing the support routines (random number generation, print-string,
+print-number) so that I could at least get a title on the screen.  :-)
+And then came sound.
+
+The sound format was devised in a bowling alley while my fiancee's
+family was bowling.  I had a sheet of graph paper, a pencil, and a few
+crazy ideas.  For one, I wanted the music to be continuous -- if a sound
+effect played, it should avoid killing the music, or at the very least,
+the music should keep time.  Second, I wanted music and sfx to share
+the same engine.  The result of my brain-storming was an early version
+of my music format.  I then coded it up (on paper!) and tried it out
+the next day, and to my surprise, it worked!  Once sound was there,
+development plateaued for a bit while I played with the sounds.  ;-)
+
+After I got over the fanciness of the sound, I focused on getting
+the actual Tetris game logic infrastructure written.  Before, I was
+writing general support routines -- getpixel, putpixel, play a sound,
+print a string, random number, etc.  Now I started writing more complex
+routines such as "detect full lines", "clear lines", "calculate score",
+and so on.  I built up little test drivers which would try to exercise
+these routines somewhat, and benchmark them to make sure I wasn't
+overrunning the machine.
+
+Eventually, I got to the point where I could manually place Tetris
+pieces around in the well, and scoring worked, and music worked,
+and so on.  But the game wasn't complete.  I hit a slump.  I could
+see the end from there, but I just didn't feel like taking the
+last few steps.  I spent inordinate amounts of time tweaking and
+cleaning up bits that didn't need it all that much, but I didn't
+feel like taking the final step.
+
+Then, I "recovered".  I got that final gust of wind which pushed me
+over the finish line, and Voila!  Tetris was a complete game.  I
+then spent around a week or two polishing up the game, tweaking
+the music files and music format, and generally making it all it
+could be -- in 8K.  I also ended up writing a Pong clone which I 
+hid inside Tetris.  (Later, I broke it out separately, added
+a chincy AI, and submitted it as a separate game).
+
+Probably the biggest technology feat in Tetris was the sound engine.
+I ended up writing a "music compiler" which converts (in a round-about
+fashion) a MIDI file into a music sequence for the Intellivision.
+The music format itself has rather fancy forms of "sliding window"
+and "delta update" compressions built in for compact coding, and the
+compiler itself makes full use of these features.  I'm rather proud of
+it, considering that it was brainstormed in a bowling alley.  ;-)
+
+If I had it to do over again, though, I'd encode it differnetly, 
+perhaps with different SFX and music engines that at least cooperate
+to share the PSG.  There are some definite limitations to my approach,
+but it works rather well in Tetris, so who am I to complain?.
+
+
+------------------------------------------------------------------------------
+9: Which of your primary Intellivision creations are you most proud of:
+   Tetris, Pong, or your Song Player?
+
+I'd have to say Tetris, because it contains both Pong and Song Player in
+it.  :-)
+
+The Song Player is basically my sound engine broken out as a separate
+program.  I did this so I could play around more easily with the
+sound format, and also so I could explore 6-voice sound some as well.
+(The Song Player just runs the same sound engine twice, once on each PSG,
+with one playing the "left" stream and the other playing the "right"
+stream.)
+
+Pong is actually embarassing, coding-wise.  I coded it totally as an
+afternoon hack, and it's got some pretty grotty code in it.  :-)
+
+
+------------------------------------------------------------------------------
+10: You recently won first place in Mike Hayes' Intellivision Library 1999
+    Intellivision Summer Development Competition with your Tetris entry.  Is
+    your mother proud?
+
+...and father and brother and sister and fiancee and...  Yes.  The family
+is proud of me.  Right now, I'm looking at ways to make it playable on
+the _real_ Intellivision, but don't hold me to anything just yet.  :-)
+
+------------------------------------------------------------------------------
+11: Were there any monumental revelations you discovered while programming
+    your demos such as maze, groovy, bncpix, or others?  Something
+    distinctive that made you think, "Gee, I didn't know the Intellivision
+    hardware could do this?"
+
+The main revelation-inducing program was "Groovy".  The fact that you
+could play 4-bit audio via the PSG was hinted to in the PSG emulation
+in MAME -- it was never discussed or mentioned in any of the GI spec
+sheets that I saw.
+
+So, I decided to try it out.  It worked in jzIntv, but that didn't
+mean anything in the "Real World."  So, Doug Parsons tested Groovy
+on his Foomboard, and to our pleasant surprise, Ash lives on in
+the real Inty!  Groovy!
+
+------------------------------------------------------------------------------
+12: What is the typical time cycle for development on your projects?
+
+Anywhere from 1 hour to 1 decade.  :-)
+
+For instance, on Sunday, I spent about 3 hours writing a Navy DIF ->
+email form letter conversion program for my fiancee (in C, from scratch).
+She TAs a geology lab, and it was rather tedious to send out grades
+manually.  So, now she exports her spreadsheet as a DIF file, and my
+program does the rest.
+
+Tetris was a two-three month project, for the bulk of the work.
+(I don't really count the baby-steps I took in June.  Rather I think
+of it more as about Nov 20th to Jan 20th.)  I'm sure I'll tweak it some
+more (already I plan to try to squeeze a third song into the same 8K!),
+but it's pretty much finished.
+
+jzIntv is my longest running publicly visable project.  I started it
+with a few false starts back in 1997, with it really taking root in
+late 1998/1999.
+
+At work, I've been coding on, extending, and maintaining an internal
+tool that we use there for the past three years.  It's basically been a
+pet project of mine that whole time, and TI absolutely loves me for it.
+
+And then there's those projects that never truly die, such as some of
+my graphics hacks that I occasionally revisit when I feel nostalgic.
+I actually whipped out my Apple ][e and did some assembly coding on it
+a few months back, for instance.
+
+------------------------------------------------------------------------------
+13: Any plans or future projects concerning the Intellivision?
+
+Currently, I'm in the process of designing a "SoftCart" for the
+Intellivision that would allow the user to download games and play them
+on the Inty.  I'm still torn between a number of cost-vs-flexibility
+tradeoffs, although I think I'm coming to a reasonable solution.
+
+I'm also working on figuring out more of the Inty's timing parameters at
+a hardware level, since I don't think those have really been explored
+all that greatly.  I have an oscilliscope, and already I've discovered
+some interesting things.
+
+These timing parameters and other details will probably be important for
+my ultimate project, which will be to write a Keyboard Component emulator.
+:-)  I don't know if I'll ever get to it, but I'm certainly going to try.
+
+------------------------------------------------------------------------------

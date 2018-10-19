@@ -1,0 +1,254 @@
+==============================================================================
+ jzIntv Joystick Support
+==============================================================================
+
+
+----------------
+ Identification
+----------------
+
+jzIntv scans for joysticks when it starts.  It will look for and configure
+up to 4 joysticks.  It prints out information on each joystick it finds,
+as well as what name it has assigned to the joystick.  For example:
+
+    joy:  Found 1 joystick(s)
+    joy:  Joystick JS0 "Logitech Inc. WingMan Extreme Digital 3D"
+    joy:     4 axes, 0 trackball(s), 1 hat(s), 7 button(s)
+
+This indicates that jzIntv found one joystick, and assigned it the name
+"JS0".  All events associated with this joystick will have the prefix
+"JS0_".  If additional joysticks were detected, they would be assigned
+the names JS1 through JS3.
+
+----------------------
+ Analog Configuration
+----------------------
+
+jzIntv offers several configuration options for adapting analog inputs
+to the 16-direction Intellivision controller input.  If you're using a
+digital joystick, please see the next section, "Digital Joysticks."
+
+You can configure joysticks with command line flags.  For each joystick,
+jzIntv accepts a configuration string such as this one:
+
+--js0="xaxis=0,yaxis=1,noac,push=17,rels=10,xrng=-49:50,yrng=-49:50,16dir"
+
+If you provide an empty configuration string (i.e. --js0=""), jzIntv
+will print out a configuration string for you that corresponds to the
+current defaults.  You can then edit that string as needed.  If you
+only wish to change one item, you need not provide the entire string.
+Rather just supply the portion you wish to change.  For example, if
+to change "push=17" to "push=33", supply the following configuration
+string:
+
+    --js0="push=33"
+
+Most of jzIntv's joystick configuration operations focus on calibrating
+the analog input axes.  The following paragraphs describe these options.
+Here's a short summary of the various options:
+
+    xaxis=#     Axis for horizontal input.  Default: 0
+    yaxis=#     Axis for vertical input.    Default: 1
+    ac / noac   Turn auto-centering on or off.
+    push=#      Joystick "pushed" threshold.    0-100
+    rels=#      Joystick "released" threshold.  0-100
+    xrng=#:#    Initial estimate of joystick horizontal range.  
+    yrng=#:#    Initial estimate of joystick vertical range.  
+    4dir        Quantize input to 4 directions:  N, S, E, W
+    4diag       Quantize input to 4 directions:  NE, NW, SE, SW
+    8dir        Quantize input to 8 directions
+    16dir       Quantize input to 16 directions (default)
+
+Typically, the defaults should be suitable for most joysticks.  These
+options are provided "just in case."  
+
+
+xaxis, yaxis
+------------
+
+Joysticks offer multiple "axes" for various inputs.  The most basic
+joystick offers two axes, one for horizontal (X axis) motion, and one
+for vertical (Y axis) motion.  By default, jzIntv assumes the joystick's
+axis 0 is the X axis, and axis 1 is the Y axis.  This works for most
+joysticks, although you can change the mapping using the "xaxis=#" and
+"yaxis=#" configuration inputs.  Other axes offered by the joystick may
+correspond to other analog inputs such as throttles and force-sensitive
+feedback.  Typically, jzIntv does not need and is not able to use these
+additional inputs.
+
+
+ac, noac
+--------
+
+The ac and noac parameters determine whether jzIntv tries to autocenter
+the joystick.  The default depends on the operating system.  Linux, for
+instance, offers highly filtered joystick input.  Therefore, jzIntv on
+Linux disables autocentering.
+
+Autocentering works by dynamically estimating where the "center" of
+the joystick travel range is.  All push/release deflection estimates
+are based off this dynamic-center position.  If you experience drift,
+you might consider enabling autocentering if it's disabled.  If the
+joystick seems unresponsive, try disabling autocentering if it's enabled.
+
+
+push, rels
+----------
+
+Most analog joysticks have some hysteresis or slop.  That is, when you
+push the joystick off-center and release it, it comes back to a position
+near center that depends on the direction you pushed it.  It never quite
+gets to center.  It may stop short of center, or it may over-shoot.
+
+jzIntv compensates for this by creating a dead-zone around the center.
+If the joystick position is inside the dead-zone, then the joystick
+is not considered "pushed".
+
+The "push=#" configuration option sets the percent deflection (distance
+from center towards edge) required before jzIntv considers the joystick
+"pushed."  The push threshold is the percentage of travel distance from
+center to the maximum travel range.  (See the notes on xrng/yrng below
+for more information on travel range.)
+
+The "rels=#" option sets the percent deflection that the joystick must
+drop below before jzIntv considers the joystick released.  This number
+must be less than or equal to the "push" threshold.  The idea here is
+that joystick inputs are often noisy.  Thus, once "pushed," the joystick
+has to move noticeably towards center before it's "released."  
+
+
+xrng, yrng
+----------
+
+jzIntv tracks the maximum range of travel for the joystick.
+It starts with an initial, conservative estimate that it expands as
+it sees controller input.  The initial estimate assumes 50% of full
+scale travel from center.  You can see this in the default settings:
+"xrng=-49:50,yrng=-49:50".  Negative numbers specify positions to the
+left or top.  Positive numbers specify positions to the right or bottom.
+
+jzIntv uses maximum travel range to scale the inputs it sees to a
+full "normalized" range.  This compensates for joysticks that do
+not provide full-range input, or which have a center position that's
+considerably off center.  jzIntv uses the normalized joystick input
+for all its compensation.  
+
+Typically the initial min/max ranges do not need adjustment.  If jzIntv
+does not respond reliably to joystick inputs, try reducing these ranges.
+
+You can also use the xrng/yrng inputs to invert one or both axes.  To do
+this, specify the min and max values in reverse order.   For example,
+"yrng=50:-49" will invert the Y axis.
+
+
+
+4dir, 4diag, 8dir, 16dir
+------------------------
+
+Analog joysticks offer an "infinite" number of directions.  The
+Intellivision, in contrast, has a 16-direction joystick.  So, by default,
+jzIntv quantizes the joystick input to 16 directions.
+
+Many games do not use the Intellivision's 16-direction input capability.
+These games reduce the input down to 8 or 4 directions.  Usually,
+the default joystick operation works well in these conditions--jzIntv
+quantizes the input to 16 directions and the game quantizes it further.
+
+Occasionally, though, the results are quirky.  In these situations,
+you can tell jzIntv to quantize to 8 or 4 directions based on the
+raw analog inputs.  This potentially gives a higher quality result.
+For games requiring diagonal input (e.g. Checkers), jzIntv even offers a
+"4 direction diagonal" mode.
+
+
+-----------------------
+ Digital Configuration
+-----------------------
+
+jzIntv supports both analog and digital joysticks through a common code
+set.  jzIntv expects digital joysticks to return their controller pad
+inputs similarly to analog joysticks.  Thus, for most digital joysticks,
+no special configuration is necessary.
+
+Some devices, such as the Retrobox, return their inputs redundantly,
+both as X/Y inputs and as button inputs.  These redundant inputs arrive
+as button inputs, and are intended for less capable emulators that don't
+wish to decode analog inputs.  These extra inputs will confuse jzIntv,
+since they look like action button inputs.
+
+To use these types of joysticks with jzIntv, you will need to create a
+"kbdhackfile" which tells jzIntv to ignore these button presses.  You may
+also need to explicitly bind any actual buttons on the joystick for them
+to become functional, as described in the next section.
+
+For the Retrobox specifically, you can use the included file
+"retrobox.kbd" to get started.  This file was provided by David Harley.
+
+
+------------------------------
+ Button and Hat Configuration
+------------------------------
+
+
+Joysticks also offer multiple buttons and hats for input.  By default,
+jzIntv maps the first 9 buttons to the 3 action buttons on the first
+joystick like so:
+
+Buttons 0, 3, 6:  Top action buttons, left controller
+Buttons 1, 4, 7:  Lower left action button, left controller
+Buttons 2, 5, 8:  Lower left action button, left controller
+
+jzIntv maps the first joystick's first hat's 8 directions to the numeric
+keypad on the right controller, making the hat usable in games such as
+Night Stalker and TRON Deadly Discs.
+
+To change these bindings, you must use a "kbdhackfile".  See 
+kbdhackfile.txt for information on setting one up.
+
+Button events are named "JSx_BTN_yy", where 'x' is the joystick number,
+and 'yy' is the button number.  Button numbers start at 0.  Under some
+operating systems, the OS may report button numbers starting at 1.
+You will need to subtract 1 from its reported number when working out
+the button numbers for jzIntv.
+
+Hat events are named "JSx_HATy_d" where 'x' is the joystick number, 'y'
+is the hat number, and 'd' is one of the following 8 compass directions:
+N, NW, W, SW, S, SE, E, NE.
+
+jzIntv itself can tell you what names it assigns to each button.  Run the
+included ROM file "event_diag.rom", found in the directory jzintv/rom/.
+Press the buttons of interest and jzIntv will print the names associated
+with the buttons.
+
+
+--------------------
+ Disc Configuration
+--------------------
+
+By default, jzIntv maps the first joystick's stick input to the left
+controller's disc input with the following bindings:
+
+    JS0_E      PD0L_J_E
+    JS0_ENE    PD0L_J_ENE
+    JS0_NE     PD0L_J_NE
+    JS0_NNE    PD0L_J_NNE
+    JS0_N      PD0L_J_N
+    JS0_NNW    PD0L_J_NNW
+    JS0_NW     PD0L_J_NW
+    JS0_WNW    PD0L_J_WNW
+    JS0_W      PD0L_J_W
+    JS0_WSW    PD0L_J_WSW
+    JS0_SW     PD0L_J_SW
+    JS0_SSW    PD0L_J_SSW
+    JS0_S      PD0L_J_S
+    JS0_SSE    PD0L_J_SSE
+    JS0_SE     PD0L_J_SE
+    JS0_ESE    PD0L_J_ESE
+
+To bind JS0 to another input controller, or to create bindings for a
+second, third or fourth joystick, you will need to write a kbdhackfile
+to generate these bindings.
+
+Note, for proper joystick operation, bind the stick input events to
+the PDxx_J events, not the PDxx_D inputs.
+

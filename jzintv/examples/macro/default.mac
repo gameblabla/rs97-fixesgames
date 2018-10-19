@@ -1,0 +1,16 @@
+;; ======================================================================== ;;
+;;  DEFAULT.MAC                                         Default Macro Set   ;;
+;;  Joseph Zbiciak <intvnut AT gmail.com>                                   ;;
+;;  These macros are hereby released into the Public Domain.                ;;
+;; ======================================================================== ;;
+
+    IF (DEFINED _DEFAULT_MAC) = 0
+
+_DEFAULT_MAC EQU 1
+
+        INCLUDE "stic.mac"
+        INCLUDE "psg.mac"
+        INCLUDE "util.mac"
+        INCLUDE "print.mac"
+
+    ENDI

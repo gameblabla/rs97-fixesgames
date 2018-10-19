@@ -1,0 +1,81 @@
+# BUILD SETTINGS ###########################################
+
+CC=mipsel-linux-gcc
+CXX=mipsel-linux-g++
+STRIP=mipsel-linux-strip
+
+PLATFORM := DINGUX
+
+TARGET := opentyrian
+
+WITH_NETWORK := false
+
+############################################################
+
+SDL_CONFIG := sdl-config
+
+SRCS := $(wildcard src/*.c)
+OBJS := $(SRCS:src/%.c=obj/%.o)
+OPK  := $(TARGET) gcw0/opentyrian.png gcw0/default.gcw0.desktop data/
+RELEASE := 1
+
+# FLAGS ####################################################
+
+ifneq (1, $(RELEASE))
+    EXTRA_CFLAGS += -g3 -O0 -Werror
+else
+    EXTRA_CFLAGS += -g0 -O2 -DNDEBUG
+endif
+EXTRA_CFLAGS += -MMD -pedantic -Wall -Wextra -Wno-missing-field-initializers
+ifeq ($(WITH_NETWORK), true)
+    EXTRA_CFLAGS += -DWITH_NETWORK
+endif
+
+#HG_REV := $(shell hg id -ib && touch src/hg_revision.h)
+#ifneq ($(HG_REV), )
+#    EXTRA_CFLAGS += '-DHG_REV="$(HG_REV)"'
+#endif
+
+EXTRA_CFLAGS += -DHG_REV="\"r$(shell git rev-list --reverse HEAD | wc -l)\""
+
+EXTRA_LDLIBS += -lm
+
+SDL_CFLAGS := $(shell $(SDL_CONFIG) --cflags)
+SDL_LDLIBS := $(shell $(SDL_CONFIG) --libs)
+ifeq ($(WITH_NETWORK), true)
+    SDL_LDLIBS += -lSDL_net
+endif
+SDL_CFLAGS := -I/mnt/gh_retrogame_buildroot/output/host/usr/mipsel-buildroot-linux-uclibc/sysroot/usr/include/SDL/
+SDL_LDLIBS := -lSDL
+ALL_CFLAGS += -std=c99  -I./src -DTARGET_$(PLATFORM) $(EXTRA_CFLAGS) $(SDL_CFLAGS) $(CFLAGS)
+# -DTARGET_GCW0
+ALL_LDFLAGS += $(LDFLAGS)
+LDLIBS += $(EXTRA_LDLIBS) $(SDL_LDLIBS)
+
+# RULES ####################################################
+
+.PHONY : all release clean
+
+all : $(TARGET)
+
+clean :
+	rm -rf obj/*
+	rm -f $(TARGET)
+
+ifneq ($(MAKECMDGOALS), clean)
+    -include $(OBJS:.o=.d)
+endif
+
+$(TARGET) : $(OBJS)
+	$(CC) -o $@ $(ALL_LDFLAGS) $^ $(LDLIBS)
+
+obj/%.o : src/%.c
+	@mkdir -p "$(dir $@)"
+	$(CC) -c -o $@ $(ALL_CFLAGS) $<
+
+opk: all
+ifeq (1, $(RELEASE))
+	$(STRIP) $(TARGET)
+endif
+	@rm -f $(TARGET).opk
+	@mksquashfs $(OPK) $(TARGET).opk

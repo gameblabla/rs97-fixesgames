@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=Spout
+Comment=Simple caveflying game
+Exec=spout-od.elf
+Terminal=false
+Type=Application
+StartupNotify=true
+X-OD-Manual=readme.txt
+Icon=spout
+Categories=games;

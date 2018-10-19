@@ -1,4 +1,8 @@
 *.o
 *.elf
+*.gcda
+*.a
+*.elf
 *.dge
 release/
+obj/
